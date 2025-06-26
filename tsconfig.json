@@ -8,6 +8,9 @@
     },
     {
       "path": "./apps/fundmate-be"
+    },
+    {
+      "path": "./apps/api-gateway"
     }
   ]
 }
