@@ -3,7 +3,7 @@
   "name": "payment-service",
   "sourceRoot": "apps/payment-service/src",
   "projectType": "application",
-  "tags": ["type:app", "scope:ai"],
+  "tags": ["type:app", "scope:payment"],
   "targets": {
     "build": {
       "executor": "@nx/esbuild:esbuild",

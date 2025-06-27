@@ -3,7 +3,7 @@
   "name": "funding-service",
   "sourceRoot": "apps/funding-service/src",
   "projectType": "application",
-  "tags": ["type:app", "scope:ai"],
+  "tags": ["type:app", "scope:funding"],
   "targets": {
     "build": {
       "executor": "@nx/esbuild:esbuild",

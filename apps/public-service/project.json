@@ -3,7 +3,7 @@
   "name": "public-service",
   "sourceRoot": "apps/public-service/src",
   "projectType": "application",
-  "tags": ["type:app", "scope:ai"],
+  "tags": ["type:app", "scope:public"],
   "targets": {
     "build": {
       "executor": "@nx/esbuild:esbuild",

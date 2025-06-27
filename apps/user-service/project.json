@@ -3,7 +3,7 @@
   "name": "user-service",
   "sourceRoot": "apps/user-service/src",
   "projectType": "application",
-  "tags": ["type:app", "scope:ai"],
+  "tags": ["type:app", "scope:user"],
   "targets": {
     "build": {
       "executor": "@nx/esbuild:esbuild",

@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "cd ../.. && nx run api-gateway:serve:development",
-    "build": "cd ../.. && nx run api-gateway:build:development",
+    "build:dev": "cd ../.. && nx run api-gateway:build:development",
+    "build:prod": "cd ../.. && nx run api-gateway:build:production",
+    "start": "cd ../.. && nx run api-gateway:serve:production && nx run api-gateway:serve:production",
     "test": "cd ../.. && nx test api-gateway"
   }
 }

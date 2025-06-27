@@ -3,7 +3,7 @@
   "name": "auth-service",
   "sourceRoot": "apps/auth-service/src",
   "projectType": "application",
-  "tags": ["type:app", "scope:ai"],
+  "tags": ["type:app", "scope:auth"],
   "targets": {
     "build": {
       "executor": "@nx/esbuild:esbuild",

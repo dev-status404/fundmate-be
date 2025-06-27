@@ -3,7 +3,7 @@
   "name": "interaction-service",
   "sourceRoot": "apps/interaction-service/src",
   "projectType": "application",
-  "tags": ["type:app", "scope:ai"],
+  "tags": ["type:app", "scope:interaction"],
   "targets": {
     "build": {
       "executor": "@nx/esbuild:esbuild",

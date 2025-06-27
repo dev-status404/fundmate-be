@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "cd ../.. && nx run interaction-service:serve:development",
-    "build": "cd ../.. && nx run interaction-service:build:development",
+    "build:dev": "cd ../.. && nx run interaction-service:build:development",
+    "build:prod": "cd ../.. && nx run interaction-service:build:production",
+    "start": "cd ../.. && nx run api-gateway:serve:production && nx run interaction-service:serve:production",
     "test": "cd ../.. && nx test interaction-service"
   }
 }

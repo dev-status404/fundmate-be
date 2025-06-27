@@ -3,7 +3,7 @@
   "name": "api-gateway",
   "sourceRoot": "apps/api-gateway/src",
   "projectType": "application",
-  "tags": ["type:app", "scope:ai"],
+  "tags": ["type:app", "scope:gateway"],
   "targets": {
     "build": {
       "executor": "@nx/esbuild:esbuild",
