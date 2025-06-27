@@ -4,13 +4,28 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/fundmate-be-e2e"
-    },
-    {
-      "path": "./apps/fundmate-be"
-    },
-    {
       "path": "./apps/api-gateway"
+    },
+    {
+      "path": "./apps/auth"
+    },
+    {
+      "path": "./apps/user"
+    },
+    {
+      "path": "./apps/funding"
+    },
+    {
+      "path": "./apps/public"
+    },
+    {
+      "path": "./apps/payment"
+    },
+    {
+      "path": "./apps/ai-document"
+    },
+    {
+      "path": "./apps/interaction"
     }
   ]
 }
