@@ -2,6 +2,11 @@
   "name": "@fundmate-be/api-gateway",
   "version": "0.0.1",
   "private": true,
+  "scripts": {
+    "dev": "nx run @fundmate-be/api-gateway:serve",
+    "build": "nx run @fundmate-be/api-gateway:build",
+    "test": "nx run @fundmate-be/api-gateway:test"
+  },
   "nx": {
     "targets": {
       "build": {
@@ -12,7 +17,7 @@
         "defaultConfiguration": "production",
         "options": {
           "platform": "node",
-          "outputPath": "api-gateway/dist",
+          "outputPath": "apps/api-gateway/dist",
           "format": [
             "cjs"
           ],

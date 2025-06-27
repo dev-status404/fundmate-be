@@ -3,14 +3,16 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const host = process.env.HOST ?? 'localhost';
-const port = process.env.PORT ? Number(process.env.PORT) : 3001;
+const port = process.env.PORT ? Number(process.env.PORT) : 3002;
 
 const app = express();
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.send({ message: 'Hello API' });
+  res.send({ message: "Hello I'm auth service" });
 });
+
+app.get('/health', (_req, res) => res.status(200).json({ status: 'ok', service: 'auth-service', timestamp: new Date().toISOString() }));
 
 import authRouter from './routes/auth';
 import oauthRouter from './routes/oauth';

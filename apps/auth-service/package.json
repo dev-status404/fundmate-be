@@ -2,6 +2,11 @@
   "name": "@fundmate-be/auth-service",
   "version": "0.0.1",
   "private": true,
+  "scripts": {
+    "dev": "nx run @fundmate-be/auth-service:serve",
+    "build": "nx run @fundmate-be/auth-service:build",
+    "test": "nx run @fundmate-be/auth-service:test"
+  },
   "nx": {
     "targets": {
       "build": {
@@ -68,8 +73,8 @@
       }
     },
     "tags": [
-      "type:apps",
-      ""
+      "type:app",
+      "scope:auth"
     ]
   },
   "dependencies": {
