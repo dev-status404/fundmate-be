@@ -2,6 +2,11 @@
   "name": "@fundmate-be/public-service",
   "version": "0.0.1",
   "private": true,
+  "scripts": {
+    "dev": "nx run @fundmate-be/public-service:serve",
+    "build": "nx run @fundmate-be/public-service:build",
+    "test": "nx run @fundmate-be/public-service:test"
+  },
   "nx": {
     "targets": {
       "build": {
@@ -69,7 +74,7 @@
     },
     "tags": [
       "type:app",
-      ""
+      "scope:public"
     ]
   }
 }
