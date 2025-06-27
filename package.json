@@ -6,7 +6,17 @@
   "private": true,
   "dependencies": {
     "axios": "^1.6.0",
-    "express": "^4.21.2"
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.0",
+    "express": "^4.21.2",
+    "express-validator": "^7.2.1",
+    "helmet": "^8.1.0",
+    "http-status-codes": "^2.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.14.1",
+    "pino": "^9.7.0",
+    "swagger-ui-express": "^5.0.1",
+    "typeorm": "^0.3.25"
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",
