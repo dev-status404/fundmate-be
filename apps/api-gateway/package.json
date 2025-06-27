@@ -17,10 +17,10 @@
             "cjs"
           ],
           "bundle": false,
-          "main": "api-gateway/src/main.ts",
-          "tsConfig": "api-gateway/tsconfig.app.json",
+          "main": "apps/api-gateway/src/main.ts",
+          "tsConfig": "apps/api-gateway/tsconfig.app.json",
           "assets": [
-            "api-gateway/src/assets"
+            "apps/api-gateway/src/assets"
           ],
           "esbuildOptions": {
             "sourcemap": true,

@@ -9,7 +9,7 @@ swcJestConfig.swcrc = false;
 
 export default {
   displayName: '@fundmate-be/api-gateway',
-  preset: '../jest.preset.js',
+  preset: '../../jest.preset.js',
   testEnvironment: 'node',
   transform: {
     '^.+\\.[tj]s$': ['@swc/jest', swcJestConfig],
