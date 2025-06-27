@@ -3,78 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "nx run @fundmate-be/auth-service:serve",
-    "build": "nx run @fundmate-be/auth-service:build",
-    "test": "nx run @fundmate-be/auth-service:test"
-  },
-  "nx": {
-    "targets": {
-      "build": {
-        "executor": "@nx/esbuild:esbuild",
-        "outputs": [
-          "{options.outputPath}"
-        ],
-        "defaultConfiguration": "production",
-        "options": {
-          "platform": "node",
-          "outputPath": "apps/auth-service/dist",
-          "format": [
-            "cjs"
-          ],
-          "bundle": false,
-          "main": "apps/auth-service/src/main.ts",
-          "tsConfig": "apps/auth-service/tsconfig.app.json",
-          "assets": [
-            "apps/auth-service/src/assets"
-          ],
-          "esbuildOptions": {
-            "sourcemap": true,
-            "outExtension": {
-              ".js": ".js"
-            }
-          }
-        },
-        "configurations": {
-          "development": {},
-          "production": {
-            "esbuildOptions": {
-              "sourcemap": false,
-              "outExtension": {
-                ".js": ".js"
-              }
-            }
-          }
-        }
-      },
-      "serve": {
-        "continuous": true,
-        "executor": "@nx/js:node",
-        "defaultConfiguration": "development",
-        "dependsOn": [
-          "build"
-        ],
-        "options": {
-          "buildTarget": "@fundmate-be/auth-service:build",
-          "runBuildTargetDependencies": false
-        },
-        "configurations": {
-          "development": {
-            "buildTarget": "@fundmate-be/auth-service:build:development"
-          },
-          "production": {
-            "buildTarget": "@fundmate-be/auth-service:build:production"
-          }
-        }
-      },
-      "test": {
-        "options": {
-          "passWithNoTests": true
-        }
-      }
-    },
-    "tags": [
-      "type:app",
-      "scope:auth"
-    ]
+    "dev": "cd ../.. && nx run auth-service:serve:development",
+    "build:dev": "cd ../.. && nx run auth-service:build:development",
+    "build:prod": "cd ../.. && nx run auth-service:build:production",
+    "start": "cd ../.. && nx run api-gateway:serve:production && nx run auth-service:serve:production",
+    "test": "cd ../.. && nx test auth-service"
   }
 }

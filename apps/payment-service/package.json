@@ -3,78 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "nx run @fundmate-be/payment-service:serve",
-    "build": "nx run @fundmate-be/payment-service:build",
-    "test": "nx run @fundmate-be/payment-service:test"
-  },
-  "nx": {
-    "targets": {
-      "build": {
-        "executor": "@nx/esbuild:esbuild",
-        "outputs": [
-          "{options.outputPath}"
-        ],
-        "defaultConfiguration": "production",
-        "options": {
-          "platform": "node",
-          "outputPath": "apps/payment-service/dist",
-          "format": [
-            "cjs"
-          ],
-          "bundle": false,
-          "main": "apps/payment-service/src/main.ts",
-          "tsConfig": "apps/payment-service/tsconfig.app.json",
-          "assets": [
-            "apps/payment-service/src/assets"
-          ],
-          "esbuildOptions": {
-            "sourcemap": true,
-            "outExtension": {
-              ".js": ".js"
-            }
-          }
-        },
-        "configurations": {
-          "development": {},
-          "production": {
-            "esbuildOptions": {
-              "sourcemap": false,
-              "outExtension": {
-                ".js": ".js"
-              }
-            }
-          }
-        }
-      },
-      "serve": {
-        "continuous": true,
-        "executor": "@nx/js:node",
-        "defaultConfiguration": "development",
-        "dependsOn": [
-          "build"
-        ],
-        "options": {
-          "buildTarget": "@fundmate-be/payment-service:build",
-          "runBuildTargetDependencies": false
-        },
-        "configurations": {
-          "development": {
-            "buildTarget": "@fundmate-be/payment-service:build:development"
-          },
-          "production": {
-            "buildTarget": "@fundmate-be/payment-service:build:production"
-          }
-        }
-      },
-      "test": {
-        "options": {
-          "passWithNoTests": true
-        }
-      }
-    },
-    "tags": [
-      "type:app",
-      "scope:payment"
-    ]
+    "dev": "cd ../.. && nx run payment-service:serve:development",
+    "build:dev": "cd ../.. && nx run payment-service:build:development",
+    "build:prod": "cd ../.. && nx run payment-service:build:production",
+    "start": "cd ../.. && nx run api-gateway:serve:production && nx run payment-service:serve:production",
+    "test": "cd ../.. && nx test payment-service"
   }
 }
