@@ -1,5 +1,5 @@
 {
-  "name": "@fundmate-be/api-gateway",
+  "name": "@fundmate-be/funding-service",
   "version": "0.0.1",
   "private": true,
   "nx": {
@@ -12,15 +12,15 @@
         "defaultConfiguration": "production",
         "options": {
           "platform": "node",
-          "outputPath": "api-gateway/dist",
+          "outputPath": "apps/funding-service/dist",
           "format": [
             "cjs"
           ],
           "bundle": false,
-          "main": "api-gateway/src/main.ts",
-          "tsConfig": "api-gateway/tsconfig.app.json",
+          "main": "apps/funding-service/src/main.ts",
+          "tsConfig": "apps/funding-service/tsconfig.app.json",
           "assets": [
-            "api-gateway/src/assets"
+            "apps/funding-service/src/assets"
           ],
           "esbuildOptions": {
             "sourcemap": true,
@@ -49,15 +49,15 @@
           "build"
         ],
         "options": {
-          "buildTarget": "@fundmate-be/api-gateway:build",
+          "buildTarget": "@fundmate-be/funding-service:build",
           "runBuildTargetDependencies": false
         },
         "configurations": {
           "development": {
-            "buildTarget": "@fundmate-be/api-gateway:build:development"
+            "buildTarget": "@fundmate-be/funding-service:build:development"
           },
           "production": {
-            "buildTarget": "@fundmate-be/api-gateway:build:production"
+            "buildTarget": "@fundmate-be/funding-service:build:production"
           }
         }
       },
@@ -69,7 +69,7 @@
     },
     "tags": [
       "type:app",
-      "scope:gateway"
+      ""
     ]
   }
 }

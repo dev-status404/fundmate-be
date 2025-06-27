@@ -1,5 +1,5 @@
 {
-  "name": "@fundmate-be/api-gateway",
+  "name": "@fundmate-be/interaction-service",
   "version": "0.0.1",
   "private": true,
   "nx": {
@@ -12,15 +12,15 @@
         "defaultConfiguration": "production",
         "options": {
           "platform": "node",
-          "outputPath": "api-gateway/dist",
+          "outputPath": "apps/interaction-service/dist",
           "format": [
             "cjs"
           ],
           "bundle": false,
-          "main": "api-gateway/src/main.ts",
-          "tsConfig": "api-gateway/tsconfig.app.json",
+          "main": "apps/interaction-service/src/main.ts",
+          "tsConfig": "apps/interaction-service/tsconfig.app.json",
           "assets": [
-            "api-gateway/src/assets"
+            "apps/interaction-service/src/assets"
           ],
           "esbuildOptions": {
             "sourcemap": true,
@@ -49,15 +49,15 @@
           "build"
         ],
         "options": {
-          "buildTarget": "@fundmate-be/api-gateway:build",
+          "buildTarget": "@fundmate-be/interaction-service:build",
           "runBuildTargetDependencies": false
         },
         "configurations": {
           "development": {
-            "buildTarget": "@fundmate-be/api-gateway:build:development"
+            "buildTarget": "@fundmate-be/interaction-service:build:development"
           },
           "production": {
-            "buildTarget": "@fundmate-be/api-gateway:build:production"
+            "buildTarget": "@fundmate-be/interaction-service:build:production"
           }
         }
       },
@@ -69,7 +69,7 @@
     },
     "tags": [
       "type:app",
-      "scope:gateway"
+      ""
     ]
   }
 }

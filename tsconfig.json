@@ -4,28 +4,31 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/api-gateway"
+      "path": ".apps/api-gateway"
     },
     {
-      "path": "./apps/auth"
+      "path": "./apps/auth-service"
     },
     {
-      "path": "./apps/user"
+      "path": "./apps/user-service"
     },
     {
-      "path": "./apps/funding"
+      "path": "./apps/funding-service"
     },
     {
-      "path": "./apps/public"
+      "path": "./apps/public-service"
     },
     {
-      "path": "./apps/payment"
+      "path": "./apps/payment-service"
     },
     {
-      "path": "./apps/ai-document"
+      "path": "./apps/ai-service"
     },
     {
-      "path": "./apps/interaction"
+      "path": "./apps/interaction-service"
+    },
+    {
+      "path": "./shared/type"
     }
   ]
 }

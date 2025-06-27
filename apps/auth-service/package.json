@@ -1,5 +1,5 @@
 {
-  "name": "@fundmate-be/api-gateway",
+  "name": "@fundmate-be/auth-service",
   "version": "0.0.1",
   "private": true,
   "nx": {
@@ -12,15 +12,15 @@
         "defaultConfiguration": "production",
         "options": {
           "platform": "node",
-          "outputPath": "api-gateway/dist",
+          "outputPath": "apps/auth-service/dist",
           "format": [
             "cjs"
           ],
           "bundle": false,
-          "main": "api-gateway/src/main.ts",
-          "tsConfig": "api-gateway/tsconfig.app.json",
+          "main": "apps/auth-service/src/main.ts",
+          "tsConfig": "apps/auth-service/tsconfig.app.json",
           "assets": [
-            "api-gateway/src/assets"
+            "apps/auth-service/src/assets"
           ],
           "esbuildOptions": {
             "sourcemap": true,
@@ -49,15 +49,15 @@
           "build"
         ],
         "options": {
-          "buildTarget": "@fundmate-be/api-gateway:build",
+          "buildTarget": "@fundmate-be/auth-service:build",
           "runBuildTargetDependencies": false
         },
         "configurations": {
           "development": {
-            "buildTarget": "@fundmate-be/api-gateway:build:development"
+            "buildTarget": "@fundmate-be/auth-service:build:development"
           },
           "production": {
-            "buildTarget": "@fundmate-be/api-gateway:build:production"
+            "buildTarget": "@fundmate-be/auth-service:build:production"
           }
         }
       },
@@ -68,8 +68,8 @@
       }
     },
     "tags": [
-      "type:app",
-      "scope:gateway"
+      "type:apps",
+      ""
     ]
   }
 }

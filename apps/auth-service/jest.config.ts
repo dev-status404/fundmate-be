@@ -8,8 +8,8 @@ const swcJestConfig = JSON.parse(readFileSync(`${__dirname}/.spec.swcrc`, 'utf-8
 swcJestConfig.swcrc = false;
 
 export default {
-  displayName: '@fundmate-be/api-gateway',
-  preset: '../jest.preset.js',
+  displayName: '@fundmate-be/auth-service',
+  preset: '../../jest.preset.js',
   testEnvironment: 'node',
   transform: {
     '^.+\\.[tj]s$': ['@swc/jest', swcJestConfig],
