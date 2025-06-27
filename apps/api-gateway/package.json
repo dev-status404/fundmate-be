@@ -76,8 +76,5 @@
       "type:app",
       "scope:gateway"
     ]
-  },
-  "dependencies": {
-    "nginx": "^1.1.0"
   }
 }
