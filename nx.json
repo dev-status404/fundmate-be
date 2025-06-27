@@ -41,7 +41,7 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": ["apps/fundmate-be-e2e/**/*"]
+      "exclude": ["apps/fundmate-be-e2e/**/*", "apps/auth-e2e/**/*"]
     }
   ],
   "targetDefaults": {
@@ -52,6 +52,11 @@
     },
     "test": {
       "dependsOn": ["^build"]
+    },
+    "@nx/js:tsc": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     }
   }
 }
