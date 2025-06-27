@@ -3,78 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "nx run @fundmate-be/interaction-service:serve",
-    "build": "nx run @fundmate-be/interaction-service:build",
-    "test": "nx run @fundmate-be/interaction-service:test"
-  },
-  "nx": {
-    "targets": {
-      "build": {
-        "executor": "@nx/esbuild:esbuild",
-        "outputs": [
-          "{options.outputPath}"
-        ],
-        "defaultConfiguration": "production",
-        "options": {
-          "platform": "node",
-          "outputPath": "apps/interaction-service/dist",
-          "format": [
-            "cjs"
-          ],
-          "bundle": false,
-          "main": "apps/interaction-service/src/main.ts",
-          "tsConfig": "apps/interaction-service/tsconfig.app.json",
-          "assets": [
-            "apps/interaction-service/src/assets"
-          ],
-          "esbuildOptions": {
-            "sourcemap": true,
-            "outExtension": {
-              ".js": ".js"
-            }
-          }
-        },
-        "configurations": {
-          "development": {},
-          "production": {
-            "esbuildOptions": {
-              "sourcemap": false,
-              "outExtension": {
-                ".js": ".js"
-              }
-            }
-          }
-        }
-      },
-      "serve": {
-        "continuous": true,
-        "executor": "@nx/js:node",
-        "defaultConfiguration": "development",
-        "dependsOn": [
-          "build"
-        ],
-        "options": {
-          "buildTarget": "@fundmate-be/interaction-service:build",
-          "runBuildTargetDependencies": false
-        },
-        "configurations": {
-          "development": {
-            "buildTarget": "@fundmate-be/interaction-service:build:development"
-          },
-          "production": {
-            "buildTarget": "@fundmate-be/interaction-service:build:production"
-          }
-        }
-      },
-      "test": {
-        "options": {
-          "passWithNoTests": true
-        }
-      }
-    },
-    "tags": [
-      "type:app",
-      "scope:interaction"
-    ]
+    "dev": "cd ../.. && nx run interaction-service:serve:development",
+    "build": "cd ../.. && nx run interaction-service:build:development",
+    "test": "cd ../.. && nx test interaction-service"
   }
 }
