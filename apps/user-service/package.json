@@ -7,6 +7,6 @@
     "build:dev": "cd ../.. && nx run user-service:build:development",
     "build:prod": "cd ../.. && nx run user-service:build:production",
     "start": "cd ../.. && nx run api-gateway:serve:production && nx run user-service:serve:production",
-    "test": "cd ../.. && nx test user-service"
+    "test:user": "cd ../.. && nx test user-service"
   }
 }

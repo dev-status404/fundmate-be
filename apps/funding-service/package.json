@@ -7,6 +7,6 @@
     "build:dev": "cd ../.. && nx run funding-service:build:development",
     "build:prod": "cd ../.. && nx run funding-service:build:production",
     "start": "cd ../.. && nx run api-gateway:serve:production && nx run funding-service:serve:production",
-    "test": "cd ../.. && nx test funding-service"
+    "test:fund": "cd ../.. && nx test funding-service"
   }
 }

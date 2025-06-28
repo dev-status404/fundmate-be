@@ -7,6 +7,6 @@
     "build:dev": "cd ../.. && nx run auth-service:build:development",
     "build:prod": "cd ../.. && nx run auth-service:build:production",
     "start": "cd ../.. && nx run api-gateway:serve:production && nx run auth-service:serve:production",
-    "test": "cd ../.. && nx test auth-service"
+    "test:auth": "cd ../.. && nx test auth-service"
   }
 }

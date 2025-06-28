@@ -7,6 +7,6 @@
     "build:dev": "cd ../.. && nx run ai-service:build:development",
     "build:prod": "cd ../.. && nx run ai-service:build:production",
     "start": "cd ../.. && nx run api-gateway:serve:production && nx run ai-service:serve:production",
-    "test": "cd ../.. && nx test ai-service"
+    "test:ai": "cd ../.. && nx test ai-service"
   }
 }
