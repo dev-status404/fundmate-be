@@ -18,7 +18,7 @@ export class User {
   @Column({ type: 'varchar', length: 45, default: '홍길동' })
   nickname!: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
+  @Column({ type: 'varchar', length: 100, nullable: true, unique: true })
   email?: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
@@ -36,6 +36,6 @@ export class User {
   @Column({ type: 'varchar', length: 10, nullable: true })
   provider?: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
+  @Column({ type: 'varchar', length: 100, nullable: true, unique: true })
   snsId?: string;
 }
