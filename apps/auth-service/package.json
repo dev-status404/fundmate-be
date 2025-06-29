@@ -8,5 +8,11 @@
     "build:prod": "cd ../.. && nx run auth-service:build:production",
     "start": "cd ../.. && nx run api-gateway:serve:production && nx run auth-service:serve:production",
     "test:auth": "cd ../.. && nx test auth-service"
+  },
+  "dependencies": {
+    "nodemailer": "^7.0.3"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^6.4.17"
   }
 }
