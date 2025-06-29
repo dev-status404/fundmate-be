@@ -3,78 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "nx run @fundmate-be/user-service:serve",
-    "build": "nx run @fundmate-be/user-service:build",
-    "test": "nx run @fundmate-be/user-service:test"
-  },
-  "nx": {
-    "targets": {
-      "build": {
-        "executor": "@nx/esbuild:esbuild",
-        "outputs": [
-          "{options.outputPath}"
-        ],
-        "defaultConfiguration": "production",
-        "options": {
-          "platform": "node",
-          "outputPath": "apps/user-service/dist",
-          "format": [
-            "cjs"
-          ],
-          "bundle": false,
-          "main": "apps/user-service/src/main.ts",
-          "tsConfig": "apps/user-service/tsconfig.app.json",
-          "assets": [
-            "apps/user-service/src/assets"
-          ],
-          "esbuildOptions": {
-            "sourcemap": true,
-            "outExtension": {
-              ".js": ".js"
-            }
-          }
-        },
-        "configurations": {
-          "development": {},
-          "production": {
-            "esbuildOptions": {
-              "sourcemap": false,
-              "outExtension": {
-                ".js": ".js"
-              }
-            }
-          }
-        }
-      },
-      "serve": {
-        "continuous": true,
-        "executor": "@nx/js:node",
-        "defaultConfiguration": "development",
-        "dependsOn": [
-          "build"
-        ],
-        "options": {
-          "buildTarget": "@fundmate-be/user-service:build",
-          "runBuildTargetDependencies": false
-        },
-        "configurations": {
-          "development": {
-            "buildTarget": "@fundmate-be/user-service:build:development"
-          },
-          "production": {
-            "buildTarget": "@fundmate-be/user-service:build:production"
-          }
-        }
-      },
-      "test": {
-        "options": {
-          "passWithNoTests": true
-        }
-      }
-    },
-    "tags": [
-      "type:app",
-      "scope:user"
-    ]
+    "dev": "cd ../.. && nx run user-service:serve:development",
+    "build:dev": "cd ../.. && nx run user-service:build:development",
+    "build:prod": "cd ../.. && nx run user-service:build:production",
+    "start": "cd ../.. && nx run api-gateway:serve:production && nx run user-service:serve:production",
+    "test:user": "cd ../.. && nx test user-service"
   }
 }

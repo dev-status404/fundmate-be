@@ -3,78 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "nx run @fundmate-be/funding-service:serve",
-    "build": "nx run @fundmate-be/funding-service:build",
-    "test": "nx run @fundmate-be/funding-service:test"
-  },
-  "nx": {
-    "targets": {
-      "build": {
-        "executor": "@nx/esbuild:esbuild",
-        "outputs": [
-          "{options.outputPath}"
-        ],
-        "defaultConfiguration": "production",
-        "options": {
-          "platform": "node",
-          "outputPath": "apps/funding-service/dist",
-          "format": [
-            "cjs"
-          ],
-          "bundle": false,
-          "main": "apps/funding-service/src/main.ts",
-          "tsConfig": "apps/funding-service/tsconfig.app.json",
-          "assets": [
-            "apps/funding-service/src/assets"
-          ],
-          "esbuildOptions": {
-            "sourcemap": true,
-            "outExtension": {
-              ".js": ".js"
-            }
-          }
-        },
-        "configurations": {
-          "development": {},
-          "production": {
-            "esbuildOptions": {
-              "sourcemap": false,
-              "outExtension": {
-                ".js": ".js"
-              }
-            }
-          }
-        }
-      },
-      "serve": {
-        "continuous": true,
-        "executor": "@nx/js:node",
-        "defaultConfiguration": "development",
-        "dependsOn": [
-          "build"
-        ],
-        "options": {
-          "buildTarget": "@fundmate-be/funding-service:build",
-          "runBuildTargetDependencies": false
-        },
-        "configurations": {
-          "development": {
-            "buildTarget": "@fundmate-be/funding-service:build:development"
-          },
-          "production": {
-            "buildTarget": "@fundmate-be/funding-service:build:production"
-          }
-        }
-      },
-      "test": {
-        "options": {
-          "passWithNoTests": true
-        }
-      }
-    },
-    "tags": [
-      "type:app",
-      "scope:funding"
-    ]
+    "dev": "cd ../.. && nx run funding-service:serve:development",
+    "build:dev": "cd ../.. && nx run funding-service:build:development",
+    "build:prod": "cd ../.. && nx run funding-service:build:production",
+    "start": "cd ../.. && nx run api-gateway:serve:production && nx run funding-service:serve:production",
+    "test:fund": "cd ../.. && nx test funding-service"
   }
 }

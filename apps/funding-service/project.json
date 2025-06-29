@@ -1,0 +1,67 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "funding-service",
+  "sourceRoot": "apps/funding-service/src",
+  "projectType": "application",
+  "tags": ["type:app", "scope:funding"],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "apps/funding-service/dist",
+        "format": ["cjs"],
+        "bundle": false,
+        "main": "apps/funding-service/src/main.ts",
+        "tsConfig": "apps/funding-service/tsconfig.app.json",
+        "assets": ["apps/funding-service/src/assets"]
+      },
+      "configurations": {
+        "development": {
+          "esbuildOptions": {
+            "sourcemap": true,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        },
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "production",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "funding-service:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "funding-service:build:development",
+          "watch": true
+        },
+        "production": {
+          "buildTarget": "funding-service:build:production",
+          "watch": false,
+          "inspect": false
+        }
+      }
+    },
+    "test": {
+      "options": {
+        "passWithNoTests": true
+      }
+    }
+  }
+}

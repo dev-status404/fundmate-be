@@ -1,0 +1,67 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "interaction-service",
+  "sourceRoot": "apps/interaction-service/src",
+  "projectType": "application",
+  "tags": ["type:app", "scope:interaction"],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "apps/interaction-service/dist",
+        "format": ["cjs"],
+        "bundle": false,
+        "main": "apps/interaction-service/src/main.ts",
+        "tsConfig": "apps/interaction-service/tsconfig.app.json",
+        "assets": ["apps/interaction-service/src/assets"]
+      },
+      "configurations": {
+        "development": {
+          "esbuildOptions": {
+            "sourcemap": true,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        },
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "production",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "interaction-service:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "interaction-service:build:development",
+          "watch": true
+        },
+        "production": {
+          "buildTarget": "interaction-service:build:production",
+          "watch": false,
+          "inspect": false
+        }
+      }
+    },
+    "test": {
+      "options": {
+        "passWithNoTests": true
+      }
+    }
+  }
+}
