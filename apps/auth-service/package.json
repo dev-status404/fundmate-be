@@ -77,9 +77,6 @@
       "scope:auth"
     ]
   },
-  "dependencies": {
-    "dotenv": "^16.6.0"
-  },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.10"
   }
