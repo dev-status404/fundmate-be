@@ -1,7 +1,9 @@
 import express from 'express';
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.development' });
 
 const host = process.env.HOST ?? 'localhost';
-const port = process.env.PORT ? Number(process.env.PORT) : 3007;
+const port = process.env.USER_SERVICE_PORT ? Number(process.env.USER_SERVICE_PORT) : 3000;
 
 const app = express();
 app.get('/', (req, res) => {

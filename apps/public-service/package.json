@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "cd ../.. && nx run public-service:serve:development",
+    "dev": "node ../../scripts/dev.js --service=public-service",
     "build:dev": "cd ../.. && nx run public-service:build:development",
     "build:prod": "cd ../.. && nx run public-service:build:production",
-    "start": "cd ../.. && nx run api-gateway:serve:production && nx run public-service:serve:production",
-    "test": "cd ../.. && nx test public-service"
+    "start": "cd ../.. && nx run public-service:serve:production",
+    "test:pub": "cd ../.. && nx test public-service"
   }
 }

@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "cd ../.. && nx run payment-service:serve:development",
+    "dev": "node ../../scripts/dev.js --service=payment-service",
     "build:dev": "cd ../.. && nx run payment-service:build:development",
     "build:prod": "cd ../.. && nx run payment-service:build:production",
-    "start": "cd ../.. && nx run api-gateway:serve:production && nx run payment-service:serve:production",
-    "test": "cd ../.. && nx test payment-service"
+    "start": "cd ../.. && nx run payment-service:serve:production",
+    "test:pay": "cd ../.. && nx test payment-service"
   }
 }

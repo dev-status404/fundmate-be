@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "cd ../.. && nx run ai-service:serve:development",
+    "dev": "node ../../scripts/dev.js --service=ai-service",
     "build:dev": "cd ../.. && nx run ai-service:build:development",
     "build:prod": "cd ../.. && nx run ai-service:build:production",
-    "start": "cd ../.. && nx run api-gateway:serve:production && nx run ai-service:serve:production",
-    "test": "cd ../.. && nx test ai-service"
+    "start": "cd ../.. && nx run ai-service:serve:production",
+    "test:ai": "cd ../.. && nx test ai-service"
   }
 }
