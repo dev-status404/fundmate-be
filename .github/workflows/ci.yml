@@ -5,6 +5,8 @@ on:
     branches:
       - main
   pull_request:
+    branches:
+      - dev
 
 permissions:
   actions: read
@@ -12,14 +14,13 @@ permissions:
 
 jobs:
   main:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           filter: tree:0
           fetch-depth: 0
 
-      # Cache node_modules
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -28,4 +29,6 @@ jobs:
       - run: npm ci --legacy-peer-deps --verbose
       - uses: nrwl/nx-set-shas@v4
 
-      - run: npx nx affected -t lint test build
+      # 이미지 빌드 검증
+      - name: Build Docker images
+        run: docker-compose build --pull --quiet

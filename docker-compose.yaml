@@ -1,0 +1,172 @@
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        SERVICE: api-gateway
+        HOST: '0.0.0.0'
+        NODE_ENV: 'docker'
+    ports:
+      - '${API_GATEWAY_PORT}:${API_GATEWAY_PORT}'
+    environment:
+      - PORT=${API_GATEWAY_PORT}
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:${API_GATEWAY_PORT}/health-checks']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      - auth-service
+      - user-service
+      - funding-service
+      - interaction-service
+      - payment-service
+      - public-service
+      - ai-service
+    networks:
+      - backend
+    restart: unless-stopped
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        SERVICE: auth-service
+        HOST: '0.0.0.0'
+    #    ports:
+    #      - '${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}'
+    environment:
+      - PORT=3000
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - backend
+    restart: unless-stopped
+
+  user-service:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        SERVICE: user-service
+        HOST: '0.0.0.0'
+    #    ports:
+    #      - '${USER_SERVICE_PORT}:${USER_SERVICE_PORT}'
+    environment:
+      - PORT=3000
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - backend
+    restart: unless-stopped
+
+  funding-service:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        SERVICE: funding-service
+        HOST: '0.0.0.0'
+    #    ports:
+    #      - '${FUNDING_SERVICE_PORT}:${FUNDING_SERVICE_PORT}'
+    environment:
+      - PORT=3000
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - backend
+    restart: unless-stopped
+
+  interaction-service:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        SERVICE: interaction-service
+        HOST: '0.0.0.0'
+    #    ports:
+    #      - '${INTERACTION_SERVICE_PORT}:${INTERACTION_SERVICE_PORT}'
+    environment:
+      - PORT=3000
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - backend
+    restart: unless-stopped
+
+  payment-service:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        SERVICE: payment-service
+        HOST: '0.0.0.0'
+    #    ports:
+    #      - '${PAYMENT_SERVICE_PORT}:${PAYMENT_SERVICE_PORT}'
+    environment:
+      - PORT=3000
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - backend
+    restart: unless-stopped
+
+  public-service:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        SERVICE: public-service
+        HOST: '0.0.0.0'
+    #    ports:
+    #      - '${PUBLIC_SERVICE_PORT}:${PUBLIC_SERVICE_PORT}'
+    environment:
+      - PORT=3000
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - backend
+    restart: unless-stopped
+
+  ai-service:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        SERVICE: ai-service
+        HOST: '0.0.0.0'
+    #    ports:
+    #      - '${AI_SERVICE_PORT}:${AI_SERVICE_PORT}'
+    environment:
+      - PORT=3000
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - backend
+    restart: unless-stopped
+
+networks:
+  backend:
