@@ -2,9 +2,11 @@ import express from 'express';
 import FundingRouter from './routes/FundingRouter';
 import OptionRouter from './routes/OptionRouter';
 import MainRouter from './routes/MainRouter';
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.development' });
 
 const host = process.env.HOST ?? 'localhost';
-const port = process.env.PORT ? Number(process.env.PORT) : 3003;
+const port = process.env.FUNDING_SERVICE_PORT ? Number(process.env.FUNDING_SERVICE_PORT) : 3000;
 
 const app = express();
 
