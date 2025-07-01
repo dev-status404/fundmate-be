@@ -5,6 +5,7 @@ dist
 tmp
 out-tsc
 .env.development
+/scripts
 
 # dependencies
 node_modules
