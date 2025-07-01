@@ -8,5 +8,8 @@
     "build:prod": "cd ../.. && nx run api-gateway:build:production",
     "start": "cd ../.. && nx run api-gateway:serve:production",
     "test:gate": "cd ../.. && nx test api-gateway"
+  },
+  "devDependencies": {
+    "@types/swagger-ui-express": "^4.1.8"
   }
 }

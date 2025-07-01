@@ -16,7 +16,7 @@
         "bundle": false,
         "main": "apps/api-gateway/src/main.ts",
         "tsConfig": "apps/api-gateway/tsconfig.app.json",
-        "assets": ["apps/api-gateway/src/assets"]
+        "assets": ["apps/api-gateway/src/assets/**/*"]
       },
       "configurations": {
         "development": {

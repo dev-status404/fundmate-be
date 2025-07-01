@@ -1,12 +1,26 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import path from 'path';
 dotenv.config({ path: '.env.development' });
 import axios from 'axios';
+import swaggerUi from 'swagger-ui-express';
 
 const host = process.env.HOST ?? 'localhost';
 const port = process.env.API_GATEWAY_PORT ? Number(process.env.API_GATEWAY_PORT) : 3000;
 
 const app = express();
+const assetsPath = path.join(__dirname, '..', '..', '..', 'src', 'assets');
+console.log(`assetsPath: ${assetsPath}`);
+app.use('/assets', express.static(assetsPath));
+
+app.use(
+  '/docs',
+  swaggerUi.serve,
+  swaggerUi.setup(null, {
+    swaggerUrl: '/assets/swagger.json',
+    explorer: true,
+  })
+);
 
 const isDocker = process.env.NODE_ENV === 'docker';
 const getServiceUrl = (serviceName: string, port: string | number) => `http://${isDocker ? serviceName : 'localhost'}:${port}/health`;

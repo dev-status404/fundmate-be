@@ -2,7 +2,6 @@
   "name": "@fundmate-be/source",
   "version": "0.0.0",
   "license": "MIT",
-  "type": "module",
   "scripts": {
     "dev:all": "nx run-many -t serve --all",
     "build:all": "nx run-many -t build --all",
@@ -44,7 +43,6 @@
     "@types/jest": "^29.5.12",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "~18.16.9",
-    "@types/swagger-ui-express": "^4.1.8",
     "esbuild": "^0.25.5",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
