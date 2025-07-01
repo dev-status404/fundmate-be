@@ -1,7 +1,10 @@
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 dotenv.config();
 import { AppDataSource } from './data-source';
+import authRouter from './routes/auth';
+import oauthRouter from './routes/oauth';
 
 const host = process.env.HOST ?? 'localhost';
 const port = process.env.PORT ? Number(process.env.PORT) : 3002;
@@ -15,9 +18,7 @@ app.get('/', (req, res) => {
 
 app.get('/health', (_req, res) => res.status(200).json({ status: 'ok', service: 'auth-service', timestamp: new Date().toISOString() }));
 
-import authRouter from './routes/auth';
-import oauthRouter from './routes/oauth';
-
+app.use(cookieParser());
 app.use('/auth', authRouter);
 app.use('/oauth', oauthRouter);
 

@@ -10,11 +10,11 @@ export class Token {
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ name: 'refresh_token', type: 'varchar', length: 255 })
   refreshToken!: string;
 
-  @Column({ type: 'varchar', length: 255 })
-  salt!: string;
+  @Column({ type: 'boolean', default: false })
+  revoke!: boolean;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt!: Date;
