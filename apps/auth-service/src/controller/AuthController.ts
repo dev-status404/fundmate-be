@@ -9,10 +9,10 @@ import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { StatusCodes } from 'http-status-codes';
-import { ensureAuthorization } from '../middleware/ensureAuthorization';
-import { jwtErrorHandler } from '../middleware/jwtErrorHandler';
+// import { ensureAuthorization } from '../middleware/ensureAuthorization';
+// import { jwtErrorHandler } from '../middleware/jwtErrorHandler';
 import dotenv from 'dotenv';
-dotenv.config();
+dotenv.config({ path: '.env.development' });
 
 export const sendVerificationCode = async (req: Request, res: Response) => {
   const { email } = req.body;

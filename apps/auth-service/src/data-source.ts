@@ -7,7 +7,7 @@ import { EmailVerification } from './entity/EmailVerification';
 import { Category } from './entity/Category';
 import { InterestCategory } from './entity/InterestCategory';
 import dotenv from 'dotenv';
-dotenv.config();
+dotenv.config({ path: '.env.development' });
 
 export const AppDataSource = new DataSource({
   type: 'mysql',

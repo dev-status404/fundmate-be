@@ -15,7 +15,7 @@ export class User {
   @JoinColumn({ name: 'image_id' })
   image?: Image;
 
-  @Column({ type: 'varchar', length: 45, default: '홍길동' })
+  @Column({ type: 'varchar', length: 45, default: 'FundiFriend' })
   nickname!: string;
 
   @Column({ type: 'varchar', length: 100, unique: true })
