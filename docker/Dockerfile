@@ -12,7 +12,10 @@ RUN npx nx build $SERVICE
 # 실행 단계
 FROM node:22-alpine
 
-WORKDIR /app
+# Create non-root user and group
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+WORKDIR /home/appuser/app
 ARG SERVICE
 RUN apk add --no-cache curl
 ARG HOST
@@ -20,7 +23,9 @@ ENV HOST=$HOST
 ARG NODE_ENV
 ENV NODE_ENV=$NODE_ENV
 
-COPY --from=builder /app/apps/${SERVICE}/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder --chown=appuser:appgroup /app/apps/${SERVICE}/dist ./dist
+COPY --from=builder --chown=appuser:appgroup /app/node_modules ./node_modules
+
+USER appuser
 
 CMD ["node", "dist/main.js"]

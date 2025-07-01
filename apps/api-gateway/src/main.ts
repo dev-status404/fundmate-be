@@ -11,13 +11,13 @@ const app = express();
 const isDocker = process.env.NODE_ENV === 'docker';
 const getServiceUrl = (serviceName: string, port: string | number) => `http://${isDocker ? serviceName : 'localhost'}:${port}/health`;
 const services = [
-  { name: 'ai-service', url: getServiceUrl('ai-service', process.env.AI_SERVICE_PORT || 3000) },
-  { name: 'auth-service', url: getServiceUrl('auth-service', process.env.AUTH_SERVICE_PORT || 3000) },
-  { name: 'funding-service', url: getServiceUrl('funding-service', process.env.FUNDING_SERVICE_PORT || 3000) },
-  { name: 'interaction-service', url: getServiceUrl('interaction-service', process.env.INTERACTION_SERVICE_PORT || 3000) },
-  { name: 'payment-service', url: getServiceUrl('payment-service', process.env.PAYMENT_SERVICE_PORT || 3000) },
-  { name: 'public-service', url: getServiceUrl('public-service', process.env.PUBLIC_SERVICE_PORT || 3000) },
-  { name: 'user-service', url: getServiceUrl('user-service', process.env.USER_SERVICE_PORT || 3000) },
+  { name: 'ai-service', url: getServiceUrl('ai-service', process.env.AI_SERVICE_PORT || 3001) },
+  { name: 'auth-service', url: getServiceUrl('auth-service', process.env.AUTH_SERVICE_PORT || 3002) },
+  { name: 'funding-service', url: getServiceUrl('funding-service', process.env.FUNDING_SERVICE_PORT || 3003) },
+  { name: 'interaction-service', url: getServiceUrl('interaction-service', process.env.INTERACTION_SERVICE_PORT || 3004) },
+  { name: 'payment-service', url: getServiceUrl('payment-service', process.env.PAYMENT_SERVICE_PORT || 3005) },
+  { name: 'public-service', url: getServiceUrl('public-service', process.env.PUBLIC_SERVICE_PORT || 3006) },
+  { name: 'user-service', url: getServiceUrl('user-service', process.env.USER_SERVICE_PORT || 3007) },
 ];
 
 app.get('/health-checks', async (_req, res) => {

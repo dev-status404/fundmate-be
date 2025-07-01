@@ -8,9 +8,9 @@ services:
         HOST: '0.0.0.0'
         NODE_ENV: 'docker'
     ports:
-      - '${API_GATEWAY_PORT}:${API_GATEWAY_PORT}'
+      - '{API_GATEWAY_PORT}:{API_GATEWAY_PORT}'
     environment:
-      - PORT=${API_GATEWAY_PORT}
+      - API_GATEWAY_PORT=${API_GATEWAY_PORT}
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:${API_GATEWAY_PORT}/health-checks']
       interval: 10s
@@ -38,9 +38,9 @@ services:
     #    ports:
     #      - '${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}'
     environment:
-      - PORT=3000
+      - AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT}
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      test: ['CMD', 'curl', '-f', 'http://localhost:${AUTH_SERVICE_PORT}/health']
       interval: 10s
       timeout: 5s
       retries: 3
@@ -58,9 +58,9 @@ services:
     #    ports:
     #      - '${USER_SERVICE_PORT}:${USER_SERVICE_PORT}'
     environment:
-      - PORT=3000
+      - USER_SERVICE_PORT=${USER_SERVICE_PORT}
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      test: ['CMD', 'curl', '-f', 'http://localhost:${USER_SERVICE_PORT}/health']
       interval: 10s
       timeout: 5s
       retries: 3
@@ -78,9 +78,9 @@ services:
     #    ports:
     #      - '${FUNDING_SERVICE_PORT}:${FUNDING_SERVICE_PORT}'
     environment:
-      - PORT=3000
+      - FUNDING_SERVICE_PORT=${FUNDING_SERVICE_PORT}
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      test: ['CMD', 'curl', '-f', 'http://localhost:${FUNDING_SERVICE_PORT}/health']
       interval: 10s
       timeout: 5s
       retries: 3
@@ -98,9 +98,9 @@ services:
     #    ports:
     #      - '${INTERACTION_SERVICE_PORT}:${INTERACTION_SERVICE_PORT}'
     environment:
-      - PORT=3000
+      - INTERACTION_SERVICE_PORT=${INTERACTION_SERVICE_PORT}
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      test: ['CMD', 'curl', '-f', 'http://localhost:${INTERACTION_SERVICE_PORT}/health']
       interval: 10s
       timeout: 5s
       retries: 3
@@ -118,9 +118,9 @@ services:
     #    ports:
     #      - '${PAYMENT_SERVICE_PORT}:${PAYMENT_SERVICE_PORT}'
     environment:
-      - PORT=3000
+      - PAYMENT_SERVICE_PORT=${PAYMENT_SERVICE_PORT}
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      test: ['CMD', 'curl', '-f', 'http://localhost:${PAYMENT_SERVICE_PORT}/health']
       interval: 10s
       timeout: 5s
       retries: 3
@@ -138,9 +138,9 @@ services:
     #    ports:
     #      - '${PUBLIC_SERVICE_PORT}:${PUBLIC_SERVICE_PORT}'
     environment:
-      - PORT=3000
+      - PUBLIC_SERVICE_PORT=${PUBLIC_SERVICE_PORT}
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      test: ['CMD', 'curl', '-f', 'http://localhost:${PUBLIC_SERVICE_PORT}/health']
       interval: 10s
       timeout: 5s
       retries: 3
@@ -158,9 +158,9 @@ services:
     #    ports:
     #      - '${AI_SERVICE_PORT}:${AI_SERVICE_PORT}'
     environment:
-      - PORT=3000
+      - AI_SERVICE_PORT=${AI_SERVICE_PORT}
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      test: ['CMD', 'curl', '-f', 'http://localhost:${AI_SERVICE_PORT}/health']
       interval: 10s
       timeout: 5s
       retries: 3
