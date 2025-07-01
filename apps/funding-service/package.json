@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "cd ../.. && nx run funding-service:serve:development",
+    "dev": "node ../../scripts/dev.js --service=funding-service",
     "build:dev": "cd ../.. && nx run funding-service:build:development",
     "build:prod": "cd ../.. && nx run funding-service:build:production",
-    "start": "cd ../.. && nx run api-gateway:serve:production && nx run funding-service:serve:production",
+    "start": "cd ../.. && nx run funding-service:serve:production",
     "test:fund": "cd ../.. && nx test funding-service"
   }
 }

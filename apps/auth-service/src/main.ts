@@ -1,13 +1,13 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
-dotenv.config();
 import { AppDataSource } from './data-source';
 import authRouter from './routes/auth';
 import oauthRouter from './routes/oauth';
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.development' });
 
 const host = process.env.HOST ?? 'localhost';
-const port = process.env.PORT ? Number(process.env.PORT) : 3002;
+const port = process.env.AUTH_SERVICE_PORT ? Number(process.env.AUTH_SERVICE_PORT) : 3000;
 
 const app = express();
 app.use(express.json());
