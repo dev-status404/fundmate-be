@@ -26,7 +26,7 @@ jobs:
       - name: Set up SSH key
         uses: webfactory/ssh-agent@v0.8.0
         with:
-          ssh-privatekey: ${{ secrets.EC2_SSH_KEY }}
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
       - name: Copy files to EC2
         run: |
