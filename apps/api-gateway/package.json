@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "cd ../.. && nx run api-gateway:serve:development",
+    "dev": "node ../../scripts/dev.js --service=api-gateway",
     "build:dev": "cd ../.. && nx run api-gateway:build:development",
     "build:prod": "cd ../.. && nx run api-gateway:build:production",
-    "start": "cd ../.. && nx run api-gateway:serve:production && nx run api-gateway:serve:production",
+    "start": "cd ../.. && nx run api-gateway:serve:production",
     "test:gate": "cd ../.. && nx test api-gateway"
   }
 }

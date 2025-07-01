@@ -1,19 +1,23 @@
 import express from 'express';
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.development' });
 import axios from 'axios';
 
 const host = process.env.HOST ?? 'localhost';
-const port = process.env.PORT ? Number(process.env.PORT) : 3000;
+const port = process.env.API_GATEWAY_PORT ? Number(process.env.API_GATEWAY_PORT) : 3000;
 
 const app = express();
 
+const isDocker = process.env.NODE_ENV === 'docker';
+const getServiceUrl = (serviceName: string, port: string | number) => `http://${isDocker ? serviceName : 'localhost'}:${port}/health`;
 const services = [
-  { name: 'ai-service', url: `http://localhost:${process.env.PORT_AI || 3001}/health` },
-  { name: 'auth-service', url: `http://localhost:${process.env.PORT_AUTH || 3002}/health` },
-  { name: 'funding-service', url: `http://localhost:${process.env.PORT_FUNDING || 3003}/health` },
-  { name: 'interaction-service', url: `http://localhost:${process.env.PORT_INTERACTION || 3004}/health` },
-  { name: 'payment-service', url: `http://localhost:${process.env.PORT_PAYMENT || 3005}/health` },
-  { name: 'public-service', url: `http://localhost:${process.env.PORT_PUBLIC || 3006}/health` },
-  { name: 'user-service', url: `http://localhost:${process.env.PORT_USER || 3007}/health` },
+  { name: 'ai-service', url: getServiceUrl('ai-service', process.env.AI_SERVICE_PORT || 3001) },
+  { name: 'auth-service', url: getServiceUrl('auth-service', process.env.AUTH_SERVICE_PORT || 3002) },
+  { name: 'funding-service', url: getServiceUrl('funding-service', process.env.FUNDING_SERVICE_PORT || 3003) },
+  { name: 'interaction-service', url: getServiceUrl('interaction-service', process.env.INTERACTION_SERVICE_PORT || 3004) },
+  { name: 'payment-service', url: getServiceUrl('payment-service', process.env.PAYMENT_SERVICE_PORT || 3005) },
+  { name: 'public-service', url: getServiceUrl('public-service', process.env.PUBLIC_SERVICE_PORT || 3006) },
+  { name: 'user-service', url: getServiceUrl('user-service', process.env.USER_SERVICE_PORT || 3007) },
 ];
 
 app.get('/health-checks', async (_req, res) => {
