@@ -63,7 +63,14 @@ function startSsh() {
   const sshCmd = os.platform() === 'win32' ? 'ssh.exe' : 'ssh';
   const sshArgs = ['-o', 'IdentitiesOnly=yes', '-o', 'StrictHostKeyChecking=no', '-i', PEM_PATH, '-L', forwarding, `ubuntu@${EC2_HOST}`, '-N'];
 
-  return run('SSH', sshCmd, sshArgs);
+  const sshProc = run('SSH', sshCmd, sshArgs);
+  sshProc.on('exit', (code) => {
+    if (code !== 0) {
+      shutdownAll();
+    }
+  });
+
+  return sshProc;
 }
 
 // ---------- NX Servers ----------
@@ -103,11 +110,31 @@ process.on('SIGINT', shutdownAll);
 process.on('SIGTERM', shutdownAll);
 
 // ---------- Main ----------
-function main() {
+async function main() {
   console.log(`ROOT_DIR: ${ROOT_DIR}`);
   startSsh();
-  startNx();
-  resetTimer();
+  // Wait 3 seconds for SSH tunnel to establish
+  await new Promise((res) => setTimeout(res, 3000));
+  // Verify TCP port 3306 is open on localhost
+  {
+    const { connect } = await import('net');
+    try {
+      await new Promise((resolve, reject) => {
+        const socket = connect({ host: '127.0.0.1', port: 3306 }, () => {
+          socket.end();
+          resolve();
+        });
+        socket.on('error', (err) => reject(err));
+      });
+    } catch (err) {
+      console.error('[SSH] Port 3306 is not open, shutting down', err);
+      shutdownAll();
+      return;
+    }
+    console.log('[SSH] Port 3306 is open, starting services');
+    startNx();
+    resetTimer();
+  }
 }
 
 main();
