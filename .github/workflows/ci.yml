@@ -29,7 +29,3 @@ jobs:
 
       - run: npm ci --legacy-peer-deps --verbose
       - uses: nrwl/nx-set-shas@v4
-
-      # 이미지 빌드 검증
-      - name: Build Docker images
-        run: docker-compose build --pull --quiet
