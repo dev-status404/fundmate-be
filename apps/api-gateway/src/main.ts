@@ -1,3 +1,4 @@
+// src/config and environment setup
 import express from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -5,12 +6,13 @@ dotenv.config({ path: '.env.development' });
 import axios from 'axios';
 import swaggerUi from 'swagger-ui-express';
 
+// src/middlewares and app initialization
 const host = process.env.HOST ?? 'localhost';
 const port = process.env.API_GATEWAY_PORT ? Number(process.env.API_GATEWAY_PORT) : 3000;
 
 const app = express();
 
-// docs
+// src/routes/docsRoutes.ts — Swagger UI and static assets routes
 const assetsPath = path.join(__dirname, '..', '..', '..', 'src', 'assets');
 app.use('/assets', express.static(assetsPath));
 
@@ -34,7 +36,7 @@ app.use(
   })
 );
 
-// health check endpoint
+// src/routes/healthRoutes.ts — Health check controller
 const isDocker = process.env.NODE_ENV === 'docker';
 const getServiceUrl = (serviceName: string, port: string | number) => `http://${isDocker ? serviceName : 'localhost'}:${port}/health`;
 const services = [
@@ -72,10 +74,12 @@ app.get('/health-checks', async (_req, res) => {
   res.status(overall === 'ok' ? 200 : 500).json({ overall, services: results });
 });
 
+// src/routes/rootRoutes.ts — Root (welcome) route
 app.get('/', (req, res) => {
   res.send({ message: "Hello I'm api gateway" });
 });
 
+// src/main.ts — Server bootstrap
 app.listen(port, host, () => {
   console.log(`[ ready ] http://${host}:${port}`);
 });
