@@ -10,7 +10,9 @@
   },
   "private": true,
   "dependencies": {
+    "@types/cookie-parser": "^1.4.9",
     "axios": "^1.6.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.6.0",
     "express": "^4.21.2",
@@ -21,6 +23,7 @@
     "mysql2": "^3.14.1",
     "nx": "^21.2.1",
     "pino": "^9.7.0",
+    "reflect-metadata": "^0.2.2",
     "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.25"
   },
@@ -49,6 +52,7 @@
     "jest": "^29.7.0",
     "jest-environment-node": "^29.7.0",
     "jsonc-eslint-parser": "^2.1.0",
+    "node-fetch": "^3.3.2",
     "node-notifier": "^10.0.1",
     "prettier": "^2.6.2",
     "ts-jest": "^29.1.0",
@@ -60,6 +64,7 @@
   "workspaces": [
     "apps/*",
     "apps",
-    "shared/type"
+    "shared/type",
+    "shared/entities"
   ]
 }
