@@ -9,19 +9,32 @@ const host = process.env.HOST ?? 'localhost';
 const port = process.env.API_GATEWAY_PORT ? Number(process.env.API_GATEWAY_PORT) : 3000;
 
 const app = express();
+
+// docs
 const assetsPath = path.join(__dirname, '..', '..', '..', 'src', 'assets');
-console.log(`assetsPath: ${assetsPath}`);
 app.use('/assets', express.static(assetsPath));
 
 app.use(
   '/docs',
   swaggerUi.serve,
   swaggerUi.setup(null, {
-    swaggerUrl: '/assets/swagger.json',
     explorer: true,
+    swaggerOptions: {
+      urls: [
+        { name: 'Auth Service', url: '/assets/auths.json' },
+        { name: 'User Service', url: '/assets/users.json' },
+        { name: 'Public Service', url: '/assets/public.json' },
+        { name: 'Fundings Service', url: '/assets/funding.json' },
+        { name: 'AI Service', url: '/assets/ai.json' },
+        { name: 'Payment Service', url: '/assets/payments.json' },
+        { name: 'Interaction Service', url: '/assets/interactions.json' },
+        { name: 'payment Service', url: '/assets/payments.json' },
+      ],
+    },
   })
 );
 
+// health check endpoint
 const isDocker = process.env.NODE_ENV === 'docker';
 const getServiceUrl = (serviceName: string, port: string | number) => `http://${isDocker ? serviceName : 'localhost'}:${port}/health`;
 const services = [
@@ -55,7 +68,6 @@ app.get('/health-checks', async (_req, res) => {
     })
   );
 
-  // overall status is down if any service is down
   const overall = results.every((r) => r.status === 'ok') ? 'ok' : 'degraded';
   res.status(overall === 'ok' ? 200 : 500).json({ overall, services: results });
 });

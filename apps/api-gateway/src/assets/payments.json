@@ -1,0 +1,194 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "Payment Service API",
+    "version": "1.0.0",
+    "description": "결제 처리 기능을 제공하는 마이크로서비스"
+  },
+  "servers": [
+    {
+      "url": "https://fundmat.store/api/payment",
+      "description": "Payment processing server"
+    }
+  ],
+  "paths": {
+    "/payment/schedules": {
+      "post": {
+        "tags": ["payment"],
+        "summary": "결제 스케줄 생성",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentScheduleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "결제 스케줄 생성 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentScheduleResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["payment"],
+        "summary": "사용자 결제 스케줄 목록 조회",
+        "parameters": [{ "name": "user_id", "in": "query", "required": true, "schema": { "type": "integer" } }],
+        "responses": {
+          "200": {
+            "description": "스케줄 목록",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PaymentScheduleResponse" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payment/histories": {
+      "get": {
+        "tags": ["payment"],
+        "summary": "사용자 결제 히스토리 조회",
+        "parameters": [{ "name": "user_id", "in": "query", "required": true, "schema": { "type": "integer" } }],
+        "responses": {
+          "200": {
+            "description": "결제 히스토리 목록",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PaymentHistoryResponse" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payment/info": {
+      "post": {
+        "tags": ["payment"],
+        "summary": "결제 수단 등록",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentInfoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "결제 수단 등록 성공",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PaymentInfoResponse" }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["payment"],
+        "summary": "사용자 결제 수단 목록 조회",
+        "parameters": [{ "name": "user_id", "in": "query", "required": true, "schema": { "type": "integer" } }],
+        "responses": {
+          "200": {
+            "description": "결제 수단 목록",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PaymentInfoResponse" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PaymentScheduleRequest": {
+        "type": "object",
+        "properties": {
+          "user_id": { "type": "integer" },
+          "reward_id": { "type": "integer" },
+          "결제정보id": { "type": "integer" },
+          "project_id2": { "type": "integer" },
+          "extra_amount": { "type": "integer" },
+          "total_amount": { "type": "integer" },
+          "schedule_date": { "type": "string", "format": "date-time" },
+          "address": { "type": "string" },
+          "address_number": { "type": "integer" },
+          "address_info": { "type": "string" }
+        },
+        "required": ["user_id", "schedule_date", "total_amount"]
+      },
+      "PaymentScheduleResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/PaymentScheduleRequest" },
+          {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "executed": { "type": "boolean" }
+            }
+          }
+        ]
+      },
+      "PaymentHistoryResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "user_id": { "type": "integer" },
+          "스케줄id": { "type": "integer" },
+          "결제_정보": { "type": "integer" },
+          "amount": { "type": "number", "format": "decimal" },
+          "executed_at": { "type": "string", "format": "date-time" },
+          "status": { "type": "string", "enum": ["success", "fail", "cancel"] }
+        }
+      },
+      "PaymentInfoRequest": {
+        "type": "object",
+        "properties": {
+          "user_id": { "type": "integer" },
+          "payment_method": { "type": "string", "enum": ["계좌이체", "카드"] },
+          "display_info": { "type": "string" },
+          "details": { "type": "object" },
+          "is_primary": { "type": "boolean" }
+        },
+        "required": ["user_id", "payment_method", "details"]
+      },
+      "PaymentInfoResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/PaymentInfoRequest" },
+          {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "created_at": { "type": "string", "format": "date-time" },
+              "is_active": { "type": "boolean" }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

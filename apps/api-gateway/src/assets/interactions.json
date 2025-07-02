@@ -1,0 +1,115 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "Interaction Service API",
+    "version": "1.0.0",
+    "description": "상호작용(조회 기록 및 좋아요) 기능을 제공하는 마이크로서비스"
+  },
+  "servers": [
+    {
+      "url": "https://fundmat.store/api/interactions",
+      "description": "Interaction service"
+    }
+  ],
+  "paths": {
+    "/interactions/like": {
+      "post": {
+        "tags": ["interactions"],
+        "summary": "프로젝트 좋아요 등록",
+        "requestBody": {
+          "description": "사용자가 프로젝트를 좋아요 합니다",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LikeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "좋아요 등록 성공"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["interactions"],
+        "summary": "프로젝트 좋아요 취소",
+        "parameters": [
+          { "name": "user_id", "in": "query", "required": true, "schema": { "type": "integer" } },
+          { "name": "project_id", "in": "query", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "204": { "description": "좋아요 취소 성공" }
+        }
+      }
+    },
+    "/interactions/views": {
+      "post": {
+        "tags": ["interactions"],
+        "summary": "조회 기록 등록",
+        "requestBody": {
+          "description": "사용자가 프로젝트를 조회한 기록을 남깁니다",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ViewHistoryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "조회 기록 등록 성공" }
+        }
+      },
+      "get": {
+        "tags": ["interactions"],
+        "summary": "조회 기록 목록 조회",
+        "parameters": [{ "name": "user_id", "in": "query", "required": true, "schema": { "type": "integer" } }],
+        "responses": {
+          "200": {
+            "description": "조회 기록 목록",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "view_id": { "type": "integer" },
+                      "user_id": { "type": "integer" },
+                      "project_id": { "type": "integer" },
+                      "viewed_at": { "type": "string", "format": "date-time" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LikeRequest": {
+        "type": "object",
+        "properties": {
+          "user_id": { "type": "integer" },
+          "project_id": { "type": "integer" }
+        },
+        "required": ["user_id", "project_id"]
+      },
+      "ViewHistoryRequest": {
+        "type": "object",
+        "properties": {
+          "user_id": { "type": "integer" },
+          "project_id": { "type": "integer" }
+        },
+        "required": ["user_id", "project_id"]
+      }
+    }
+  }
+}

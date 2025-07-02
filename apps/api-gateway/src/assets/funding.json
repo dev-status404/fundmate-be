@@ -1,0 +1,184 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "Fundings Service API",
+    "version": "1.0.0",
+    "description": "펀딩(프로젝트·리워드·옵션) 기능을 제공하는 마이크로서비스"
+  },
+  "servers": [
+    {
+      "url": "https://fundmat.store/api/fundings",
+      "description": "Fundings service"
+    }
+  ],
+  "paths": {
+    "/projects": {
+      "get": {
+        "tags": ["fundings"],
+        "summary": "전체 프로젝트 목록 조회",
+        "responses": {
+          "200": {
+            "description": "프로젝트 리스트",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Project" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["fundings"],
+        "summary": "새 프로젝트 생성",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Project" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "프로젝트 생성 성공",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Project" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{project_id}": {
+      "get": {
+        "tags": ["fundings"],
+        "summary": "프로젝트 상세 조회",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "단일 프로젝트",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Project" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{project_id}/rewards": {
+      "get": {
+        "tags": ["fundings"],
+        "summary": "특정 프로젝트 리워드 목록 조회",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "리워드 리스트",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Reward" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{project_id}/options": {
+      "get": {
+        "tags": ["fundings"],
+        "summary": "특정 프로젝트 옵션 목록 조회",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "옵션 리스트",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/OptionData" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Project": {
+        "type": "object",
+        "properties": {
+          "project_id": { "type": "integer" },
+          "user_id2": { "type": "integer" },
+          "image_id": { "type": "integer" },
+          "category_id": { "type": "integer" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "story": { "type": "string" },
+          "goal_amount": { "type": "integer" },
+          "current_amount": { "type": "integer" },
+          "start_date": { "type": "string", "format": "date" },
+          "end_date": { "type": "string", "format": "date" },
+          "delivery_date": { "type": "string", "format": "date" },
+          "is_active": { "type": "boolean" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "gender": { "type": "integer" },
+          "age_group": { "type": "integer" }
+        },
+        "required": ["title", "goal_amount"]
+      },
+      "Reward": {
+        "type": "object",
+        "properties": {
+          "reward_id": { "type": "integer" },
+          "project_id": { "type": "integer" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "amount": { "type": "integer" },
+          "stock": { "type": "integer" }
+        },
+        "required": ["project_id", "amount", "stock"]
+      },
+      "OptionData": {
+        "type": "object",
+        "properties": {
+          "option_id": { "type": "integer" },
+          "project_id": { "type": "integer" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "price": { "type": "integer" }
+        },
+        "required": ["project_id", "title", "price"]
+      }
+    }
+  }
+}
