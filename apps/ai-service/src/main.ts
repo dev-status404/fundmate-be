@@ -1,7 +1,7 @@
 import express from 'express';
 //import dotenv from "dotenv";
 import cors from "cors";
-
+import AiChat from './routes/aichat.js';
 //dotenv.config();
 
 import dotenv from 'dotenv';
@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
 
 app.get('/health', (_req, res) => res.status(200).json({ status: 'ok', service: 'ai-service', timestamp: new Date().toISOString() }));
 
-const AiChat = require("./src/routes/aichat");
+
 
 app.use(cors());
 app.use(express.json());

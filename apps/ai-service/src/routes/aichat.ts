@@ -1,10 +1,8 @@
-const express = require("express");
+import express from 'express';
+import { summarize, requests } from '../controller/AiChatController';
+
 const router = express.Router();
 
-const {
-   summarize
-} = require("../controller/AiChatController");
-
-router.post("/summarize", summarize);
-
-module.exports = router;
+router.post('/summarize', summarize);
+router.post('/requests', requests);
+export default router;
