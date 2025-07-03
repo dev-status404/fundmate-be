@@ -34,7 +34,7 @@ export const getAllProjects = async (req: Request, res: Response) => {
     const queryResult: ProjectType[] = await query.getRawMany();
 
     if (queryResult.length === 0) {
-      return res.status(StatusCodes.NO_CONTENT).json(queryResult);
+      return res.status(StatusCodes.OK).json([]);
     }
 
     const result = queryResult.map((row) => {
@@ -89,7 +89,7 @@ export const getRecentlyViewedFundingList = async (req: Request, res: Response) 
     const queryResult: ProjectType[] = await query.getRawMany();
 
     if (queryResult.length === 0) {
-      return res.status(StatusCodes.NO_CONTENT).json(queryResult);
+      return res.status(StatusCodes.OK).json([]);
     }
 
     const result = queryResult.map((row) => {
@@ -134,7 +134,7 @@ export const getDeadlineFundingList = async (req: Request, res: Response) => {
     const queryResult: ProjectType[] = await query.getRawMany();
 
     if (queryResult.length === 0) {
-      return res.status(StatusCodes.NO_CONTENT).json(queryResult);
+      return res.status(StatusCodes.OK).json([]);
     }
 
     const result = queryResult.map((row) => {
@@ -168,7 +168,9 @@ export const getNewFundingList = async (req: Request, res: Response) => {
       'project.goalAmount AS goalAmount',
       'project.currentAmount AS currentAmount',
     ])
-    .addSelect('DATEDIFF(project.created_at, NOW()) AS remainingDay');
+    .addSelect('DATEDIFF(project.created_at, NOW()) AS createdBefore')
+    .addSelect('DATEDIFF(project.end_date, NOW()) AS remainingDay')
+    .orderBy('project.createdBefore', 'ASC');
 
   if (limit) {
     query.take(limit);
@@ -178,7 +180,7 @@ export const getNewFundingList = async (req: Request, res: Response) => {
     const queryResult: ProjectType[] = await query.getRawMany();
 
     if (queryResult.length === 0) {
-      return res.status(StatusCodes.NO_CONTENT).json(queryResult);
+      return res.status(StatusCodes.OK).json([]);
     }
 
     const result = queryResult.map((row) => {
@@ -232,7 +234,7 @@ export const getFundingListByCategoryId = async (req: Request, res: Response) =>
     const queryResult: ProjectType[] = await query.getRawMany();
 
     if (queryResult.length === 0) {
-      return res.status(StatusCodes.NO_CONTENT).json(queryResult);
+      return res.status(StatusCodes.OK).json([]);
     }
 
     const result = queryResult.map((row) => {
