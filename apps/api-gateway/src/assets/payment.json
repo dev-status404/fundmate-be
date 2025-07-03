@@ -130,8 +130,8 @@
         "properties": {
           "user_id": { "type": "integer" },
           "reward_id": { "type": "integer" },
-          "결제정보id": { "type": "integer" },
-          "project_id2": { "type": "integer" },
+          "payment_info_id": { "type": "integer" },
+          "project_id": { "type": "integer" },
           "extra_amount": { "type": "integer" },
           "total_amount": { "type": "integer" },
           "schedule_date": { "type": "string", "format": "date-time" },
@@ -158,8 +158,8 @@
         "properties": {
           "id": { "type": "integer" },
           "user_id": { "type": "integer" },
-          "스케줄id": { "type": "integer" },
-          "결제_정보": { "type": "integer" },
+          "schedule_id": { "type": "integer" },
+          "payment_info_id": { "type": "integer" },
           "amount": { "type": "number", "format": "decimal" },
           "executed_at": { "type": "string", "format": "date-time" },
           "status": { "type": "string", "enum": ["success", "fail", "cancel"] }
@@ -169,7 +169,7 @@
         "type": "object",
         "properties": {
           "user_id": { "type": "integer" },
-          "payment_method": { "type": "string", "enum": ["계좌이체", "카드"] },
+          "payment_method": { "type": "string", "enum": ["bank_transfer", "card"] },
           "display_info": { "type": "string" },
           "details": { "type": "object" },
           "is_primary": { "type": "boolean" }

@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "node ../../scripts/dev.mjs --service==interaction-service",
+    "dev": "node ../../scripts/dev.mjs --service=interaction-service",
     "build:dev": "cd ../.. && nx run interaction-service:build:development",
     "build:prod": "cd ../.. && nx run interaction-service:build:production",
     "start": "cd ../.. && nx run interaction-service:serve:production",

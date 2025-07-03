@@ -138,7 +138,7 @@
         "type": "object",
         "properties": {
           "project_id": { "type": "integer" },
-          "user_id2": { "type": "integer" },
+          "user_id": { "type": "integer" },
           "image_id": { "type": "integer" },
           "category_id": { "type": "integer" },
           "title": { "type": "string" },

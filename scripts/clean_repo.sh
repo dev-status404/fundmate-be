@@ -20,9 +20,6 @@ done
 echo "Running nx reset..."
 npx nx reset --silent
 
-echo "Removing .nx"
-rm -rf ".nx"
-
 # Remove dist directories in each app
 echo "Removing dist directories in each app..."
 rm -rf "dist"

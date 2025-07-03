@@ -9,7 +9,7 @@ const port = process.env.PAYMENT_SERVICE_PORT ? Number(process.env.PAYMENT_SERVI
 const app = express();
 
 app.use('/health', healthRouter);
-app.use('/payments', (req, res) => {
+app.use('/payment', (req, res) => {
   res.status(200).json({
     status: 'ok',
     service: 'payment-service',
