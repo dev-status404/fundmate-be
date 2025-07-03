@@ -25,7 +25,7 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url'>> = {
     swagger: 'funding.json',
     port: Number(process.env.FUNDING_SERVICE_PORT) || 3003,
     base: ['/projects'],
-  }
+  },
   'interaction-service': {
     name: 'interaction-service',
     swagger: 'interactions.json',
