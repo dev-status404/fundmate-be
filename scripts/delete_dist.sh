@@ -1,12 +1,17 @@
 #!/bin/bash
-
-# Exit on error
+# git bash로도 실행이 가능합니다!
 set -euo pipefail
 
 # Move to project root (assumes script run from any subdirectory)
 cd "$(git rev-parse --show-toplevel)"
 
 echo "=== Cleaning up build artifacts ==="
+
+echo "Running nx reset..."
+npx nx reset --silent
+
+echo "Removing .nx"
+rm -rf ".nx"
 
 # Remove dist directories in each app
 for app in apps/*; do
@@ -26,8 +31,5 @@ fi
 echo "Running nx reset..."
 npx nx reset --silent
 
-# Optional: clear Docker containers/images (uncomment if needed)
-# echo "Pruning Docker system..."
-# docker system prune --all --volumes --force
 
 echo "Cleanup complete."
