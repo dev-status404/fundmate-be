@@ -126,7 +126,7 @@ ${input_text}
       }
     );
 
-    const expandedIdea: string = response.data.choices[0].message.content;
+const expandedIdea: string = response.data.choices?.[0]?.message?.content || '';
     return res.json({ expandedIdea });
   } catch (error: any) {
     console.error('AI 확장 오류:', error.response?.data || error.message);
