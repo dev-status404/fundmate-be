@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
 import { authEntities } from '@shared/entities';
 import dotenv from 'dotenv';
-dotenv.config({ path: '.env.development' });
+dotenv.config();
 
 export const AppDataSource = new DataSource({
   type: 'mysql',

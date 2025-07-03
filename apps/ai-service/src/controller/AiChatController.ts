@@ -51,7 +51,7 @@ export const summarize = async (req: Request, res: Response) => {
       }
     );
 
-const summary: string = response.data.choices?.[0]?.message?.content || '';
+    const summary: string = response.data.choices?.[0]?.message?.content || '';
     return res.json({ summary });
   } catch (error: any) {
     console.error('Groq API 오류:', error.response?.data || error.message);
@@ -60,7 +60,7 @@ const summary: string = response.data.choices?.[0]?.message?.content || '';
 };
 
 const getAdditionalData = async (category: string, gender: string, age: string, housing: string) => {
-  // 여기에 공공데이터 DB 조회 로직 추가
+  // TODO: 여기에 공공데이터 DB 조회 로직 추가
   // 아래는 예시
   return {
     trend: '최근 20세대의 자취 혼밥 문화가 확산 중입니다.',
@@ -126,7 +126,7 @@ ${input_text}
       }
     );
 
-const expandedIdea: string = response.data.choices?.[0]?.message?.content || '';
+    const expandedIdea: string = response.data.choices?.[0]?.message?.content || '';
     return res.json({ expandedIdea });
   } catch (error: any) {
     console.error('AI 확장 오류:', error.response?.data || error.message);

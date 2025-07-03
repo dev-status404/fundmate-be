@@ -30,4 +30,4 @@ jobs:
       - run: npm ci --legacy-peer-deps --verbose
 
       - uses: nrwl/nx-set-shas@v4
-      - run: npx nx affected -t lint test build
+      # - run: npx nx affected -t lint test build

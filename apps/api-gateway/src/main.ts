@@ -5,7 +5,7 @@ import docsRoutes from './routes/docs-route';
 import apiRoutes from './routes/api-route';
 import assetsRoutes from './routes/assets-route';
 import cookieParser from 'cookie-parser';
-dotenv.config({ path: '.env.development' });
+dotenv.config();
 
 const host = process.env.HOST ?? 'localhost';
 const port = process.env.API_GATEWAY_PORT ? Number(process.env.API_GATEWAY_PORT) : 3000;
