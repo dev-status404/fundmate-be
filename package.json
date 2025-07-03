@@ -2,15 +2,18 @@
   "name": "@fundmate-be/source",
   "version": "0.0.0",
   "license": "MIT",
-  "type": "module",
   "scripts": {
     "dev:all": "nx run-many -t serve --all",
     "build:all": "nx run-many -t build --all",
-    "test:all": "nx run-many -t test --all"
+    "test:all": "nx run-many -t test --all",
+    "clean": "./scripts/clean_repo.sh",
+    "start:all": "node scripts/dev.mjs --service=all"
   },
   "private": true,
   "dependencies": {
+    "@types/cookie-parser": "^1.4.9",
     "axios": "^1.6.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.6.0",
     "express": "^4.21.2",
@@ -21,6 +24,7 @@
     "mysql2": "^3.14.1",
     "nx": "^21.2.1",
     "pino": "^9.7.0",
+    "reflect-metadata": "^0.2.2",
     "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.25"
   },
@@ -42,15 +46,16 @@
     "@types/jest": "^29.5.12",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "~18.16.9",
-    "@types/swagger-ui-express": "^4.1.8",
     "esbuild": "^0.25.5",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
     "jest": "^29.7.0",
     "jest-environment-node": "^29.7.0",
     "jsonc-eslint-parser": "^2.1.0",
+    "node-fetch": "^3.3.2",
     "node-notifier": "^10.0.1",
     "prettier": "^2.6.2",
+    "reflect-metadata": "^0.2.2",
     "ts-jest": "^29.1.0",
     "ts-node": "10.9.1",
     "tslib": "^2.3.0",
@@ -60,6 +65,7 @@
   "workspaces": [
     "apps/*",
     "apps",
-    "shared/type"
+    "shared/type",
+    "shared/entities"
   ]
 }

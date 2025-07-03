@@ -21,13 +21,31 @@ jobs:
       - name: Set up SSH key
         uses: webfactory/ssh-agent@v0.8.0
         with:
-          ssh-key: ${{ secrets.EC2_SSH_KEY }}
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
       - name: Copy files to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-          cd /home/${{ secrets.EC2_HOST }}/fundmate-be
-          git pull origin main
-          docker-compose down
-          docker-compose up -d --build
+          cd fundmate-be
+          git pull origin 
+
+          # .env 파일
+          cat <<EOT > .env 
+          API_GATEWAY_PORT=3000
+          AI_SERVICE_PORT=3001
+          AUTH_SERVICE_PORT=3002
+          FUNDING_SERVICE_PORT=3003
+          INTERACTION_SERVICE_PORT=3004
+          PAYMENT_SERVICE_PORT=3005
+          PUBLIC_SERVICE_PORT=3006
+          USER_SERVICE_PORT=3007
+          DB_HOST=${{secrets.DB_HOST}}
+          DB_USER=${{secrets.DB_USER}}
+          DB_PASSWORD=${{secrets.DB_PASSWORD}}
+          DB_NAME=${{secrets.DB_NAME}}
+          OPENAI_API_KEY=&{{secrets.OPEN_API_KEY}}
+          EOT
+
+          sudo docker-compose down
+          sudo docker-compose up -d --build
           EOF

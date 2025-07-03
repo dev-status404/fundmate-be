@@ -1,0 +1,19 @@
+{
+  "name": "@shared/entities",
+  "root": "shared/entities",
+  "sourceRoot": "shared/entities/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "main": "shared/entities/src/index.ts",
+        "tsConfig": "shared/entities/tsconfig.lib.json",
+        "outputPath": "dist/shared/entities",
+        "externalDependencies": []
+      }
+    }
+  },
+  "tags": ["scope:shared", "type:entities"]
+}

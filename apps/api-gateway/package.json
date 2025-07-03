@@ -3,10 +3,14 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "node ../../scripts/dev.js --service=api-gateway",
+    "dev": "node ../../scripts/dev.mjs --service=all",
     "build:dev": "cd ../.. && nx run api-gateway:build:development",
     "build:prod": "cd ../.. && nx run api-gateway:build:production",
-    "start": "cd ../.. && nx run api-gateway:serve:production",
-    "test:gate": "cd ../.. && nx test api-gateway"
+    "start": "cd ../.. && nx run api-gateway:serve:development",
+    "test:gate": "cd ../.. && nx test api-gateway",
+    "clean": "./../../scripts/clean_repo.sh"
+  },
+  "devDependencies": {
+    "@types/swagger-ui-express": "^4.1.8"
   }
 }

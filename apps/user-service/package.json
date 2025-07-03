@@ -3,10 +3,11 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "node ../../scripts/dev.js --service=user-service",
+    "dev": "node ../../scripts/dev.mjs --service=user-service",
     "build:dev": "cd ../.. && nx run user-service:build:development",
     "build:prod": "cd ../.. && nx run user-service:build:production",
     "start": "cd ../.. && nx run user-service:serve:production",
-    "test:user": "cd ../.. && nx test user-service"
+    "test:user": "cd ../.. && nx test user-service",
+    "clean": "./../../scripts/clean_repo.sh"
   }
 }

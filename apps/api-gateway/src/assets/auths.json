@@ -1,0 +1,293 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "Auth Service API",
+    "version": "1.0.0",
+    "description": "Authentication 관련 기능을 제공하는 마이크로서비스",
+    "contact": {
+      "email": "apiteam@fundmat.store"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://fundmat.store/api/auths",
+      "description": "Authentication server"
+    }
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "로그인",
+        "requestBody": {
+          "description": "사용자 이메일과 비밀번호로 로그인 요청",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "로그인 성공, access_token 및 refresh_token 반환",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/token": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "토큰 갱신",
+        "requestBody": {
+          "description": "Refresh Token으로 Access Token 갱신",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "새로운 access_token 발급",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/signup": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "회원가입",
+        "requestBody": {
+          "description": "새 사용자 등록",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignupRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "회원가입 성공"
+          }
+        }
+      }
+    },
+    "/auth/password": {
+      "patch": {
+        "tags": ["auth"],
+        "summary": "비밀번호 재설정",
+        "requestBody": {
+          "description": "이메일 인증 코드 확인 후 비밀번호 재설정",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "비밀번호 재설정 성공"
+          }
+        }
+      }
+    },
+    "/auth/codes/send": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "이메일 인증 코드 전송",
+        "requestBody": {
+          "description": "이메일로 인증 코드 전송 요청",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "인증 코드 전송 완료"
+          }
+        }
+      }
+    },
+    "/auth/codes/verify": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "이메일 인증 코드 확인",
+        "requestBody": {
+          "description": "전송된 인증 코드 확인",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "인증 코드 확인 성공"
+          }
+        }
+      }
+    },
+    "/auth/google": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Google 소셜 로그인",
+        "responses": {
+          "200": {
+            "description": "로그인 성공, access_token 반환"
+          }
+        }
+      }
+    },
+    "/auth/kakao": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Kakao 소셜 로그인",
+        "responses": {
+          "200": {
+            "description": "로그인 성공, access_token 반환"
+          }
+        }
+      }
+    },
+    "/auth/naver": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Naver 소셜 로그인",
+        "responses": {
+          "200": {
+            "description": "로그인 성공, access_token 반환"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "format": "password" }
+        },
+        "required": ["email", "password"]
+      },
+      "RefreshRequest": {
+        "type": "object",
+        "properties": {
+          "refresh_token": { "type": "string" }
+        },
+        "required": ["refresh_token"]
+      },
+      "SignupRequest": {
+        "type": "object",
+        "properties": {
+          "nickname": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "code": { "type": "string" },
+          "password": { "type": "string" },
+          "confirm_password": { "type": "string" }
+        },
+        "required": ["nickname", "email", "code", "password", "confirm_password"]
+      },
+      "ResetPasswordRequest": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "code": { "type": "string" },
+          "new_password": { "type": "string" },
+          "confirm_password": { "type": "string" }
+        },
+        "required": ["email", "code", "new_password", "confirm_password"]
+      },
+      "EmailRequest": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string", "format": "email" }
+        },
+        "required": ["email"]
+      },
+      "VerifyRequest": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "code": { "type": "string" }
+        },
+        "required": ["email", "code"]
+      },
+      "TokenResponse": {
+        "type": "object",
+        "properties": {
+          "access_token": { "type": "string" },
+          "refresh_token": { "type": "string" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}

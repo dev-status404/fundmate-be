@@ -4,7 +4,7 @@
 dist
 tmp
 out-tsc
-.env.development
+.env
 
 # dependencies
 node_modules
@@ -45,3 +45,4 @@ Thumbs.db
 .github/instructions/nx.instructions.md
 
 test-output
+.env
