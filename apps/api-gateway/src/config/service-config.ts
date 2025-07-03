@@ -18,7 +18,7 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url'>> = {
     name: 'auth-service',
     swagger: 'auths.json',
     port: Number(process.env.AUTH_SERVICE_PORT) || 3002,
-    base: ['/auth'],
+    base: ['/auth', '/oauth'],
   },
   'funding-service': {
     name: 'funding-service',
@@ -55,7 +55,7 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url'>> = {
 export const serviceConfig: Record<string, ServiceConfig> = Object.values(rowServiceConfig).reduce((acc, service) => {
   acc[service.name] = {
     ...service,
-    swagger: `/docs/assets/${service.swagger}`,
+    swagger: `/assets/${service.swagger}`,
     url: isDocker ? `http://${service.name}:${service.port}` : `http://localhost:${service.port}`,
   };
   return acc;

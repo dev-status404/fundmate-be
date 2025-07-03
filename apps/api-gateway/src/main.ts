@@ -1,8 +1,9 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import { healthCheck } from './controllers/health-controller';
-import docsRoutes from './routes/docs-routes';
-import apiRoutes from './routes/api-routes';
+import docsRoutes from './routes/docs-route';
+import apiRoutes from './routes/api-route';
+import assetsRoutes from './routes/assets-route';
 
 dotenv.config({ path: '.env.development' });
 
@@ -18,7 +19,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/health-checks', healthCheck);
-
+app.use('/assets', assetsRoutes);
 app.use('/docs', docsRoutes);
 app.use('/', apiRoutes);
 
