@@ -113,7 +113,7 @@ export const signUp = async (req: Request, res: Response) => {
     });
 
     if (!record) {
-      return res.status(StatusCodes.BAD_GATEWAY).json({ message: '이메일 인증 필요' });
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: '이메일 인증 필요' });
     }
     if (new Date() > record.expiresAt) {
       return res.status(StatusCodes.GONE).json({ message: '인증 코드 만료' });
@@ -228,7 +228,7 @@ export const resetPassword = async (req: Request, res: Response) => {
     });
 
     if (!record) {
-      return res.status(StatusCodes.BAD_GATEWAY).json({ message: '이메일 인증 필요' });
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: '이메일 인증 필요' });
     }
     if (new Date() > record.expiresAt) {
       return res.status(StatusCodes.GONE).json({ message: '인증 코드 만료' });
@@ -249,7 +249,7 @@ export const resetPassword = async (req: Request, res: Response) => {
     return res.status(StatusCodes.OK).json({ message: '비밀번호 재설정 성공' });
   } catch (err) {
     console.error(err);
-    return res.status(StatusCodes.UNAUTHORIZED).json({ message: '비밀번호 재설정 실패' });
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '비밀번호 재설정 실패' });
   }
 };
 
