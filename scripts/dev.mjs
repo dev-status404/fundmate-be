@@ -36,7 +36,8 @@ function log(name, message) {
 
 function run(name, cmd, args, extraEnv = {}) {
   const env = { PEM_PATH, RDS_ENDPOINT, EC2_HOST, TEAM_LEAD_WEBHOOK_URL, ...process.env, ...extraEnv };
-  log(name, `Spawning: ${cmd} ${args.join(' ')}\n`);
+  log(name, `Spawning: ${cmd} ${args.join(' ')}
+`);
   const proc = spawn(cmd, args, { shell: true, cwd: ROOT_DIR, env });
   proc.stdout.on('data', (d) => {
     log(name, d);
@@ -46,7 +47,8 @@ function run(name, cmd, args, extraEnv = {}) {
     log(name, d);
     resetTimer();
   });
-  proc.on('exit', (code, sig) => log(name, `Exited code=${code} sig=${sig}\n`));
+  proc.on('exit', (code, sig) => log(name, `Exited code=${code} sig=${sig}
+`));
   procs.push(proc);
   return proc;
 }
@@ -75,8 +77,26 @@ function startSsh() {
 
 // ---------- NX Servers ----------
 function startNx() {
-  run('GATEWAY', 'nx', ['serve', API_GATEWAY]);
-  run('SERVICE', 'nx', ['serve', SERVICE_NAME]);
+  if (SERVICE_NAME === API_GATEWAY) {
+    run('GATEWAY', 'nx', ['serve', API_GATEWAY]);
+  } else if (SERVICE_NAME === 'all') {
+    const allServices = [
+      'ai-service',
+      'api-gateway',
+      'auth-service',
+      'funding-service',
+      'interaction-service',
+      'payment-service',
+      'public-service',
+      'user-service',
+    ];
+    allServices.forEach(service => {
+      run(service.toUpperCase(), 'nx', ['serve', service]);
+    });
+  } else {
+    run('GATEWAY', 'nx', ['serve', API_GATEWAY]);
+    run('SERVICE', 'nx', ['serve', SERVICE_NAME]);
+  }
 }
 
 // ---------- Idle Handling ----------

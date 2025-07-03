@@ -7,6 +7,16 @@ cd "$(git rev-parse --show-toplevel)"
 
 echo "=== Cleaning up build artifacts ==="
 
+# Kill processes using ports 3000–3007
+echo "Killing processes on ports 3000 to 3007..."
+for port in {3000..3007}; do
+  pid=$(lsof -ti tcp:$port) || true
+  if [ -n "$pid" ]; then
+    echo "Killing PID $pid on port $port"
+    kill -9 "$pid"
+  fi
+done
+
 echo "Running nx reset..."
 npx nx reset --silent
 
@@ -14,6 +24,8 @@ echo "Removing .nx"
 rm -rf ".nx"
 
 # Remove dist directories in each app
+echo "Removing dist directories in each app..."
+rm -rf "dist"
 for app in apps/*; do
   if [ -d "$app/dist" ]; then
     echo "Removing $app/dist"

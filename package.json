@@ -5,7 +5,8 @@
   "scripts": {
     "dev:all": "nx run-many -t serve --all",
     "build:all": "nx run-many -t build --all",
-    "test:all": "nx run-many -t test --all"
+    "test:all": "nx run-many -t test --all",
+    "clean": "./scripts/clean_repo.sh"
   },
   "private": true,
   "dependencies": {
@@ -52,6 +53,7 @@
     "node-fetch": "^3.3.2",
     "node-notifier": "^10.0.1",
     "prettier": "^2.6.2",
+    "reflect-metadata": "^0.2.2",
     "ts-jest": "^29.1.0",
     "ts-node": "10.9.1",
     "tslib": "^2.3.0",
