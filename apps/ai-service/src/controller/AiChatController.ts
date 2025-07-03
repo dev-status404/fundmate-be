@@ -51,7 +51,7 @@ export const summarize = async (req: Request, res: Response) => {
       }
     );
 
-    const summary: string = response.data.choices[0].message.content;
+const summary: string = response.data.choices?.[0]?.message?.content || '';
     return res.json({ summary });
   } catch (error: any) {
     console.error('Groq API 오류:', error.response?.data || error.message);
