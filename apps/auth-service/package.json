@@ -3,11 +3,12 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "node ../../scripts/dev.js --service=auth-service",
+    "dev": "node ../../scripts/dev.mjs --service=auth-service",
     "build:dev": "cd ../.. && nx run auth-service:build:development",
     "build:prod": "cd ../.. && nx run auth-service:build:production",
     "start": "cd ../.. && nx run auth-service:serve:production",
-    "test:auth": "cd ../.. && nx test auth-service"
+    "test:auth": "cd ../.. && nx test auth-service",
+    "clean": "./../../scripts/clean_repo.sh"
   },
   "dependencies": {
     "nodemailer": "^7.0.3"
