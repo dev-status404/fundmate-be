@@ -3,16 +3,13 @@ import { AppDataSource } from '../data-source';
 import { EmailVerification } from '@shared/entities';
 import { User } from '@shared/entities';
 import { InterestCategory } from '@shared/entities';
-import { Category } from '@shared/entities';
 import { Token } from '@shared/entities';
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { StatusCodes } from 'http-status-codes';
-// import { ensureAuthorization } from '../middleware/ensureAuthorization';
-// import { jwtErrorHandler } from '../middleware/jwtErrorHandler';
 import dotenv from 'dotenv';
-dotenv.config({ path: '.env.development' });
+dotenv.config();
 
 export const sendVerificationCode = async (req: Request, res: Response) => {
   const { email } = req.body;
@@ -137,7 +134,7 @@ export const signUp = async (req: Request, res: Response) => {
 
     await interestCategoryRepo.save({
       user: savedUser,
-      category: { categoryId: Category },
+      category: { categoryId: categoryId },
     });
 
     return res.status(StatusCodes.CREATED).json({ message: '회원 가입 성공' });

@@ -2,7 +2,8 @@ import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import dotenv from 'dotenv';
 import { fundingEntities } from '@shared/entities';
-dotenv.config({ path: __dirname + '/../../../.env.development' });
+// dotenv.config({ path: __dirname + '/../../../.env.development' });
+dotenv.config();
 
 export const AppDataSource = new DataSource({
   type: 'mysql',
@@ -12,7 +13,7 @@ export const AppDataSource = new DataSource({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   entities: fundingEntities,
-  // synchronize: true,
+  synchronize: true,
   logging: true,
   timezone: '+09:00',
 });

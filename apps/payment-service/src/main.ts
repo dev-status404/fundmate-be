@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import healthRouter from './routes/health-route';
 import paymentRouter from './routes/payment-route';
 import { AppDataSource } from './data-source';
-dotenv.config({ path: '.env.development' });
+dotenv.config();
 
 const host = process.env.HOST ?? 'localhost';
 const port = process.env.PAYMENT_SERVICE_PORT ? Number(process.env.PAYMENT_SERVICE_PORT) : 3000;

@@ -6,7 +6,8 @@
     "dev:all": "nx run-many -t serve --all",
     "build:all": "nx run-many -t build --all",
     "test:all": "nx run-many -t test --all",
-    "clean": "./scripts/clean_repo.sh"
+    "clean": "./scripts/clean_repo.sh",
+    "start:all": "node scripts/dev.mjs --service=all"
   },
   "private": true,
   "dependencies": {
