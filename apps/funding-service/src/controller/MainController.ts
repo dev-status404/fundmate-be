@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { Project } from '@shared/entities';
-import { StatusCodes } from 'http-status-codes';
+import { HttpStatusCode } from 'axios';
 
 type ProjectType = {
   title: string;
@@ -34,7 +34,7 @@ export const getAllProjects = async (req: Request, res: Response) => {
     const queryResult: ProjectType[] = await query.getRawMany();
 
     if (queryResult.length === 0) {
-      return res.status(StatusCodes.OK).json([]);
+      return res.status(HttpStatusCode.Ok).json([]);
     }
 
     const result = queryResult.map((row) => {
@@ -49,10 +49,10 @@ export const getAllProjects = async (req: Request, res: Response) => {
       };
     });
 
-    return res.status(StatusCodes.OK).json(result);
+    return res.status(HttpStatusCode.Ok).json(result);
   } catch (err) {
     console.log(err);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '서버 문제가 발생했습니다 🥲' });
+    return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다 🥲' });
   }
 };
 
@@ -60,7 +60,7 @@ export const getRecentlyViewedFundingList = async (req: Request, res: Response) 
   let projectIds = req.query.project_id;
 
   if (!projectIds) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: '최근 조회한 프로젝트 ID가 없습니다 🥲' });
+    return res.status(HttpStatusCode.BadRequest).json({ message: '최근 조회한 프로젝트 ID가 없습니다 🥲' });
   }
 
   if (typeof projectIds === 'string') {
@@ -89,7 +89,7 @@ export const getRecentlyViewedFundingList = async (req: Request, res: Response) 
     const queryResult: ProjectType[] = await query.getRawMany();
 
     if (queryResult.length === 0) {
-      return res.status(StatusCodes.OK).json([]);
+      return res.status(HttpStatusCode.Ok).json([]);
     }
 
     const result = queryResult.map((row) => {
@@ -104,10 +104,10 @@ export const getRecentlyViewedFundingList = async (req: Request, res: Response) 
       };
     });
 
-    return res.status(StatusCodes.OK).json(result);
+    return res.status(HttpStatusCode.Ok).json(result);
   } catch (err) {
     console.log(err);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '서버 문제가 발생했습니다 🥲' });
+    return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다 🥲' });
   }
 };
 
@@ -134,7 +134,7 @@ export const getDeadlineFundingList = async (req: Request, res: Response) => {
     const queryResult: ProjectType[] = await query.getRawMany();
 
     if (queryResult.length === 0) {
-      return res.status(StatusCodes.OK).json([]);
+      return res.status(HttpStatusCode.Ok).json([]);
     }
 
     const result = queryResult.map((row) => {
@@ -149,10 +149,10 @@ export const getDeadlineFundingList = async (req: Request, res: Response) => {
       };
     });
 
-    return res.status(StatusCodes.OK).json(result);
+    return res.status(HttpStatusCode.Ok).json(result);
   } catch (err) {
     console.log(err);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '서버 문제가 발생했습니다 🥲' });
+    return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다 🥲' });
   }
 };
 
@@ -180,7 +180,7 @@ export const getNewFundingList = async (req: Request, res: Response) => {
     const queryResult: ProjectType[] = await query.getRawMany();
 
     if (queryResult.length === 0) {
-      return res.status(StatusCodes.OK).json([]);
+      return res.status(HttpStatusCode.Ok).json([]);
     }
 
     const result = queryResult.map((row) => {
@@ -195,10 +195,10 @@ export const getNewFundingList = async (req: Request, res: Response) => {
       };
     });
 
-    return res.status(StatusCodes.OK).json(result);
+    return res.status(HttpStatusCode.Ok).json(result);
   } catch (err) {
     console.log(err);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '서버 문제가 발생했습니다 🥲' });
+    return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다 🥲' });
   }
 };
 
@@ -212,7 +212,7 @@ export const getFundingListByCategoryId = async (req: Request, res: Response) =>
   const projectRepo = AppDataSource.getRepository(Project);
 
   if (!categoryId) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: '카테고리 ID를 입력해주세요 🥲' });
+    return res.status(HttpStatusCode.BadRequest).json({ message: '카테고리 ID를 입력해주세요 🥲' });
   }
 
   const query = projectRepo
@@ -234,7 +234,7 @@ export const getFundingListByCategoryId = async (req: Request, res: Response) =>
     const queryResult: ProjectType[] = await query.getRawMany();
 
     if (queryResult.length === 0) {
-      return res.status(StatusCodes.OK).json([]);
+      return res.status(HttpStatusCode.Ok).json([]);
     }
 
     const result = queryResult.map((row) => {
@@ -249,10 +249,10 @@ export const getFundingListByCategoryId = async (req: Request, res: Response) =>
       };
     });
 
-    return res.status(StatusCodes.OK).json(result);
+    return res.status(HttpStatusCode.Ok).json(result);
   } catch (err) {
     console.log(err);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '서버 문제가 발생했습니다 🥲' });
+    return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다 🥲' });
   }
 };
 

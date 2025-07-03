@@ -124,8 +124,8 @@ export const signUp = async (req: Request, res: Response) => {
       return res.status(StatusCodes.CONFLICT).json({ message: '이미 가입된 이메일' });
     }
 
-    const salt = crypto.randomBytes(10).toString('base64');
-    const hashPassword = crypto.pbkdf2Sync(password, salt, 10000, 10, 'sha512').toString('base64');
+    const salt = crypto.randomBytes(32).toString('base64');
+    const hashPassword = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('base64');
 
     const newUser = userRepo.create({
       nickname,
@@ -137,7 +137,7 @@ export const signUp = async (req: Request, res: Response) => {
 
     await interestCategoryRepo.save({
       user: savedUser,
-      category: { categoryId } as Category,
+      category: { categoryId: Category },
     });
 
     return res.status(StatusCodes.CREATED).json({ message: '회원 가입 성공' });
@@ -163,7 +163,7 @@ export const login = async (req: Request, res: Response) => {
       return res.status(StatusCodes.UNAUTHORIZED).json({ message: '잘못된 이메일 또는 비밀번호' });
     }
 
-    const hashPassword = crypto.pbkdf2Sync(password, user.salt, 10000, 10, 'sha512').toString('base64');
+    const hashPassword = crypto.pbkdf2Sync(password, user.salt, 10000, 64, 'sha512').toString('base64');
 
     if (hashPassword !== user.password) {
       return res.status(StatusCodes.UNAUTHORIZED).json({ message: '잘못된 이메일 또는 비밀번호' });
@@ -174,10 +174,14 @@ export const login = async (req: Request, res: Response) => {
       issuer: 'Fundi',
     });
 
-    const refreshToken = jwt.sign({ userId: user.userId, email: user.email }, process.env.REFRESH_TOKEN_SECRET as string, {
-      expiresIn: '7d',
-      issuer: 'Fundi',
-    });
+    const refreshToken = jwt.sign(
+      { userId: user.userId, email: user.email },
+      process.env.REFRESH_TOKEN_SECRET as string,
+      {
+        expiresIn: '7d',
+        issuer: 'Fundi',
+      }
+    );
 
     const newToken = tokenRepo.create({
       user,
@@ -239,8 +243,8 @@ export const resetPassword = async (req: Request, res: Response) => {
       return res.status(StatusCodes.NOT_FOUND).json({ message: '존재하지 않는 유저' });
     }
 
-    const newSalt = crypto.randomBytes(10).toString('base64');
-    const hashPassword = crypto.pbkdf2Sync(new_password, newSalt, 10000, 10, 'sha512').toString('base64');
+    const newSalt = crypto.randomBytes(32).toString('base64');
+    const hashPassword = crypto.pbkdf2Sync(new_password, newSalt, 10000, 64, 'sha512').toString('base64');
 
     user.salt = newSalt;
     user.password = hashPassword;

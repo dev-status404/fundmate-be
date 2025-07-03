@@ -12,17 +12,17 @@ export const healthCheck = async (_req: Request, res: Response) => {
     services.map(async ({ name, url }) => {
       try {
         const start = Date.now();
-        const resp = await axios.get(url, { timeout: 2000 });
+        const resp = await axios.get(url, { timeout: 5000 });
         return {
           name,
           status: resp.status === 200 ? 'ok' : 'error',
           latency: Date.now() - start,
         };
-      } catch (err: unknown) {
+      } catch (err) {
         return {
           name,
           status: 'down',
-          error: err instanceof Error ? err.message : String(err),
+          error: err instanceof Error ? err.stack : String(err),
         };
       }
     })
