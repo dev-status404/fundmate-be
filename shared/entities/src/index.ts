@@ -19,4 +19,4 @@ import { Project } from './funding-entities/Project';
 import { OptionData } from './funding-entities/OptionData';
 export { Project, OptionData };
 
-export const fundingEntities = [Project, OptionData];
+export const fundingEntities = [Project, OptionData, User, Image, Category, ...authEntities];

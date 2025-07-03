@@ -1,6 +1,4 @@
-import { Category } from 'src/auth-entities/Category';
-import { Image } from 'src/auth-entities/Image';
-import { User } from 'src/auth-entities/User';
+import { Category, Image, User } from '@shared/entities';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('project')

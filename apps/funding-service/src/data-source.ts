@@ -12,7 +12,7 @@ export const AppDataSource = new DataSource({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   entities: fundingEntities,
-  synchronize: true,
+  // synchronize: true,
   logging: true,
   timezone: '+09:00',
 });
