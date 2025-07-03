@@ -19,7 +19,7 @@
     "customConditions": ["development"],
     "baseUrl": ".",
     "paths": {
-      "@shared/entities": ["dist/shared/entities/index.js"],
+      "@shared/entities": ["dist/shared/entities/index"],
       "@shared/entities/*": ["dist/shared/entities/*"]
     }
   }
