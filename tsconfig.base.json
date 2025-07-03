@@ -16,6 +16,11 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es2022",
-    "customConditions": ["development"]
+    "customConditions": ["development"],
+    "baseUrl": ".",
+    "paths": {
+      "@shared/entities": ["dist/shared/entities/index.js"],
+      "@shared/entities/*": ["dist/shared/entities/*"]
+    }
   }
 }

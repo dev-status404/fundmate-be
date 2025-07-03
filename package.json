@@ -23,6 +23,7 @@
     "mysql2": "^3.14.1",
     "nx": "^21.2.1",
     "pino": "^9.7.0",
+    "reflect-metadata": "^0.2.2",
     "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.25"
   },
@@ -63,6 +64,7 @@
   "workspaces": [
     "apps/*",
     "apps",
-    "shared/type"
+    "shared/type",
+    "shared/entities"
   ]
 }
