@@ -1,8 +1,6 @@
 import express from 'express';
-//import dotenv from "dotenv";
 import cors from "cors";
 import AiChat from './routes/aichat.js';
-//dotenv.config();
 
 import dotenv from 'dotenv';
 dotenv.config({ path: '.env.development' });
