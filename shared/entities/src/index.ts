@@ -8,6 +8,8 @@ import { User } from './auth-entities/User';
 
 export const authEntities = [Age, Category, EmailVerification, Image, InterestCategory, Token, User];
 
+export { Age, Category, EmailVerification, Image, InterestCategory, Token, User };
+
 import { PaymentHistory } from './payment-entities/payment-history';
 import { PaymentInfo } from './payment-entities/payment-info';
 import { PaymentSchedule } from './payment-entities/payment-schedule';

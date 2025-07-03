@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
-import { EmailVerification } from '../entity/EmailVerification';
-import { User } from '../entity/User';
-import { InterestCategory } from '../entity/InterestCategory';
-import { Category } from '../entity/Category';
-import { Token } from '../entity/Token';
+import { EmailVerification } from '@shared/entities';
+import { User } from '@shared/entities';
+import { InterestCategory } from '@shared/entities';
+import { Category } from '@shared/entities';
+import { Token } from '@shared/entities';
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
@@ -212,7 +212,45 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
 };
 
 export const resetPassword = async (req: Request, res: Response) => {
-  res.json('비밀번호 재설정');
+  const { email, code, new_password, confirm_password } = req.body;
+
+  const userRepo = AppDataSource.getRepository(User);
+  const emailVerificationRepo = AppDataSource.getRepository(EmailVerification);
+
+  try {
+    if (new_password !== confirm_password) {
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: '비밀번호 불일치' });
+    }
+
+    const record = await emailVerificationRepo.findOne({
+      where: { email, code, isUsed: true },
+      order: { verificationId: 'DESC' },
+    });
+
+    if (!record) {
+      return res.status(StatusCodes.BAD_GATEWAY).json({ message: '이메일 인증 필요' });
+    }
+    if (new Date() > record.expiresAt) {
+      return res.status(StatusCodes.GONE).json({ message: '인증 코드 만료' });
+    }
+
+    const user = await userRepo.findOneBy({ email });
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: '존재하지 않는 유저' });
+    }
+
+    const newSalt = crypto.randomBytes(10).toString('base64');
+    const hashPassword = crypto.pbkdf2Sync(new_password, newSalt, 10000, 10, 'sha512').toString('base64');
+
+    user.salt = newSalt;
+    user.password = hashPassword;
+    await userRepo.save(user);
+
+    return res.status(StatusCodes.OK).json({ message: '비밀번호 재설정 성공' });
+  } catch (err) {
+    console.error(err);
+    return res.status(StatusCodes.UNAUTHORIZED).json({ message: '비밀번호 재설정 실패' });
+  }
 };
 
 export const logout = async (req: Request, res: Response) => {
