@@ -13,7 +13,7 @@
         "platform": "node",
         "outputPath": "apps/user-service/dist",
         "format": ["cjs"],
-        "bundle": false,
+        "bundle": true,
         "main": "apps/user-service/src/main.ts",
         "tsConfig": "apps/user-service/tsconfig.app.json",
         "assets": ["apps/user-service/src/assets"]

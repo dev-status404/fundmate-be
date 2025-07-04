@@ -17,12 +17,16 @@ for port in {3000..3007}; do
   fi
 done
 
-echo "Running nx reset..."
-npx nx reset --silent
-
 # Remove dist directories in each app
 echo "Removing dist directories in each app..."
-rm -rf "dist"
+
+for app in shared/*; do
+  if [ -d "$app/dist" ]; then
+    echo "Removing $app/dist"
+    rm -rf "$app/dist"
+  fi
+done
+
 for app in apps/*; do
   if [ -d "$app/dist" ]; then
     echo "Removing $app/dist"

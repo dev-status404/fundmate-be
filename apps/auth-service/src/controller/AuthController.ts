@@ -7,15 +7,15 @@ import { Token } from '@shared/entities';
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { StatusCodes } from 'http-status-codes';
 import dotenv from 'dotenv';
+import StatusCode from 'http-status-codes';
 dotenv.config();
 
 export const sendVerificationCode = async (req: Request, res: Response) => {
   const { email } = req.body;
 
   if (!email) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: '이메일 입력 필요' });
+    return res.status(StatusCode.BAD_REQUEST).json({ message: '이메일 입력 필요' });
   }
 
   try {
@@ -50,10 +50,10 @@ export const sendVerificationCode = async (req: Request, res: Response) => {
 
     await transporter.sendMail(mailOptions);
 
-    return res.status(StatusCodes.OK).json({ message: '이메일 인증 코드 전송 완료' });
+    return res.status(StatusCode.OK).json({ message: '이메일 인증 코드 전송 완료' });
   } catch (err) {
     console.error(err);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '이메일 인증 코드 전송 실패' });
+    return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: '이메일 인증 코드 전송 실패' });
   }
 };
 
@@ -61,7 +61,7 @@ export const verifyEmailCode = async (req: Request, res: Response) => {
   const { email, code } = req.body;
 
   if (!email || !code) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: '이메일 및 인증 코드 입력 필요' });
+    return res.status(StatusCode.BAD_REQUEST).json({ message: '이메일 및 인증 코드 입력 필요' });
   }
 
   const verificationRepo = AppDataSource.getRepository(EmailVerification);
@@ -73,20 +73,20 @@ export const verifyEmailCode = async (req: Request, res: Response) => {
     });
 
     if (!record) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: '잘못된 인증 코드' });
+      return res.status(StatusCode.BAD_REQUEST).json({ message: '잘못된 인증 코드' });
     }
 
     if (new Date() > record.expiresAt) {
-      return res.status(StatusCodes.GONE).json({ message: '인증 코드 만료' });
+      return res.status(StatusCode.GONE).json({ message: '인증 코드 만료' });
     }
 
     record.isUsed = true;
     await verificationRepo.save(record);
 
-    return res.status(StatusCodes.OK).json({ message: '이메일 인증 성공' });
+    return res.status(StatusCode.OK).json({ message: '이메일 인증 성공' });
   } catch (err) {
     console.error(err);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '이메일 인증 실패' });
+    return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: '이메일 인증 실패' });
   }
 };
 
@@ -100,7 +100,7 @@ export const signUp = async (req: Request, res: Response) => {
 
   try {
     if (password !== confirm_password) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: '비밀번호 불일치' });
+      return res.status(StatusCode.BAD_REQUEST).json({ message: '비밀번호 불일치' });
     }
 
     const record = await emailVerificationRepo.findOneBy({
@@ -110,15 +110,15 @@ export const signUp = async (req: Request, res: Response) => {
     });
 
     if (!record) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: '이메일 인증 필요' });
+      return res.status(StatusCode.BAD_REQUEST).json({ message: '이메일 인증 필요' });
     }
     if (new Date() > record.expiresAt) {
-      return res.status(StatusCodes.GONE).json({ message: '인증 코드 만료' });
+      return res.status(StatusCode.GONE).json({ message: '인증 코드 만료' });
     }
 
     const existingUser = await userRepo.findOneBy({ email });
     if (existingUser) {
-      return res.status(StatusCodes.CONFLICT).json({ message: '이미 가입된 이메일' });
+      return res.status(StatusCode.CONFLICT).json({ message: '이미 가입된 이메일' });
     }
 
     const salt = crypto.randomBytes(32).toString('base64');
@@ -137,10 +137,10 @@ export const signUp = async (req: Request, res: Response) => {
       category: { categoryId: categoryId },
     });
 
-    return res.status(StatusCodes.CREATED).json({ message: '회원 가입 성공' });
+    return res.status(StatusCode.CREATED).json({ message: '회원 가입 성공' });
   } catch (err) {
     console.error(err);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '회원 가입 실패' });
+    return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: '회원 가입 실패' });
   }
 };
 
@@ -148,7 +148,7 @@ export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: '이메일 및 비밀번호 입력 필요' });
+    return res.status(StatusCode.BAD_REQUEST).json({ message: '이메일 및 비밀번호 입력 필요' });
   }
 
   try {
@@ -157,13 +157,13 @@ export const login = async (req: Request, res: Response) => {
     const user = await userRepo.findOneBy({ email });
 
     if (!user || !user.password || !user.salt) {
-      return res.status(StatusCodes.UNAUTHORIZED).json({ message: '잘못된 이메일 또는 비밀번호' });
+      return res.status(StatusCode.UNAUTHORIZED).json({ message: '잘못된 이메일 또는 비밀번호' });
     }
 
     const hashPassword = crypto.pbkdf2Sync(password, user.salt, 10000, 64, 'sha512').toString('base64');
 
     if (hashPassword !== user.password) {
-      return res.status(StatusCodes.UNAUTHORIZED).json({ message: '잘못된 이메일 또는 비밀번호' });
+      return res.status(StatusCode.UNAUTHORIZED).json({ message: '잘못된 이메일 또는 비밀번호' });
     }
 
     const accessToken = jwt.sign({ userId: user.userId, email: user.email }, process.env.PRIVATE_KEY as string, {
@@ -201,10 +201,10 @@ export const login = async (req: Request, res: Response) => {
       sameSite: 'none',
     });
 
-    return res.status(StatusCodes.OK).json({ message: '로그인 성공' });
+    return res.status(StatusCode.OK).json({ message: '로그인 성공' });
   } catch (err) {
     console.error(err);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '로그인 실패' });
+    return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: '로그인 실패' });
   }
 };
 
@@ -220,7 +220,7 @@ export const resetPassword = async (req: Request, res: Response) => {
 
   try {
     if (new_password !== confirm_password) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: '비밀번호 불일치' });
+      return res.status(StatusCode.BAD_REQUEST).json({ message: '비밀번호 불일치' });
     }
 
     const record = await emailVerificationRepo.findOne({
@@ -229,15 +229,15 @@ export const resetPassword = async (req: Request, res: Response) => {
     });
 
     if (!record) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: '이메일 인증 필요' });
+      return res.status(StatusCode.BAD_REQUEST).json({ message: '이메일 인증 필요' });
     }
     if (new Date() > record.expiresAt) {
-      return res.status(StatusCodes.GONE).json({ message: '인증 코드 만료' });
+      return res.status(StatusCode.GONE).json({ message: '인증 코드 만료' });
     }
 
     const user = await userRepo.findOneBy({ email });
     if (!user) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: '존재하지 않는 유저' });
+      return res.status(StatusCode.NOT_FOUND).json({ message: '존재하지 않는 유저' });
     }
 
     const newSalt = crypto.randomBytes(32).toString('base64');
@@ -247,10 +247,10 @@ export const resetPassword = async (req: Request, res: Response) => {
     user.password = hashPassword;
     await userRepo.save(user);
 
-    return res.status(StatusCodes.OK).json({ message: '비밀번호 재설정 성공' });
+    return res.status(StatusCode.OK).json({ message: '비밀번호 재설정 성공' });
   } catch (err) {
     console.error(err);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '비밀번호 재설정 실패' });
+    return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: '비밀번호 재설정 실패' });
   }
 };
 

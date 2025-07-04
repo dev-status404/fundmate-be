@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import axios from 'axios';
 import { serviceConfig } from '../config/service-config';
-import { HttpStatusCode } from 'axios';
+import StatusCode from 'http-status-codes';
 
 const router = Router();
 router.all('/*', async (req, res, next) => {
@@ -11,7 +11,7 @@ router.all('/*', async (req, res, next) => {
   );
 
   if (!inputPath) {
-    return res.status(HttpStatusCode.NotFound).json({ message: 'Service not found' });
+    return res.status(StatusCode.NOT_FOUND).json({ message: 'Service not found' });
   }
 
   const { url } = inputPath;

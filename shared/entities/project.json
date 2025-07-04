@@ -10,7 +10,7 @@
       "options": {
         "main": "shared/entities/src/index.ts",
         "tsConfig": "shared/entities/tsconfig.lib.json",
-        "outputPath": "dist/shared/entities",
+        "outputPath": "shared/entities/dist",
         "externalDependencies": []
       }
     }

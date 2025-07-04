@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 // import { AppDataSource } from '../data-source';
 // import { Project } from '@shared/entities';
-// import { StatusCodes } from 'http-status-codes';
+// import { StatusCode } from 'http-status-codes';
 
 // type ProjectDetailType = {
 //   title: string;
