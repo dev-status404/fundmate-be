@@ -1,16 +1,16 @@
-import { Category, Image, User } from '@shared/entities';
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Category, Image, OptionData, User, Like } from '@shared/entities';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('project')
 export class Project {
   @PrimaryGeneratedColumn({ name: 'project_id', type: 'int' })
   projectId!: number;
 
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
-  @ManyToOne(() => Image, { nullable: true })
+  @ManyToOne(() => Image, { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'image_id' })
   image?: Image;
 
@@ -53,4 +53,10 @@ export class Project {
 
   @Column({ name: 'age_group', type: 'int', nullable: true, default: 0 })
   ageGroup!: number;
+
+  @OneToMany(() => OptionData, (option) => option.project)
+  options!: OptionData[];
+
+  @OneToMany(() => Like, (like) => like.project)
+  likes!: Like[];
 }
