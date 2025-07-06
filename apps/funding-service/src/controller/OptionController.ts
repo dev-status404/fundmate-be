@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { HttpStatusCode } from 'axios';
-import { error } from 'console';
 import { OptionData } from 'shared/entities/src';
 
 type OptionType = {
@@ -10,6 +9,7 @@ type OptionType = {
   price: number;
 };
 
+// [WIP] 테스트 중인 API입니다.
 export const createOption = async (req: Request, res: Response) => {
   // [todo] 로그인 확인용 로직 추가
 
