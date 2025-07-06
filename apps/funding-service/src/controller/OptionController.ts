@@ -15,7 +15,7 @@ export const createOption = async (req: Request, res: Response) => {
 
   const { title, description, price }: OptionType = req.body;
 
-  if (!title || !description || !price) {
+if (!title || !description || price == null) {
     return res.status(HttpStatusCode.BadRequest).json({ message: '올바른 정보를 입력하세요.' });
   }
 
