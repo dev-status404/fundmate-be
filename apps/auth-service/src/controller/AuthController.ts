@@ -9,6 +9,8 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 import StatusCode from 'http-status-codes';
+import { ensureAuthorization } from '../middleware/ensureAuthorization';
+import { jwtErrorHandler } from '../middleware/jwtErrorHandler';
 dotenv.config();
 
 export const sendVerificationCode = async (req: Request, res: Response) => {
@@ -209,7 +211,44 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const refreshAccessToken = async (req: Request, res: Response) => {
-  res.json('토큰 갱신');
+  const tokenRepo = AppDataSource.getRepository(Token);
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
+    return res.status(StatusCode.UNAUTHORIZED).json({ message: '리프레시 토큰 필요' });
+  }
+
+  try {
+    const userInfo = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET as string) as { userId: number };
+
+    const tokenRecord = await tokenRepo.findOne({
+      where: {
+        refreshToken,
+        revoke: false,
+      },
+      relations: ['user'],
+    });
+
+    if (!tokenRecord) {
+      return res.status(StatusCode.UNAUTHORIZED).json({ message: '유효하지 않은 리프레시 토큰' });
+    }
+
+    const newAccessToken = jwt.sign({ userId: userInfo.userId }, process.env.PRIVATE_KEY as string, {
+      expiresIn: '30m',
+      issuer: 'Fundi',
+    });
+
+    res.cookie('accessToken', newAccessToken, {
+      httpOnly: false,
+      secure: true,
+      sameSite: 'none',
+    });
+
+    return res.status(StatusCode.OK).json({ message: '토큰 갱신 완료' });
+  } catch (err) {
+    console.error(err);
+    return res.status(StatusCode.UNAUTHORIZED).json({ message: '리프레시 토큰 검증 실패' });
+  }
 };
 
 export const resetPassword = async (req: Request, res: Response) => {
@@ -255,5 +294,48 @@ export const resetPassword = async (req: Request, res: Response) => {
 };
 
 export const logout = async (req: Request, res: Response) => {
-  res.json('로그아웃');
+  const tokenRepo = AppDataSource.getRepository(Token);
+  const authorization = ensureAuthorization(req);
+
+  if (authorization instanceof Error) {
+    return jwtErrorHandler(authorization, res);
+  }
+
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
+    return res.status(StatusCode.UNAUTHORIZED).json({ message: '리프레시 토큰 필요' });
+  }
+
+  try {
+    const tokenRecord = await tokenRepo.findOne({
+      where: {
+        user: { userId: authorization.userId },
+        refreshToken,
+        revoke: false,
+      },
+      relations: ['user'],
+    });
+
+    if (tokenRecord) {
+      tokenRecord.revoke = true;
+      await tokenRepo.save(tokenRecord);
+    }
+
+    res.clearCookie('accessToken', {
+      httpOnly: false,
+      secure: true,
+      sameSite: 'none',
+    });
+    res.clearCookie('refreshToken', {
+      httpOnly: false,
+      secure: true,
+      sameSite: 'none',
+    });
+
+    return res.status(StatusCode.OK).json({ message: '로그아웃 성공' });
+  } catch (err) {
+    console.error(err);
+    return res.status(StatusCode.UNAUTHORIZED).json({ message: '로그아웃 실패' });
+  }
 };
