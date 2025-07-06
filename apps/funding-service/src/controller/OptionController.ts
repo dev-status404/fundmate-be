@@ -33,7 +33,7 @@ if (!title || !description || price == null) {
 
     console.log(optionId);
 
-    if (!optionId) throw new Error('옵션 ID가 없습니다.');
+if (optionId == null) throw new Error('옵션 ID가 없습니다.');
 
     return res.status(HttpStatusCode.Created).json({ option_id: optionId });
   } catch (err) {
