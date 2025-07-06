@@ -4,7 +4,7 @@ import { AppDataSource } from './data-source';
 import authRouter from './routes/auth';
 import oauthRouter from './routes/oauth';
 import dotenv from 'dotenv';
-dotenv.config({ path: '.env.development' });
+dotenv.config();
 
 const host = process.env.HOST ?? 'localhost';
 const port = process.env.AUTH_SERVICE_PORT ? Number(process.env.AUTH_SERVICE_PORT) : 3000;
@@ -16,7 +16,9 @@ app.get('/', (req, res) => {
   res.send({ message: "Hello I'm auth service" });
 });
 
-app.get('/health', (_req, res) => res.status(200).json({ status: 'ok', service: 'auth-service', timestamp: new Date().toISOString() }));
+app.get('/health', (_req, res) =>
+  res.status(200).json({ status: 'ok', service: 'auth-service', timestamp: new Date().toISOString() })
+);
 
 app.use(cookieParser());
 app.use('/auth', authRouter);

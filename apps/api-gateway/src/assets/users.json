@@ -1,0 +1,129 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "User Service API",
+    "version": "1.0.0",
+    "description": "사용자 관리 기능을 제공하는 마이크로서비스"
+  },
+  "servers": [
+    {
+      "url": "https://fundmat.store/api/users",
+      "description": "User management server"
+    }
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "tags": ["users"],
+        "summary": "사용자 목록 조회",
+        "responses": {
+          "200": {
+            "description": "사용자 배열",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/User" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["users"],
+        "summary": "사용자 생성",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "사용자 생성 성공",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}": {
+      "get": {
+        "tags": ["users"],
+        "summary": "특정 사용자 조회",
+        "parameters": [{ "name": "user_id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": {
+          "200": {
+            "description": "단일 사용자",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "404": { "description": "사용자 없음" }
+        }
+      },
+      "put": {
+        "tags": ["users"],
+        "summary": "사용자 정보 수정",
+        "parameters": [{ "name": "user_id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "사용자 업데이트 성공" }
+        }
+      },
+      "delete": {
+        "tags": ["users"],
+        "summary": "사용자 삭제",
+        "parameters": [{ "name": "user_id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": {
+          "204": { "description": "사용자 삭제 성공" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UserRequest": {
+        "type": "object",
+        "properties": {
+          "age_id": { "type": "integer" },
+          "image_id": { "type": "integer" },
+          "nickname": { "type": "string" },
+          "email": { "type": "string" },
+          "password": { "type": "string" },
+          "contents": { "type": "string" },
+          "gender": { "type": "string" },
+          "provider": { "type": "string" },
+          "sns_id": { "type": "string" }
+        },
+        "required": ["nickname", "email"]
+      },
+      "User": {
+        "allOf": [
+          { "$ref": "#/components/schemas/UserRequest" },
+          {
+            "type": "object",
+            "properties": {
+              "user_id": { "type": "integer" }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

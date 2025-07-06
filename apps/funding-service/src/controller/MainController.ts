@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { Project } from '@shared/entities';
-import { StatusCodes } from 'http-status-codes';
+import { HttpStatusCode } from 'axios';
 
 type ProjectType = {
   title: string;
@@ -37,7 +37,7 @@ export const getAllProjects = async (req: Request, res: Response) => {
     const queryResult: ProjectType[] = await query.getRawMany();
 
     if (queryResult.length === 0) {
-      return res.status(StatusCodes.OK).json([]);
+      return res.status(HttpStatusCode.Ok).json([]);
     }
 
     const result = queryResult.map((row) => {
@@ -52,7 +52,7 @@ export const getAllProjects = async (req: Request, res: Response) => {
       };
     });
 
-    return res.status(StatusCodes.OK).json(result);
+    return res.status(HttpStatusCode.Ok).json(result);
   } catch (err) {
     console.log(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '서버 문제가 발생했습니다.' });
@@ -92,7 +92,7 @@ export const getRecentlyViewedFundingList = async (req: Request, res: Response) 
     const queryResult: ProjectType[] = await query.getRawMany();
 
     if (queryResult.length === 0) {
-      return res.status(StatusCodes.OK).json([]);
+      return res.status(HttpStatusCode.Ok).json([]);
     }
 
     const result = queryResult.map((row) => {
@@ -107,11 +107,11 @@ export const getRecentlyViewedFundingList = async (req: Request, res: Response) 
       };
     });
 
-    return res.status(StatusCodes.OK).json(result);
+    return res.status(HttpStatusCode.Ok).json(result);
   } catch (err) {
     console.log(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '서버 문제가 발생했습니다.' });
-  }
+}
 };
 
 export const getDeadlineFundingList = async (req: Request, res: Response) => {
@@ -137,7 +137,7 @@ export const getDeadlineFundingList = async (req: Request, res: Response) => {
     const queryResult: ProjectType[] = await query.getRawMany();
 
     if (queryResult.length === 0) {
-      return res.status(StatusCodes.OK).json([]);
+      return res.status(HttpStatusCode.Ok).json([]);
     }
 
     const result = queryResult.map((row) => {
@@ -152,11 +152,11 @@ export const getDeadlineFundingList = async (req: Request, res: Response) => {
       };
     });
 
-    return res.status(StatusCodes.OK).json(result);
+    return res.status(HttpStatusCode.Ok).json(result);
   } catch (err) {
     console.log(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '서버 문제가 발생했습니다.' });
-  }
+ }
 };
 
 export const getNewFundingList = async (req: Request, res: Response) => {
@@ -183,7 +183,7 @@ export const getNewFundingList = async (req: Request, res: Response) => {
     const queryResult: ProjectType[] = await query.getRawMany();
 
     if (queryResult.length === 0) {
-      return res.status(StatusCodes.OK).json([]);
+      return res.status(HttpStatusCode.Ok).json([]);
     }
 
     const result = queryResult.map((row) => {
@@ -198,11 +198,11 @@ export const getNewFundingList = async (req: Request, res: Response) => {
       };
     });
 
-    return res.status(StatusCodes.OK).json(result);
+    return res.status(HttpStatusCode.Ok).json(result);
   } catch (err) {
     console.log(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '서버 문제가 발생했습니다.' });
-  }
+ }
 };
 
 export const getPopularFundingList = async (req: Request, res: Response) => {
@@ -216,7 +216,7 @@ export const getFundingListByCategoryId = async (req: Request, res: Response) =>
 
   if (!categoryId) {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: '카테고리 ID를 입력해주세요.' });
-  }
+ }
 
   const query = projectRepo
     .createQueryBuilder('project')
@@ -237,7 +237,7 @@ export const getFundingListByCategoryId = async (req: Request, res: Response) =>
     const queryResult: ProjectType[] = await query.getRawMany();
 
     if (queryResult.length === 0) {
-      return res.status(StatusCodes.OK).json([]);
+      return res.status(HttpStatusCode.Ok).json([]);
     }
 
     const result = queryResult.map((row) => {
@@ -252,11 +252,11 @@ export const getFundingListByCategoryId = async (req: Request, res: Response) =>
       };
     });
 
-    return res.status(StatusCodes.OK).json(result);
+    return res.status(HttpStatusCode.Ok).json(result);
   } catch (err) {
     console.log(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '서버 문제가 발생했습니다.' });
-  }
+}
 };
 
 export const getMyFundingList = (req: Request, res: Response) => {
