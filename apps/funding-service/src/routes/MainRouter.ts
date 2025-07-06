@@ -6,7 +6,7 @@ import {
   getMyFundingList,
   getNewFundingList,
   getPopularFundingList,
-  getRecentFinishedFundingById,
+  getFollowersRecentlyFinished,
   getRecentlyViewedFundingList,
 } from '../controller/MainController';
 
@@ -20,6 +20,6 @@ router.get('/popular', getPopularFundingList);
 router.get('/:id', getFundingListByCategoryId);
 
 router.get('/my-projects', getMyFundingList);
-router.get('/recent-completed', getRecentFinishedFundingById);
+router.get('/recent-completed', getFollowersRecentlyFinished);
 
 export default router;

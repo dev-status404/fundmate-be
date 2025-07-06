@@ -12,6 +12,9 @@ type ProjectType = {
   remainingDay: number;
 };
 
+// [todo] popular, getMyFunding, getFollowersRecentlyFinished 개발하기
+// [todo] 중복 코드 모듈화
+
 export const getAllProjects = async (req: Request, res: Response) => {
   const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : undefined;
   const projectRepo = AppDataSource.getRepository(Project);
@@ -257,9 +260,10 @@ export const getFundingListByCategoryId = async (req: Request, res: Response) =>
 };
 
 export const getMyFundingList = (req: Request, res: Response) => {
+  // user_id Where절 -> 전체 가져오기
   res.send('My uploaded funding list');
 };
 
-export const getRecentFinishedFundingById = (req: Request, res: Response) => {
+export const getFollowersRecentlyFinished = (req: Request, res: Response) => {
   res.send('Recently completed funding');
 };
