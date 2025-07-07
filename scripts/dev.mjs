@@ -12,8 +12,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 
-dotenv.config({ path: path.join(ROOT_DIR, '.env.development') });
-console.log(`Loaded environment from .env.development`);
+dotenv.config({ path: path.join(ROOT_DIR, '.env') });
+console.log(`Loaded environment from .env`);
 
 // Extract only the needed variables
 const { PEM_PATH, RDS_ENDPOINT, EC2_HOST, TEAM_LEAD_WEBHOOK_URL } = process.env;
@@ -23,7 +23,11 @@ if (!PEM_PATH || !RDS_ENDPOINT || !EC2_HOST) {
 }
 
 // ---------- Arguments & Configuration ----------
-const argv = minimist(process.argv.slice(2), { string: ['service'], alias: { s: 'service' }, default: { service: 'ai-service' } });
+const argv = minimist(process.argv.slice(2), {
+  string: ['service'],
+  alias: { s: 'service' },
+  default: { service: 'ai-service' },
+});
 const SERVICE_NAME = argv.service;
 const API_GATEWAY = 'api-gateway';
 const IDLE_PERIOD = 1000 * 60 * 60 * 2; // 2 hours
@@ -36,7 +40,11 @@ function log(name, message) {
 
 function run(name, cmd, args, extraEnv = {}) {
   const env = { PEM_PATH, RDS_ENDPOINT, EC2_HOST, TEAM_LEAD_WEBHOOK_URL, ...process.env, ...extraEnv };
-  log(name, `Spawning: ${cmd} ${args.join(' ')}\n`);
+  log(
+    name,
+    `Spawning: ${cmd} ${args.join(' ')}
+`
+  );
   const proc = spawn(cmd, args, { shell: true, cwd: ROOT_DIR, env });
   proc.stdout.on('data', (d) => {
     log(name, d);
@@ -46,7 +54,13 @@ function run(name, cmd, args, extraEnv = {}) {
     log(name, d);
     resetTimer();
   });
-  proc.on('exit', (code, sig) => log(name, `Exited code=${code} sig=${sig}\n`));
+  proc.on('exit', (code, sig) =>
+    log(
+      name,
+      `Exited code=${code} sig=${sig}
+`
+    )
+  );
   procs.push(proc);
   return proc;
 }
@@ -61,7 +75,18 @@ function startSsh() {
 
   // Build SSH command with identity-only flag to avoid wrong key selection
   const sshCmd = os.platform() === 'win32' ? 'ssh.exe' : 'ssh';
-  const sshArgs = ['-o', 'IdentitiesOnly=yes', '-o', 'StrictHostKeyChecking=no', '-i', PEM_PATH, '-L', forwarding, `ubuntu@${EC2_HOST}`, '-N'];
+  const sshArgs = [
+    '-o',
+    'IdentitiesOnly=yes',
+    '-o',
+    'StrictHostKeyChecking=no',
+    '-i',
+    PEM_PATH,
+    '-L',
+    forwarding,
+    `ubuntu@${EC2_HOST}`,
+    '-N',
+  ];
 
   const sshProc = run('SSH', sshCmd, sshArgs);
   sshProc.on('exit', (code) => {
@@ -75,8 +100,26 @@ function startSsh() {
 
 // ---------- NX Servers ----------
 function startNx() {
-  run('GATEWAY', 'nx', ['serve', API_GATEWAY]);
-  run('SERVICE', 'nx', ['serve', SERVICE_NAME]);
+  if (SERVICE_NAME === API_GATEWAY) {
+    run('GATEWAY', 'nx', ['serve', API_GATEWAY]);
+  } else if (SERVICE_NAME === 'all') {
+    const allServices = [
+      'ai-service',
+      'api-gateway',
+      'auth-service',
+      'funding-service',
+      'interaction-service',
+      'payment-service',
+      'public-service',
+      'user-service',
+    ];
+    allServices.forEach((service) => {
+      run(service.toUpperCase(), 'nx', ['serve', service]);
+    });
+  } else {
+    run('GATEWAY', 'nx', ['serve', API_GATEWAY]);
+    run('SERVICE', 'nx', ['serve', SERVICE_NAME]);
+  }
 }
 
 // ---------- Idle Handling ----------
@@ -95,10 +138,13 @@ function onIdle() {
       body: JSON.stringify({ text: `No traffic on ${SERVICE_NAME}&${API_GATEWAY} for 2h` }),
     });
   }
-  notifier.notify({ title: 'Idle Timeout', message: 'Continue services?', wait: true, timeout: 10 }, (err, resp, meta) => {
-    if (err || resp === 'no' || meta.activationValue === 'timeout') shutdownAll();
-    else resetTimer();
-  });
+  notifier.notify(
+    { title: 'Idle Timeout', message: 'Continue services?', wait: true, timeout: 10 },
+    (err, resp, meta) => {
+      if (err || resp === 'no' || meta.activationValue === 'timeout') shutdownAll();
+      else resetTimer();
+    }
+  );
 }
 
 // ---------- Shutdown ----------

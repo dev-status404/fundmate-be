@@ -13,7 +13,7 @@
         "platform": "node",
         "outputPath": "apps/interaction-service/dist",
         "format": ["cjs"],
-        "bundle": false,
+        "bundle": true,
         "main": "apps/interaction-service/src/main.ts",
         "tsConfig": "apps/interaction-service/tsconfig.app.json",
         "assets": ["apps/interaction-service/src/assets"]

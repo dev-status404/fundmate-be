@@ -1,0 +1,135 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "Public Service API",
+    "version": "1.0.0",
+    "description": "공개 컨텐츠 기능을 제공하는 마이크로서비스"
+  },
+  "servers": [
+    {
+      "url": "https://fundmat.store/api/public",
+      "description": "Public content server"
+    }
+  ],
+  "paths": {
+    "/public/stats": {
+      "get": {
+        "tags": ["public"],
+        "summary": "통계 데이터 목록 조회",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "schema": { "type": "string" },
+            "required": false
+          },
+          {
+            "name": "age_group",
+            "in": "query",
+            "schema": { "type": "string" },
+            "required": false
+          },
+          {
+            "name": "gender",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["male", "female", "any"] },
+            "required": false
+          },
+          {
+            "name": "household_type",
+            "in": "query",
+            "schema": { "type": "string" },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "통계 데이터 배열",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PublicStat" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/patents": {
+      "get": {
+        "tags": ["public"],
+        "summary": "특허 정보 목록 조회",
+        "responses": {
+          "200": {
+            "description": "특허 정보 배열",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PatentInfo" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/patents/{patent_id}": {
+      "get": {
+        "tags": ["public"],
+        "summary": "특정 특허 정보 조회",
+        "parameters": [
+          {
+            "name": "patent_id",
+            "in": "path",
+            "schema": { "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "단일 특허 정보",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PatentInfo" }
+              }
+            }
+          },
+          "404": {
+            "description": "특허 정보를 찾을 수 없음"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PublicStat": {
+        "type": "object",
+        "properties": {
+          "stat_id": { "type": "integer" },
+          "category": { "type": "string" },
+          "age_group": { "type": "string" },
+          "gender": { "type": "string", "enum": ["male", "female", "any"] },
+          "household_type": { "type": "string" },
+          "stat_title": { "type": "string" },
+          "stat_value": { "type": "string" },
+          "source": { "type": "string" },
+          "collected_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "PatentInfo": {
+        "type": "object",
+        "properties": {
+          "patent_id": { "type": "integer" },
+          "ai_id": { "type": "integer" },
+          "title": { "type": "string" },
+          "summary": { "type": "string" },
+          "link": { "type": "string" }
+        }
+      }
+    }
+  }
+}

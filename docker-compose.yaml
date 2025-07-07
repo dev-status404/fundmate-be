@@ -16,6 +16,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+      start_period: 30s
     depends_on:
       - auth-service
       - user-service
@@ -44,6 +45,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+      start_period: 30s
     networks:
       - backend
     restart: unless-stopped
@@ -64,6 +66,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+      start_period: 30s
     networks:
       - backend
     restart: unless-stopped
@@ -84,6 +87,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+      start_period: 30s
     networks:
       - backend
     restart: unless-stopped
@@ -104,6 +108,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+      start_period: 30s
     networks:
       - backend
     restart: unless-stopped
@@ -124,6 +129,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+      start_period: 30s
     networks:
       - backend
     restart: unless-stopped
@@ -144,6 +150,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+      start_period: 30s
     networks:
       - backend
     restart: unless-stopped
@@ -164,6 +171,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+      start_period: 30s
     networks:
       - backend
     restart: unless-stopped

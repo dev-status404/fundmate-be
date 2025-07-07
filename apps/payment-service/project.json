@@ -13,7 +13,7 @@
         "platform": "node",
         "outputPath": "apps/payment-service/dist",
         "format": ["cjs"],
-        "bundle": false,
+        "bundle": true,
         "main": "apps/payment-service/src/main.ts",
         "tsConfig": "apps/payment-service/tsconfig.app.json",
         "assets": ["apps/payment-service/src/assets"]

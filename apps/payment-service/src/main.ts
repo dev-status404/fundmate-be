@@ -1,17 +1,17 @@
 import express from 'express';
 import dotenv from 'dotenv';
-dotenv.config();
+import healthRouter from './routes/health-route';
+import paymentRouter from './routes/payment-route';
 import { AppDataSource } from './data-source';
+dotenv.config();
 
 const host = process.env.HOST ?? 'localhost';
 const port = process.env.PAYMENT_SERVICE_PORT ? Number(process.env.PAYMENT_SERVICE_PORT) : 3000;
 
 const app = express();
-app.get('/', (req, res) => {
-  res.send({ message: "Hello I'm payment service" });
-});
 
-app.get('/health', (_req, res) => res.status(200).json({ status: 'ok', service: 'payment-service', timestamp: new Date().toISOString() }));
+app.use('/health', healthRouter);
+app.use('/payment', paymentRouter);
 
 AppDataSource.initialize()
   .then(() => {

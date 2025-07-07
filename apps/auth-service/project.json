@@ -13,7 +13,7 @@
         "platform": "node",
         "outputPath": "apps/auth-service/dist",
         "format": ["cjs"],
-        "bundle": false,
+        "bundle": true,
         "main": "apps/auth-service/src/main.ts",
         "tsConfig": "apps/auth-service/tsconfig.app.json",
         "assets": ["apps/auth-service/src/assets"]
@@ -44,7 +44,8 @@
       "dependsOn": ["build"],
       "options": {
         "buildTarget": "auth-service:build",
-        "runBuildTargetDependencies": false
+        "runBuildTargetDependencies": false,
+        "runtimeArgs": ["-r", "tsconfig-paths/register"]
       },
       "configurations": {
         "development": {

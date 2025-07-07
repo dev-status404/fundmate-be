@@ -13,7 +13,7 @@
         "platform": "node",
         "outputPath": "apps/ai-service/dist",
         "format": ["cjs"],
-        "bundle": false,
+        "bundle": true,
         "main": "apps/ai-service/src/main.ts",
         "tsConfig": "apps/ai-service/tsconfig.app.json",
         "assets": ["apps/ai-service/src/assets"]

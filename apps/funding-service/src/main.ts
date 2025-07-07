@@ -5,7 +5,7 @@ import FundingRouter from './routes/FundingRouter';
 import MainRouter from './routes/MainRouter';
 import { AppDataSource } from './data-source';
 import dotenv from 'dotenv';
-dotenv.config({ path: '.env.development' });
+dotenv.config();
 
 const host = process.env.HOST ?? 'localhost';
 const port = process.env.FUNDING_SERVICE_PORT ? Number(process.env.FUNDING_SERVICE_PORT) : 3000;
@@ -17,7 +17,9 @@ app.use('/projects', FundingRouter);
 // app.use('/options', OptionRouter);
 app.use('/api/projects', MainRouter);
 
-app.get('/health', (_req, res) => res.status(200).json({ status: 'ok', service: 'funding-service', timestamp: new Date().toISOString() }));
+app.get('/health', (_req, res) =>
+  res.status(200).json({ status: 'ok', service: 'funding-service', timestamp: new Date().toISOString() })
+);
 
 AppDataSource.initialize()
   .then(() => {
