@@ -8,8 +8,6 @@ function isInValid(element: unknown): boolean {
 }
 
 export const requestBodyValidation = (datas: unknown[]): boolean => {
-  // const values = Object.values(datas);
   const hasInvalid = datas.some(isInValid);
-
   return !hasInvalid;
 };

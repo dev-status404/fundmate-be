@@ -3,6 +3,8 @@ import { AppDataSource } from '../data-source';
 import { OptionData, Project } from '@shared/entities';
 import { StatusCodes } from 'http-status-codes';
 import { requestBodyValidation } from '../modules/RequestBodyValidation';
+import { ensureAuthorization } from '../modules/ensureAuthorization';
+import { jwtErrorHandler } from '../modules/jwtErrorHandler';
 
 type ProjectDetailType = {
   title: string;
@@ -12,7 +14,14 @@ type ProjectDetailType = {
 };
 
 export const createFunding = (req: Request, res: Response) => {
-  // [TODO] 토큰 값 받아오기 -> userId validation, imageId 받아오기 -> funding Create
+  // [TODO] userId validation, imageId 받아오기 -> funding Create
+  const getToken = ensureAuthorization(req);
+
+  if (getToken instanceof Error) {
+    return jwtErrorHandler(getToken, res);
+  }
+
+  const user = getToken.userId;
 
   const {
     title,
@@ -57,12 +66,14 @@ export const createFunding = (req: Request, res: Response) => {
     //   endDate,
     //   deliveryDate,
     //   description,
+    //   user,
     //   category,
     //   story,
     //   gender,
     //   ageGroup,
     // });
   } catch (err) {
+    console.log(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '서버 문제가 발생했습니다.' });
   }
 
