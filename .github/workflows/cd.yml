@@ -23,7 +23,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
-      - name: Copy files and create .env on EC2
+      - name: git pull & create .env file
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
           cd fundmate-be
@@ -62,6 +62,8 @@ jobs:
           NAVER_REDIRECT_URI=http://localhost:3002/oauth/naver/callback 
           EOL
 
+      - name: clean up Drive & Start docker
+        run: |
           sudo rm -rf /home/ubuntu/.vscode-serve
           sudo docker system prune -a --volumes  
           sudo docker-compose down
