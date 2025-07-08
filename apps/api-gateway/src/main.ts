@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import { healthCheck } from './controllers/health-controller';
 import docsRoutes from './routes/docs-route';
@@ -15,7 +15,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
   res.send({ message: "Hello I'm api gateway" });
 });
 

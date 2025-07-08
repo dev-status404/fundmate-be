@@ -6,7 +6,7 @@ export class OptionData {
   @PrimaryGeneratedColumn({ name: 'option_id', type: 'int' })
   optionId!: number;
 
-  @ManyToOne(() => Project, { nullable: true })
+  @ManyToOne(() => Project, { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'project_id' })
   project?: Project;
 

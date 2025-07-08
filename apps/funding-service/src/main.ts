@@ -1,7 +1,7 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import FundingRouter from './routes/FundingRouter';
-import OptionRouter from './routes/OptionRouter';
+// import OptionRouter from './routes/OptionRouter';
 import MainRouter from './routes/MainRouter';
 import { AppDataSource } from './data-source';
 import dotenv from 'dotenv';
@@ -14,7 +14,7 @@ const app = express();
 app.use(cookieParser());
 
 app.use('/projects', FundingRouter);
-app.use('/options', OptionRouter);
+// app.use('/options', OptionRouter);
 app.use('/api/projects', MainRouter);
 
 app.get('/health', (_req, res) =>
