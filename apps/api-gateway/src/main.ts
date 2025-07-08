@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import { healthCheck } from './controllers/health-controller';
 import docsRoutes from './routes/docs-route';
 import apiRoutes from './routes/api-route';
-import assetsRoutes from './routes/assets-route';
+import path from 'path';
 import cookieParser from 'cookie-parser';
 dotenv.config();
 
@@ -20,7 +20,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.get('/health-checks', healthCheck);
-app.use('/assets', assetsRoutes);
+app.use('/assets', express.static(path.join(__dirname, 'src/assets')));
 app.use('/docs', docsRoutes);
 app.use('/', apiRoutes);
 
