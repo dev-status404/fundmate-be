@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { HttpStatusCode } from 'axios';
-import { OptionData } from 'shared/entities/src';
+import { OptionData } from '@shared/entities';
 import { requestBodyValidation } from '../modules/RequestBodyValidation';
 
 type OptionType = {

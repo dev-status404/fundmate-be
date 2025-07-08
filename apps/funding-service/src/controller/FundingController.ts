@@ -1,19 +1,19 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
-import { OptionData, Project } from '@shared/entities';
+import { User } from '@shared/entities';
 import { StatusCodes } from 'http-status-codes';
 import { requestBodyValidation } from '../modules/RequestBodyValidation';
 import { ensureAuthorization } from '../modules/ensureAuthorization';
 import { jwtErrorHandler } from '../modules/jwtErrorHandler';
 
-type ProjectDetailType = {
-  title: string;
-  shortDescription: string;
-  goalAmount: number;
-  currentAmount: number;
-};
+// type ProjectDetailType = {
+//   title: string;
+//   shortDescription: string;
+//   goalAmount: number;
+//   currentAmount: number;
+// };
 
-export const createFunding = (req: Request, res: Response) => {
+export const createFunding = async (req: Request, res: Response) => {
   // [TODO] userId validation, imageId 받아오기 -> funding Create
   const getToken = ensureAuthorization(req);
 
@@ -22,7 +22,10 @@ export const createFunding = (req: Request, res: Response) => {
   }
 
   const user = getToken.userId;
-
+  const checkUser = await AppDataSource.getRepository(User).findOne({ where: { userId: user } });
+  if (!checkUser) {
+    return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다. - 잘못된 로그인' });
+  }
   const {
     title,
     goal_amount: goalAmount,
@@ -55,8 +58,8 @@ export const createFunding = (req: Request, res: Response) => {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: '올바른 정보를 입력하세요.' });
   }
 
-  const optionRepo = AppDataSource.getRepository(OptionData);
-  const fundingRepo = AppDataSource.getRepository(Project);
+  // const optionRepo = AppDataSource.getRepository(OptionData);
+  // const fundingRepo = AppDataSource.getRepository(Project);
 
   try {
     // fundingRepo.create({
@@ -72,6 +75,8 @@ export const createFunding = (req: Request, res: Response) => {
     //   gender,
     //   ageGroup,
     // });
+
+    return res.status(StatusCodes.CREATED).json({ message: '프로젝트 생성이 완료되었습니다.' });
   } catch (err) {
     console.log(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '서버 문제가 발생했습니다.' });
