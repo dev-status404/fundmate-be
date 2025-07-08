@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { Age } from './Age';
-import { Image } from './Image';
+import { Age } from '../user-entities/Age';
+import { Image } from '../user-entities/Image';
 
 @Entity('users')
 export class User {
