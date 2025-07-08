@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import axios from 'axios';
-import { serviceConfig } from '../config/service-config';
+import { serviceConfig } from '@shared/config';
 import StatusCode from 'http-status-codes';
 
 const router = Router();
@@ -14,6 +14,7 @@ router.all('/*', async (req, res, next) => {
     return res.status(StatusCode.NOT_FOUND).json({ message: 'Service not found' });
   }
 
+  // 사용할 수 있는 서버라면
   const { url } = inputPath;
   const targetUrl = `${url}${req.originalUrl}`;
 

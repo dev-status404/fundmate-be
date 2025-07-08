@@ -32,6 +32,9 @@
     },
     {
       "path": "./shared/entities"
+    },
+    {
+      "path": "./shared/config"
     }
   ]
 }

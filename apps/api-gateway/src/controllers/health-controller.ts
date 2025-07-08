@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import axios from 'axios';
-import { serviceConfig } from '../config/service-config';
+import { serviceConfig } from '@shared/config';
 
 export const healthCheck = async (_req: Request, res: Response) => {
   const services = Object.values(serviceConfig).map((service) => ({
