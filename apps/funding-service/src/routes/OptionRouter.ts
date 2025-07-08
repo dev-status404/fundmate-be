@@ -1,9 +1,8 @@
 import express from 'express';
-import { createOption, deleteOption } from '../controller/OptionController';
+// import { createOption } from '../controller/OptionController';
 
 const router = express.Router();
 
-router.post('/', createOption);
-router.delete('/:id', deleteOption);
+// router.post('/', createOption);
 
 export default router;
