@@ -11,7 +11,7 @@ export const AppDataSource = new DataSource({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   entities: authEntities,
-  migrationsRun: true,
+  migrationsRun: false,
   synchronize: false,
   logging: true,
   timezone: '+09:00',
