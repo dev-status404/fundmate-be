@@ -13,7 +13,8 @@ app.get('/', (req, res) => {
 app.get('/health', (_req, res) =>
   res.status(200).json({ status: 'ok', service: 'interaction-service', timestamp: new Date().toISOString() })
 );
-
+const likeRouter = require('./src/routes/likes');
+app.use('/users/likes', likeRouter);
 app.listen(port, host, () => {
   console.log(`[ ready ] http://${host}:${port}`);
 });

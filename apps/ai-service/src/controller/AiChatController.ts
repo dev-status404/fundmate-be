@@ -1,6 +1,14 @@
 import { Request, Response } from 'express';
 import axios from 'axios';
+import dotenv from 'dotenv';
+//dotenv.config();
+// // .env.apikey 파일 로드 (openai_api_key 포함)
+dotenv.config({ path: '.env.apikey' });
 
+// // .env.development 파일 로드 (PEM_PATH, RDS_ENDPOINT, EC2_HOST 포함)
+dotenv.config({ path: __dirname + '/../../../../.env.development' });
+
+console.log('API KEY:', process.env.PEM_PATH);
 export const summarize = async (req: Request, res: Response) => {
   const { message } = req.body as { message?: string };
 
@@ -21,14 +29,15 @@ export const summarize = async (req: Request, res: Response) => {
           {
             role: 'system',
             content: `당신은 한국어만 사용하여 답변하는 AI입니다.  
-            모든 답변은 반드시 완전한 한국어 문장으로 작성하세요. 
+            모든 답변은 반드시 한국어 문장으로 작성하세요. 
             당신은 특정 아이디어 내용 또는 기획내용을 40자 이내로 요약하기 위해 만들어진 AI입니다. 
   
             반드시 아래 조건을 지켜야 합니다:
             1. 40자를 절대로 넘기지 마세요 (37~40자 권장)
-            2. 문장은 완결된 형태여야 합니다 (예: '~입니다.', '~입니다')
+            2. 문장은 완결된 형태가 아니여도 되지만 어색함이 없어야합니다.
             3. '?'로 끝나면 "아이디어를 제대로 입력해주세요"라고 답변하세요.
             4. 질문 형태거나 불명확한 요청에도 "아이디어를 제대로 입력해주세요"라고 하세요.
+            5. 답변은 최대한 짧게 작성합니다.
 
             예시:
             입력: 아래 내용에 대해 40자 이내로 요약해 주세요! 꼭 40자 이내여야해요:
@@ -63,7 +72,7 @@ const getAdditionalData = async (category: string, gender: string, age: string, 
   // TODO: 여기에 공공데이터 DB 조회 로직 추가
   // 아래는 예시
   return {
-    trend: '최근 20세대의 자취 혼밥 문화가 확산 중입니다.',
+    trend: '최근 20세대의 반려동물 문화가 확산 중입니다.',
     stat: '1인 가구 비중은 전체의 35%를 차지합니다.',
     interest: '해당 연령대는 자기계발, 반려동물, 홈인테리어에 관심이 많습니다.',
   };
@@ -80,26 +89,30 @@ export const requests = async (req: Request, res: Response) => {
     const data = await getAdditionalData(category, gender, age_ground, household_type);
 
     const aiPrompt = `
-다음은 사용자가 제시한 아이디어와 타겟 정보입니다.
-이 정보를 바탕으로 해당 아이디어를 구체적이고 창의적으로 확장해 주세요.
+아래는 사용자가 제시한 아이디어와 타겟 정보입니다.
+이 정보를 바탕으로 아이디어를 구체적이고 창의적으로 확장해 주세요.
 
-[사용자 입력 아이디어]
+[아이디어]
 ${input_text}
 
 [타겟 정보]
 - 카테고리: ${category}
 - 성별: ${gender}
-- 나이: ${age_ground}
+- 나이대: ${age_ground}
 - 주거 형태: ${household_type}
 
-[관련 데이터]
+[참고 데이터]
 - 트렌드: ${data.trend}
 - 통계: ${data.stat}
 - 관심사: ${data.interest}
 
-[요청사항]
-- 위 정보를 반영하여 아이디어를 보다 구체적이고 참신하게 확장해 주세요.
-- 한국어로 완전한 문장으로 답변해 주세요.
+[작성 규칙]
+1. 위 정보를 모두 반영하여 아이디어를 확장하세요.
+2. 너무 일반적이거나 모호한 표현은 피하세요.
+3. 창의적이고 구체적인 방향으로 아이디어를 발전시켜 주세요.
+4. 답변은 반드시 **100% 한국어**로 작성하며, 영어·중국어·아랍어·기호는 사용하지 않습니다.
+5. 문장은 완결된 서술형으로 작성하세요.
+6. 질문 형태거나 불명확한 요청에는 “아이디어를 제대로 입력해주세요”라고 답변하세요.
 `;
 
     const response = await axios.post(
