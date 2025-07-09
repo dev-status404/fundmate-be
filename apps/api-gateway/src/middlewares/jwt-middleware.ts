@@ -27,6 +27,6 @@ export function jwtMiddleware(required: boolean) {
     }
 
     (req as AuthRequest).user = result;
-    next();
+    return next();
   };
 }

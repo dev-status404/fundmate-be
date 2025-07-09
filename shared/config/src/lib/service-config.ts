@@ -1,5 +1,7 @@
+export type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'ALL';
+
 export interface JwtRule {
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'ALL';
+  method: HTTPMethod;
   path: string;
   required: boolean;
 }
