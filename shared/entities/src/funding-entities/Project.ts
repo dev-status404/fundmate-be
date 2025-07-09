@@ -1,4 +1,5 @@
 import { Category, Image, OptionData, User, Like } from '@shared/entities';
+import { Comment } from '@shared/entities';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('project')
@@ -59,4 +60,7 @@ export class Project {
 
   @OneToMany(() => Like, (like) => like.project)
   likes!: Like[];
+
+  @OneToMany(() => Comment, (comment) => comment.project)
+  comments!: Comment[];
 }

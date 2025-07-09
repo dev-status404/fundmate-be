@@ -5,6 +5,7 @@ import FundingRouter from './routes/FundingRouter';
 import MainRouter from './routes/MainRouter';
 import { AppDataSource } from './data-source';
 import dotenv from 'dotenv';
+import ProfileRouter from './routes/ProfileRouter';
 dotenv.config();
 
 const host = process.env.HOST ?? 'localhost';
@@ -16,6 +17,7 @@ app.use(cookieParser());
 app.use('/projects', FundingRouter);
 // app.use('/options', OptionRouter);
 app.use('/api/projects', MainRouter);
+app.use('/profiles', ProfileRouter);
 
 app.get('/health', (_req, res) =>
   res.status(200).json({ status: 'ok', service: 'funding-service', timestamp: new Date().toISOString() })
