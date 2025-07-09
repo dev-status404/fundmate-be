@@ -36,6 +36,7 @@ services:
       args:
         SERVICE: auth-service
         HOST: '0.0.0.0'
+        NODE_ENV: 'docker'
     #    ports:
     #      - '${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}'
     environment:
@@ -57,6 +58,7 @@ services:
       args:
         SERVICE: user-service
         HOST: '0.0.0.0'
+        NODE_ENV: 'docker'
     #    ports:
     #      - '${USER_SERVICE_PORT}:${USER_SERVICE_PORT}'
     environment:
@@ -78,6 +80,7 @@ services:
       args:
         SERVICE: funding-service
         HOST: '0.0.0.0'
+        NODE_ENV: 'docker'
     #    ports:
     #      - '${FUNDING_SERVICE_PORT}:${FUNDING_SERVICE_PORT}'
     environment:
@@ -99,6 +102,7 @@ services:
       args:
         SERVICE: interaction-service
         HOST: '0.0.0.0'
+        NODE_ENV: 'docker'
     #    ports:
     #      - '${INTERACTION_SERVICE_PORT}:${INTERACTION_SERVICE_PORT}'
     environment:
@@ -120,6 +124,7 @@ services:
       args:
         SERVICE: payment-service
         HOST: '0.0.0.0'
+        NODE_ENV: 'docker'
     #    ports:
     #      - '${PAYMENT_SERVICE_PORT}:${PAYMENT_SERVICE_PORT}'
     environment:
@@ -141,6 +146,7 @@ services:
       args:
         SERVICE: public-service
         HOST: '0.0.0.0'
+        NODE_ENV: 'docker'
     #    ports:
     #      - '${PUBLIC_SERVICE_PORT}:${PUBLIC_SERVICE_PORT}'
     environment:
@@ -162,6 +168,7 @@ services:
       args:
         SERVICE: ai-service
         HOST: '0.0.0.0'
+        NODE_ENV: 'docker'
     #    ports:
     #      - '${AI_SERVICE_PORT}:${AI_SERVICE_PORT}'
     environment:

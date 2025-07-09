@@ -1,33 +1,9 @@
 import { Request, Response } from 'express';
-import axios from 'axios';
-import { serviceConfig } from '../config/service-config';
+import StatusCode from 'http-status-codes';
+import { checkAllServices, HealthResult } from '../services/health-service';
 
 export const healthCheck = async (_req: Request, res: Response) => {
-  const services = Object.values(serviceConfig).map((service) => ({
-    name: service.name,
-    url: `${service.url}/health`,
-  }));
-
-  const results = await Promise.all(
-    services.map(async ({ name, url }) => {
-      try {
-        const start = Date.now();
-        const resp = await axios.get(url, { timeout: 5000 });
-        return {
-          name,
-          status: resp.status === 200 ? 'ok' : 'error',
-          latency: Date.now() - start,
-        };
-      } catch (err) {
-        return {
-          name,
-          status: 'down',
-          error: err instanceof Error ? err.stack : String(err),
-        };
-      }
-    })
-  );
-
+  const results: HealthResult[] = await checkAllServices();
   const overall = results.every((r) => r.status === 'ok') ? 'ok' : 'degraded';
-  res.status(overall === 'ok' ? 200 : 500).json({ overall, services: results });
+  res.status(overall === 'ok' ? StatusCode.OK : StatusCode.INTERNAL_SERVER_ERROR).json({ overall, services: results });
 };
