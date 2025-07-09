@@ -2,22 +2,26 @@ import express from 'express';
 import dotenv from 'dotenv';
 import healthRouter from './routes/health-route';
 import paymentRouter from './routes/payment-route';
+import methodRouter from './routes/method-route';
+import reservationRouter from './routes/reservation-route';
 import { AppDataSource } from './data-source';
+import { serviceConfig } from '@shared/config';
 dotenv.config();
 
-const host = process.env.HOST ?? 'localhost';
-const port = process.env.PAYMENT_SERVICE_PORT ? Number(process.env.PAYMENT_SERVICE_PORT) : 3000;
+const { port, host, url } = serviceConfig['payment-service'];
 
 const app = express();
 
 app.use('/health', healthRouter);
-app.use('/payment', paymentRouter);
+app.use('/payments', paymentRouter);
+app.use('/payment-methods', methodRouter);
+app.use('/reservations', reservationRouter);
 
 AppDataSource.initialize()
   .then(() => {
     console.log('데이터 베이스 연결 성공'); // 추후 정리 코드
     app.listen(port, host, () => {
-      console.log(`[ ready ] http://${host}:${port}`);
+      console.log(`[ ready ] ${url}`);
     });
   })
   .catch((error) => {

@@ -1,12 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import AiChat from './routes/aichat.js';
-
+import { serviceConfig } from '@shared/config';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const host = process.env.HOST ?? 'localhost';
-const port = process.env.AI_SERVICE_PORT ? Number(process.env.AI_SERVICE_PORT) : 3000;
+const { port, host, url } = serviceConfig['ai-service'];
 
 const app = express();
 
@@ -23,5 +22,5 @@ app.use(express.json());
 app.use('/ai', AiChat);
 
 app.listen(port, host, () => {
-  console.log(`[ ready ] http://${host}:${port}`);
+  console.log(`[ ready ] ${url}`);
 });

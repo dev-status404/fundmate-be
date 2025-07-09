@@ -9,6 +9,7 @@ export interface JwtRule {
 export interface ServiceConfig {
   name: string;
   swagger: string;
+  host: string;
   port: number;
   url: string;
   base: string[];
@@ -16,7 +17,7 @@ export interface ServiceConfig {
 }
 
 const isDocker = process.env.NODE_ENV === 'docker';
-const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url'>> = {
+const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url' | 'host'>> = {
   'ai-service': {
     name: 'ai-service',
     swagger: 'ai.json',
@@ -84,10 +85,12 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url'>> = {
 };
 
 export const serviceConfig: Record<string, ServiceConfig> = Object.values(rowServiceConfig).reduce((acc, service) => {
+  const host = isDocker ? service.name : 'localhost';
   acc[service.name] = {
     ...service,
     swagger: `/assets/${service.swagger}`,
-    url: isDocker ? `http://${service.name}:${service.port}` : `http://localhost:${service.port}`,
+    host,
+    url: `http://${host}:${service.port}`,
   };
   return acc;
 }, {} as Record<string, ServiceConfig>);

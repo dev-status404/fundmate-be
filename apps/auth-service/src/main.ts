@@ -1,13 +1,13 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import { AppDataSource } from './data-source';
+import { serviceConfig } from '@shared/config';
 import authRouter from './routes/auth';
 import oauthRouter from './routes/oauth';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const host = process.env.HOST ?? 'localhost';
-const port = process.env.AUTH_SERVICE_PORT ? Number(process.env.AUTH_SERVICE_PORT) : 3000;
+const { port, host, url } = serviceConfig['auth-service'];
 
 const app = express();
 app.use(express.json());
@@ -28,7 +28,7 @@ AppDataSource.initialize()
   .then(() => {
     console.log('데이터 베이스 연결 성공'); // 추후 정리 코드
     app.listen(port, host, () => {
-      console.log(`[ ready ] http://${host}:${port}`);
+      console.log(`[ ready ] ${url}`);
     });
   })
   .catch((error) => {
