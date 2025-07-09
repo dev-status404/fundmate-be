@@ -34,13 +34,13 @@ export class Project {
   @Column({ name: 'current_amount', type: 'int', nullable: false })
   currentAmount!: number;
 
-  @Column({ name: 'start_date', type: 'timestamp', nullable: false })
+  @Column({ name: 'start_date', type: 'date', nullable: false })
   startDate!: Date;
 
-  @Column({ name: 'end_date', type: 'timestamp', nullable: false })
+  @Column({ name: 'end_date', type: 'date', nullable: false })
   endDate!: Date;
 
-  @Column({ name: 'delivery_date', type: 'timestamp', nullable: false })
+  @Column({ name: 'delivery_date', type: 'date', nullable: false })
   deliveryDate!: Date;
 
   @Column({ name: 'is_active', type: 'boolean', nullable: false, default: false })
