@@ -5,6 +5,10 @@ set -euo pipefail
 # Move to project root (assumes script run from any subdirectory)
 cd "$(git rev-parse --show-toplevel)"
 
+echo "=== Checking npm install ==="
+
+npm i
+
 echo "=== Cleaning up build artifacts ==="
 
 # Kill processes using ports 3000–3007

@@ -1,0 +1,19 @@
+{
+  "name": "@shared/config",
+  "root": "shared/config",
+  "sourceRoot": "shared/config/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "main": "shared/config/src/index.ts",
+        "tsConfig": "shared/config/tsconfig.lib.json",
+        "outputPath": "shared/config/dist",
+        "externalDependencies": []
+      }
+    }
+  },
+  "tags": ["scope:shared", "type:config"]
+}
