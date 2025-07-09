@@ -45,6 +45,10 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url'>> = {
     jwtRules: [
       { method: 'POST', path: '/projects', required: true },
       { method: 'GET', path: '/project/:id', required: false },
+      { method: 'GET', path: '/project/recent-completed', required: true },
+      { method: 'GET', path: '/project/my-projects', required: true },
+      { method: 'GET', path: '/project/comments', required: true },
+      { method: 'POST', path: '/options', required: true },
       { method: 'ALL', path: '/options', required: false },
       { method: 'ALL', path: '/api/projects', required: false },
     ],
