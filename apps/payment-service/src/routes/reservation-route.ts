@@ -9,12 +9,13 @@ const router = Router();
 // 펀딩 전체 갯수
 router.get('/count', async (req, res) => {
   const { userId } = res.locals.user;
+  if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
   try {
     const paymentScheduleRepo = AppDataSource.getRepository(PaymentSchedule);
     const paymentHistoryRepo = AppDataSource.getRepository(PaymentHistory);
 
-    const countBySchedule = await paymentScheduleRepo.count(userId);
-    const countByHistory = await paymentHistoryRepo.count(userId);
+    const countBySchedule = await paymentScheduleRepo.count({ where: { userId } });
+    const countByHistory = await paymentHistoryRepo.count({ where: { userId } });
 
     return res
       .status(StatusCodes.OK)

@@ -16,7 +16,6 @@ export function decideService(req: Request, res: Response, next: NextFunction) {
 // 토큰 확인 여부결정 미들웨어
 export function decideJwt(req: Request, res: Response, next: NextFunction) {
   const rules = res.locals.service.jwtRules;
-  console.log(req.path, req.method);
   const rule = rules.find(
     (r: JwtRule) => (r.method === 'ALL' || r.method === req.method) && req.path.startsWith(r.path)
   ) ?? {

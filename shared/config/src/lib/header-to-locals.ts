@@ -4,10 +4,13 @@ export function headerToLocals(req: Request, res: Response, next: NextFunction) 
   const userIdHeader = req.header('x-user-id');
   const emailHeader = req.header('x-user-email');
   if (userIdHeader) {
-    res.locals.user = {
-      userId: Number(userIdHeader),
-      email: emailHeader || '',
-    };
+    const userId = parseInt(userIdHeader, 10);
+    if (!isNaN(userId)) {
+      res.locals.user = {
+        userId,
+        email: emailHeader || '',
+      };
+    }
   }
   next();
 }
