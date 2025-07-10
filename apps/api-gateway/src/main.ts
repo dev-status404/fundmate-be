@@ -5,7 +5,7 @@ import docsRoutes from './routes/docs-route';
 import apiRoutes from './routes/api-route';
 import path from 'path';
 import cookieParser from 'cookie-parser';
-import { headerToLocals } from 'shared/config/src';
+import { headerToLocals } from '@shared/config';
 dotenv.config();
 
 const host = 'localhost';

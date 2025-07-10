@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import StatusCode from 'http-status-codes';
-import { serviceConfig, HTTPMethod } from '@shared/config';
-import { JwtRule } from '@shared/config';
+import { serviceConfig, HTTPMethod, JwtRule } from '@shared/config';
 import { jwtMiddleware } from '../middlewares/jwt-middleware';
 
 // 서버 결정 미들웨어
