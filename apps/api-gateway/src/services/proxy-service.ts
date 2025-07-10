@@ -7,7 +7,6 @@ export async function proxyRequest(service: ServiceConfig, req: Request): Promis
     throw new Error('proxyRequest: 올바른 ServiceConfig({ url: string })를 첫번째 인자로 넘겨주세요');
   }
   const targetUrl = `${service.url}${req.originalUrl}`;
-  console.log('url:', targetUrl, service);
   const config: AxiosRequestConfig = {
     method: req.method,
     url: targetUrl,
