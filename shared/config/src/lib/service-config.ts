@@ -65,8 +65,11 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url' | 'host'>> = {
     name: 'payment-service',
     swagger: 'payment.json',
     port: Number(process.env.PAYMENT_SERVICE_PORT) || 3005,
-    base: ['/payment'],
-    jwtRules: [{ method: 'ALL', path: '/payment', required: true }],
+    base: ['/payments', '/reservations'],
+    jwtRules: [
+      { method: 'ALL', path: '/payments', required: true },
+      { method: 'ALL', path: '/reservations', required: true },
+    ],
   },
   'public-service': {
     name: 'public-service',

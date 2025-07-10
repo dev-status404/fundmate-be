@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get('/', (req: Request, res: Response) => {
-  res.send({ message: "Hello I'm api gateway" });
+  return res.send({ message: "Hello I'm api gateway" });
 });
 
 app.get('/health-checks', healthCheck);
