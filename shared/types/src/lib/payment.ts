@@ -1,5 +1,3 @@
-import 'express-serve-static-core';
-
 export interface DecodedJwt {
   userId: number;
   email: string;

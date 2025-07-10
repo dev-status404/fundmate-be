@@ -9,7 +9,7 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "main": "shared/types/src/index.ts",
-        "tsType": "shared/types/tstype.lib.json",
+        "tsConfig": "shared/types/tsconfig.lib.json",
         "outputPath": "shared/types/dist",
         "externalDependencies": []
       }

@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import { serviceConfig } from '@shared/config';
 dotenv.config();
 
-const { host, port, url } = serviceConfig['user-service'];
+const { port, host, url } = serviceConfig['user-service'];
 
 const app = express();
 app.get('/', (req, res) => {

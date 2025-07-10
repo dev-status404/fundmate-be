@@ -7,14 +7,13 @@ import { Token } from './auth-entities/Token';
 import { User } from './auth-entities/User';
 import { Like } from './interaction-entities/Like';
 
-export const authEntities = [Age, Category, EmailVerification, Image, InterestCategory, Token, User];
-
-export * from './payment-entities';
-
 import { Project } from './funding-entities/Project';
 import { OptionData } from './funding-entities/OptionData';
+
+export { Age, Category, EmailVerification, Image, InterestCategory, Token, User };
 export { Project, OptionData };
-
-export const fundingEntities = [Project, OptionData, User, Image, Category, Like, ...authEntities];
-
+export * from './payment-entities';
 export { Like };
+
+export const authEntities = [Age, Category, EmailVerification, Image, InterestCategory, Token, User];
+export const fundingEntities = [Project, OptionData, User, Image, Category, Like, ...authEntities];
