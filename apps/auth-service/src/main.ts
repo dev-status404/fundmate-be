@@ -1,7 +1,7 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import { AppDataSource } from './data-source';
-import { serviceConfig } from '@shared/config';
+import { serviceConfig, headerToLocals } from '@shared/config';
 import authRouter from './routes/auth';
 import oauthRouter from './routes/oauth';
 import dotenv from 'dotenv';
@@ -11,6 +11,7 @@ const { port, host, url } = serviceConfig['auth-service'];
 
 const app = express();
 app.use(express.json());
+app.use(headerToLocals);
 
 app.get('/', (req, res) => {
   res.send({ message: "Hello I'm auth service" });

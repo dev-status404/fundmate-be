@@ -1,11 +1,10 @@
 import { Router } from 'express';
-import { detectService, forwardRequest } from '../controllers/api-controller';
-// import { jwtMiddleware } from '../middlewares/jwt-middleware';
+import { decideJwt, decideService, forwardRequest } from '../controllers/api-controller';
 
 const router = Router();
 
-router.use(detectService);
-// router.use(jwtMiddleware);
+router.use(decideService);
+router.use(decideJwt);
 router.all('/*', forwardRequest);
 
 export default router;

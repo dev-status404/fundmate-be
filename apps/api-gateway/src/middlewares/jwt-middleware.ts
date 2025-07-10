@@ -16,13 +16,11 @@ export function jwtMiddleware(required: boolean) {
 
     const result = ensureAuthorization(req);
     if (result instanceof Error) {
-      if (required) {
-        return jwtErrorHandler(result, res);
-      }
-      return next();
+      if (required) return jwtErrorHandler(result, res);
+      else return next();
     }
 
-    res.locals.user = result;
+    res.locals.user = { userId: result.userId, email: result.email, token };
     return next();
   };
 }

@@ -1,13 +1,14 @@
 import express from 'express';
 import cors from 'cors';
 import AiChat from './routes/aichat.js';
-import { serviceConfig } from '@shared/config';
+import { serviceConfig, headerToLocals } from '@shared/config';
 import dotenv from 'dotenv';
 dotenv.config();
 
 const { port, host, url } = serviceConfig['ai-service'];
 
 const app = express();
+app.use(headerToLocals);
 
 app.get('/', (req, res) => {
   res.send({ message: "Hello I'm ai service" });

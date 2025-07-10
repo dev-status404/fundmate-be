@@ -5,12 +5,15 @@ import paymentRouter from './routes/payment-route';
 import methodRouter from './routes/method-route';
 import reservationRouter from './routes/reservation-route';
 import { AppDataSource } from './data-source';
-import { serviceConfig } from '@shared/config';
+import { serviceConfig, headerToLocals } from '@shared/config';
 dotenv.config();
 
 const { port, host, url } = serviceConfig['payment-service'];
 
 const app = express();
+
+app.use(express.json());
+app.use(headerToLocals);
 
 app.use('/health', healthRouter);
 app.use('/payments', paymentRouter); // <- 다른 서버 연결 예제입니다!

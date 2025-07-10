@@ -1,26 +1,59 @@
 import { Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { AppDataSource } from '../data-source';
-import { PaymentInfo, PaymentSchedule } from '@shared/entities';
+import { PaymentHistory, PaymentInfo, PaymentSchedule } from '@shared/entities';
 import createError from 'http-errors';
 
 const router = Router();
 
-router.get('/count', (req, res) => {
-  return res.status(StatusCodes.OK).json({ message: '펀딩 전체 갯수' });
+// 펀딩 전체 갯수
+router.get('/count', async (req, res) => {
+  const { userId } = res.locals.user;
+  if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
+  try {
+    const paymentScheduleRepo = AppDataSource.getRepository(PaymentSchedule);
+    const paymentHistoryRepo = AppDataSource.getRepository(PaymentHistory);
+
+    const countBySchedule = await paymentScheduleRepo.count({ where: { userId } });
+    const countByHistory = await paymentHistoryRepo.count({ where: { userId } });
+
+    return res
+      .status(StatusCodes.OK)
+      .json({ count: countBySchedule + countByHistory, countBySchedule, countByHistory });
+  } catch (err: any) {
+    console.log(err);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '펀딩 갯수 조회 실패' });
+  }
 });
-router.get('/', (req, res) => {
-  return res.status(StatusCodes.OK).json({ message: '펀딩 결제 및 예약 내역 전체 조회' });
+
+// 펀딩 결제 및 예약 내역 전체 조회
+router.get('/', async (req, res) => {
+  const { userId } = res.locals.user;
+  try {
+    const paymentScheduleRepo = AppDataSource.getRepository(PaymentSchedule);
+    const findBySchedule = await paymentScheduleRepo.findBy({ userId });
+    return res.status(StatusCodes.OK).json({ findBySchedule });
+  } catch (err: any) {
+    console.log(err);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '펀딩 갯수 조회 실패' });
+  }
 });
+
+// 펀딩 결제 및 예약 내역 상세 조회
 router.get('/:id', (req, res) => {
   return res.status(StatusCodes.OK).json({ message: '펀딩 결제 및 예약 내역 상세 조회' });
 });
+
+// 펀딩 결제 및 예약 등록
 router.post('/:id', (req, res) => {
   return res.status(StatusCodes.OK).json({ message: '펀딩 결제 및 예약 등록' });
 });
+
+// 펀딩 결제 및 예약 정보 수정
 router.patch('/:id', (req, res) => {
   return res.status(StatusCodes.OK).json({ message: '펀딩 결제 및 예약 정보 수정' });
 });
+
 // 결제 정보 수정
 router.patch('/:id/payment_methods', async (req, res) => {
   const { userId } = res.locals.user;
@@ -59,6 +92,8 @@ router.patch('/:id/payment_methods', async (req, res) => {
     return res.status(status).json({ message: '결제 수단 수정 실패' });
   }
 });
+
+// 펀딩 결제 예약 취소
 router.delete('/:id', (req, res) => {
   return res.status(StatusCodes.OK).json({ message: '펀딩 결제 예약 취소' });
 });
