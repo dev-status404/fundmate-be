@@ -247,7 +247,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
     return res.status(StatusCode.OK).json({ message: '토큰 갱신 완료' });
   } catch (err) {
     console.error(err);
-    return res.status(StatusCode.UNAUTHORIZED).json({ message: '리프레시 토큰 검증 실패' });
+    return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: '리프레시 토큰 검증 실패' });
   }
 };
 
@@ -336,6 +336,6 @@ export const logout = async (req: Request, res: Response) => {
     return res.status(StatusCode.OK).json({ message: '로그아웃 성공' });
   } catch (err) {
     console.error(err);
-    return res.status(StatusCode.UNAUTHORIZED).json({ message: '로그아웃 실패' });
+    return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: '로그아웃 실패' });
   }
 };
