@@ -6,15 +6,7 @@ import { requestBodyValidation } from '../modules/RequestBodyValidation';
 import { ensureAuthorization } from '../modules/ensureAuthorization';
 import { jwtErrorHandler } from '../modules/jwtErrorHandler';
 
-// type ProjectDetailType = {
-//   title: string;
-//   shortDescription: string;
-//   goalAmount: number;
-//   currentAmount: number;
-// };
-
 export const createFunding = async (req: Request, res: Response) => {
-  // [TODO] imageId 받아오기 -> funding Create
   const getToken = ensureAuthorization(req);
 
   if (getToken instanceof Error) {
@@ -55,6 +47,7 @@ export const createFunding = async (req: Request, res: Response) => {
   ];
 
   if (!requestBodyValidation(values)) {
+    console.log(shortDescription);
     return res.status(HttpStatusCode.BadRequest).json({ message: '올바른 정보를 입력하세요.' });
   }
 
@@ -93,6 +86,7 @@ export const createFunding = async (req: Request, res: Response) => {
       .execute();
 
     if (fundingResult && optionResult.affected && optionResult.affected > 0) {
+      await queryRunner.commitTransaction();
       return res.status(HttpStatusCode.Created).json({ message: '프로젝트 생성이 완료되었습니다.' });
     } else {
       throw new Error('프로젝트 생성에 실패했습니다.');

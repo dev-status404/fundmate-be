@@ -1,7 +1,7 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import FundingRouter from './routes/FundingRouter';
-// import OptionRouter from './routes/OptionRouter';
+import OptionRouter from './routes/OptionRouter';
 import MainRouter from './routes/MainRouter';
 import { AppDataSource } from './data-source';
 import dotenv from 'dotenv';
@@ -13,9 +13,10 @@ const port = process.env.FUNDING_SERVICE_PORT ? Number(process.env.FUNDING_SERVI
 
 const app = express();
 app.use(cookieParser());
+app.use(express.json());
 
 app.use('/projects', FundingRouter);
-// app.use('/options', OptionRouter);
+app.use('/options', OptionRouter);
 app.use('/api/projects', MainRouter);
 app.use('/profiles', ProfileRouter);
 
