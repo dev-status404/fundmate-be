@@ -1,13 +1,8 @@
 import { Request } from 'express';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-
+import { DecodedJwt } from '@shared/types';
 dotenv.config();
-
-export interface DecodedJwt {
-  userId: number;
-  email: string;
-}
 
 export const ensureAuthorization = (req: Request): DecodedJwt | Error => {
   try {

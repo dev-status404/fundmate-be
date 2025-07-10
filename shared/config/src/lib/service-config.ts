@@ -9,6 +9,7 @@ export interface JwtRule {
 export interface ServiceConfig {
   name: string;
   swagger: string;
+  host: string;
   port: number;
   url: string;
   base: string[];
@@ -16,7 +17,7 @@ export interface ServiceConfig {
 }
 
 const isDocker = process.env.NODE_ENV === 'docker';
-const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url'>> = {
+const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url' | 'host'>> = {
   'ai-service': {
     name: 'ai-service',
     swagger: 'ai.json',
@@ -45,6 +46,10 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url'>> = {
     jwtRules: [
       { method: 'POST', path: '/projects', required: true },
       { method: 'GET', path: '/project/:id', required: false },
+      { method: 'GET', path: '/project/recent-completed', required: true },
+      { method: 'GET', path: '/project/my-projects', required: true },
+      { method: 'GET', path: '/project/comments', required: true },
+      { method: 'POST', path: '/options', required: true },
       { method: 'ALL', path: '/options', required: false },
       { method: 'ALL', path: '/api/projects', required: false },
     ],
@@ -60,8 +65,11 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url'>> = {
     name: 'payment-service',
     swagger: 'payment.json',
     port: Number(process.env.PAYMENT_SERVICE_PORT) || 3005,
-    base: ['/payment'],
-    jwtRules: [{ method: 'ALL', path: '/payment', required: true }],
+    base: ['/payments', '/reservations'],
+    jwtRules: [
+      { method: 'ALL', path: '/payments', required: true },
+      { method: 'ALL', path: '/reservations', required: true },
+    ],
   },
   'public-service': {
     name: 'public-service',
@@ -80,10 +88,12 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url'>> = {
 };
 
 export const serviceConfig: Record<string, ServiceConfig> = Object.values(rowServiceConfig).reduce((acc, service) => {
+  const host = isDocker ? service.name : 'localhost';
   acc[service.name] = {
     ...service,
     swagger: `/assets/${service.swagger}`,
-    url: isDocker ? `http://${service.name}:${service.port}` : `http://localhost:${service.port}`,
+    host,
+    url: `http://${host}:${service.port}`,
   };
   return acc;
 }, {} as Record<string, ServiceConfig>);
