@@ -5,6 +5,7 @@ import docsRoutes from './routes/docs-route';
 import apiRoutes from './routes/api-route';
 import path from 'path';
 import cookieParser from 'cookie-parser';
+import { headerToLocals } from 'shared/config/src';
 dotenv.config();
 
 const host = 'localhost';
@@ -14,6 +15,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(headerToLocals);
 
 app.get('/', (req: Request, res: Response) => {
   return res.send({ message: "Hello I'm api gateway" });

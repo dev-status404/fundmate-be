@@ -1,4 +1,6 @@
 export * from './lib/service-config.js';
+export * from './lib/proxy-config.js';
+export * from './lib/header-to-locals.js';
 import { serviceConfig } from './lib/service-config.js';
 import { ServiceClient } from './lib/proxy-config.js';
 
