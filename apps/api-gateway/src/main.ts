@@ -7,7 +7,7 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 dotenv.config();
 
-const host = process.env.HOST ?? 'localhost';
+const host = 'localhost';
 const port = process.env.API_GATEWAY_PORT ? Number(process.env.API_GATEWAY_PORT) : 3000;
 
 const app = express();

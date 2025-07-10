@@ -28,7 +28,7 @@
       "path": "./apps/interaction-service"
     },
     {
-      "path": "./shared/type"
+      "path": "./shared/types"
     },
     {
       "path": "./shared/entities"
