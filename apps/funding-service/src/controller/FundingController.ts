@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { User } from '@shared/entities';
-import { StatusCodes } from 'http-status-codes';
+import { HttpStatusCode } from 'axios';
 import { requestBodyValidation } from '../modules/RequestBodyValidation';
 import { ensureAuthorization } from '../modules/ensureAuthorization';
 import { jwtErrorHandler } from '../modules/jwtErrorHandler';
@@ -24,7 +24,7 @@ export const createFunding = async (req: Request, res: Response) => {
   const user = getToken.userId;
   const checkUser = await AppDataSource.getRepository(User).findOne({ where: { userId: user } });
   if (!checkUser) {
-    return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다. - 잘못된 로그인' });
+    return res.status(HttpStatusCode.Unauthorized).json({ message: '로그인이 필요합니다. - 잘못된 로그인' });
   }
   const {
     title,
@@ -55,7 +55,7 @@ export const createFunding = async (req: Request, res: Response) => {
   ];
 
   if (!requestBodyValidation(values)) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: '올바른 정보를 입력하세요.' });
+    return res.status(HttpStatusCode.BadRequest).json({ message: '올바른 정보를 입력하세요.' });
   }
 
   // const optionRepo = AppDataSource.getRepository(OptionData);
@@ -76,10 +76,10 @@ export const createFunding = async (req: Request, res: Response) => {
     //   ageGroup,
     // });
 
-    return res.status(StatusCodes.CREATED).json({ message: '프로젝트 생성이 완료되었습니다.' });
+    return res.status(HttpStatusCode.Created).json({ message: '프로젝트 생성이 완료되었습니다.' });
   } catch (err) {
     console.log(err);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '서버 문제가 발생했습니다.' });
+    return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
   }
 
   res.send('funding create');
