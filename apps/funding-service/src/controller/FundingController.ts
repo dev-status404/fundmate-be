@@ -85,7 +85,7 @@ export const createFunding = async (req: Request, res: Response) => {
       .where('option_id IN (:...optionIds)', { optionIds })
       .execute();
 
-    if (fundingResult && optionResult.affected && optionResult.affected > 0) {
+if (fundingResult && optionResult.affected && optionResult.affected === optionIds.length) {
       await queryRunner.commitTransaction();
       return res.status(HttpStatusCode.Created).json({ message: '프로젝트 생성이 완료되었습니다.' });
     } else {
