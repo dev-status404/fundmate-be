@@ -47,8 +47,7 @@ export const createFunding = async (req: Request, res: Response) => {
   ];
 
   if (!requestBodyValidation(values)) {
-    console.log(shortDescription);
-    return res.status(HttpStatusCode.BadRequest).json({ message: '올바른 정보를 입력하세요.' });
+return res.status(HttpStatusCode.BadRequest).json({ message: '올바른 정보를 입력하세요.' });
   }
 
   const queryRunner = AppDataSource.createQueryRunner();
