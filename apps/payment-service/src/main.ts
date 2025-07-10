@@ -12,6 +12,8 @@ const { port, host, url } = serviceConfig['payment-service'];
 
 const app = express();
 
+app.use(express.json());
+
 app.use('/health', healthRouter);
 app.use('/payments', paymentRouter); // <- 다른 서버 연결 예제입니다!
 app.use('/payment-methods', methodRouter);
