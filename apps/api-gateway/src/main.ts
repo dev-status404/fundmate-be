@@ -7,7 +7,7 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 dotenv.config();
 
-const host = process.env.HOST ?? 'localhost';
+const host = 'localhost';
 const port = process.env.API_GATEWAY_PORT ? Number(process.env.API_GATEWAY_PORT) : 3000;
 
 const app = express();
@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get('/', (req: Request, res: Response) => {
-  res.send({ message: "Hello I'm api gateway" });
+  return res.send({ message: "Hello I'm api gateway" });
 });
 
 app.get('/health-checks', healthCheck);

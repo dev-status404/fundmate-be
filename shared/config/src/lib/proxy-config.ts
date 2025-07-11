@@ -3,6 +3,7 @@ import { HTTPMethod, ServiceConfig } from '@shared/config';
 
 export class ServiceClient {
   private readonly client: AxiosInstance;
+  private authContext: { token: string; userId: number; email: string } | null = null;
 
   constructor(private readonly config: ServiceConfig) {
     this.client = axios.create({
@@ -15,6 +16,11 @@ export class ServiceClient {
     });
   }
 
+  // header에 넣어야 하는거 이걸로 넣기
+  public setAuthContext(context: { token: string; userId: number; email: string }) {
+    this.authContext = context;
+  }
+
   public async request<T = any>(
     method: HTTPMethod,
     path: string,
@@ -23,11 +29,20 @@ export class ServiceClient {
     extraConfig?: AxiosRequestConfig
   ): Promise<AxiosResponse<T>> {
     const url = this.normalizePath(path);
+    const mergedHeaders: Record<string, any> = {
+      ...(extraConfig?.headers || {}),
+    };
+    if (this.authContext) {
+      mergedHeaders['Authorization'] = `Bearer ${this.authContext.token}`;
+      mergedHeaders['x-user-id'] = String(this.authContext.userId);
+      mergedHeaders['x-user-email'] = this.authContext.email;
+    }
     return this.client.request<T>({
       method,
       url,
       data,
       params,
+      headers: mergedHeaders,
       ...extraConfig,
     });
   }

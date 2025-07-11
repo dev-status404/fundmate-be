@@ -22,7 +22,9 @@
       "@shared/entities": ["dist/shared/entities/index"],
       "@shared/entities/*": ["dist/shared/entities/*"],
       "@shared/config": ["dist/shared/config/index"],
-      "@shared/config/*": ["dist/shared/config/*"]
+      "@shared/config/*": ["dist/shared/config/*"],
+      "@shared/types": ["dist/shared/types/index"],
+      "@shared/types/*": ["dist/shared/types/*"]
     }
   }
 }

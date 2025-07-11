@@ -6,22 +6,16 @@ import { InterestCategory } from './auth-entities/InterestCategory';
 import { Token } from './auth-entities/Token';
 import { User } from './auth-entities/User';
 
-export { Age, Category, EmailVerification, Image, InterestCategory, Token, User };
-
-export const authEntities = [Age, Category, EmailVerification, Image, InterestCategory, Token, User];
-
-import { PaymentHistory } from './payment-entities/payment-history';
-import { PaymentInfo } from './payment-entities/payment-info';
-import { PaymentSchedule } from './payment-entities/payment-schedule';
-
-export const paymentEntities = [PaymentHistory, PaymentInfo, PaymentSchedule];
-
 import { Project } from './funding-entities/Project';
 import { OptionData } from './funding-entities/OptionData';
-export { Project, OptionData };
-
-export const fundingEntities = [Project, OptionData, User, Image, Category, Like, Comment, ...authEntities];
 
 import { Like } from './interaction-entities/Like';
 import { Comment } from './interaction-entities/Comment';
+
+export { Age, Category, EmailVerification, Image, InterestCategory, Token, User };
+export { Project, OptionData };
+export * from './payment-entities';
 export { Like, Comment };
+
+export const authEntities = [Age, Category, EmailVerification, Image, InterestCategory, Token, User];
+export const fundingEntities = [Project, OptionData, User, Image, Category, Like, Comment, ...authEntities];

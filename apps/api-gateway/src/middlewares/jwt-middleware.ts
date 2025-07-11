@@ -1,11 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { ensureAuthorization, DecodedJwt } from './ensureAuthorization';
+import { ensureAuthorization } from './ensureAuthorization';
 import { jwtErrorHandler } from './jwtErrorHandler';
 import { StatusCodes } from 'http-status-codes';
-
-export interface AuthRequest extends Request {
-  user?: DecodedJwt;
-}
 
 export function jwtMiddleware(required: boolean) {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -20,13 +16,11 @@ export function jwtMiddleware(required: boolean) {
 
     const result = ensureAuthorization(req);
     if (result instanceof Error) {
-      if (required) {
-        return jwtErrorHandler(result, res);
-      }
-      return next();
+      if (required) return jwtErrorHandler(result, res);
+      else return next();
     }
 
-    (req as AuthRequest).user = result;
+    res.locals.user = { userId: result.userId, email: result.email, token };
     return next();
   };
 }
