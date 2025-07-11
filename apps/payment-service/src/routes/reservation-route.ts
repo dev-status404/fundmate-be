@@ -32,20 +32,31 @@ router.get('/', async (req, res) => {
   try {
     const paymentScheduleRepo = AppDataSource.getRepository(PaymentSchedule);
     const findBySchedule = await paymentScheduleRepo.findBy({ userId });
-    return res.status(StatusCodes.OK).json({ findBySchedule });
+    if (findBySchedule.length === 0) throw createError(StatusCodes.NOT_FOUND, '예약된 정보가 없습니다.');
+    return res.status(StatusCodes.OK).json(findBySchedule);
   } catch (err: any) {
     console.log(err);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '펀딩 갯수 조회 실패' });
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '전체 펀딩 조회 실패' });
   }
 });
 
 // 펀딩 결제 및 예약 내역 상세 조회
 router.get('/:id', (req, res) => {
-  return res.status(StatusCodes.OK).json({ message: '펀딩 결제 및 예약 내역 상세 조회' });
+  const { userId } = res.locals.user;
+  const reservationId = +req.params.id;
+  try {
+    const paymentScheduleRepo = AppDataSource.getRepository(PaymentSchedule);
+    const findBySchedule = paymentScheduleRepo.findOneBy({ id: reservationId, userId });
+    if (!findBySchedule) throw createError(StatusCodes.NOT_FOUND, '예약된 정보가 없습니다.');
+    return res.status(StatusCodes.OK).json(findBySchedule);
+  } catch (err: any) {
+    console.log(err);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '펀딩 조회 실패' });
+  }
 });
 
 // 펀딩 결제 및 예약 등록
-router.post('/:id', (req, res) => {
+router.post('/', (req, res) => {
   return res.status(StatusCodes.OK).json({ message: '펀딩 결제 및 예약 등록' });
 });
 
