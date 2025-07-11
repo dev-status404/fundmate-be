@@ -48,7 +48,7 @@ export const createFunding = async (req: Request, res: Response) => {
   ];
 
   if (!requestBodyValidation(values)) {
-return res.status(HttpStatusCode.BadRequest).json({ message: '올바른 정보를 입력하세요.' });
+    return res.status(HttpStatusCode.BadRequest).json({ message: '올바른 정보를 입력하세요.' });
   }
 
   const queryRunner = AppDataSource.createQueryRunner();
@@ -85,7 +85,7 @@ return res.status(HttpStatusCode.BadRequest).json({ message: '올바른 정보�
       .where('option_id IN (:...optionIds)', { optionIds })
       .execute();
 
-if (fundingResult && optionResult.affected && optionResult.affected === optionIds.length) {
+    if (fundingResult && optionResult.affected && optionResult.affected === optionIds.length) {
       await queryRunner.commitTransaction();
       return res.status(HttpStatusCode.Created).json({ message: '프로젝트 생성이 완료되었습니다.' });
     } else {
@@ -138,8 +138,10 @@ export const getFundingDetail = async (req: Request, res: Response) => {
     .where('option.project_id = :projectId', { projectId: projectDetailId });
 
   try {
-    const projectQueryResult = await projectQuery.getRawOne();
-    const optionQueryResult = await optionQuery.getRawMany();
+    const [projectQueryResult, optionQueryResult] = await Promise.all([
+      projectQuery.getRawOne(),
+      optionQuery.getRawMany(),
+    ]);
 
     if (projectQueryResult && optionQueryResult) {
       const project = {
@@ -168,7 +170,7 @@ export const getFundingDetail = async (req: Request, res: Response) => {
 
       return res.status(HttpStatusCode.Ok).json({ project, users, options });
     } else {
-      throw new Error('프로젝트 상세 조회에 실패 (옵션 null 또는 잘못된 상품 ID');
+      return res.status(HttpStatusCode.NotFound).json({ message: '프로젝트 정보를 찾을 수 없습니다.' });
     }
   } catch (err) {
     console.log(err);
