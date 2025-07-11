@@ -3,10 +3,8 @@ import {
   getAllProjects,
   getDeadlineFundingList,
   getFundingListByCategoryId,
-  getMyFundingList,
   getNewFundingList,
   getPopularFundingList,
-  getFollowersRecentlyFinished,
   getRecentlyViewedFundingList,
 } from '../controller/MainController';
 
@@ -18,8 +16,5 @@ router.get('/deadline', getDeadlineFundingList);
 router.get('/new', getNewFundingList);
 router.get('/popular', getPopularFundingList);
 router.get('/:id', getFundingListByCategoryId);
-
-router.get('/my-projects', getMyFundingList);
-router.get('/recent-completed', getFollowersRecentlyFinished);
 
 export default router;

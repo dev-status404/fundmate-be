@@ -1,0 +1,19 @@
+{
+  "name": "@shared/types",
+  "root": "shared/types",
+  "sourceRoot": "shared/types/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "main": "shared/types/src/index.ts",
+        "tsConfig": "shared/types/tsconfig.lib.json",
+        "outputPath": "shared/types/dist",
+        "externalDependencies": []
+      }
+    }
+  },
+  "tags": ["scope:shared", "type:types"]
+}

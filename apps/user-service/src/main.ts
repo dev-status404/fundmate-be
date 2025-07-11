@@ -2,13 +2,16 @@ import express from 'express';
 import { AppDataSource } from './data-source';
 import userRouter from './routes/users';
 import dotenv from 'dotenv';
+import { serviceConfig, headerToLocals } from '@shared/config';
 dotenv.config();
 
-const host = process.env.HOST ?? 'localhost';
-const port = process.env.USER_SERVICE_PORT ? Number(process.env.USER_SERVICE_PORT) : 3000;
+const { port, host, url } = serviceConfig['user-service'];
 
 const app = express();
+
 app.use(express.json());
+app.use(headerToLocals);
+
 app.get('/', (req, res) => {
   res.send({ message: "Hello I'm user service" });
 });
@@ -23,7 +26,7 @@ AppDataSource.initialize()
   .then(() => {
     console.log('데이터 베이스 연결 성공'); // 추후 정리 코드
     app.listen(port, host, () => {
-      console.log(`[ ready ] http://${host}:${port}`);
+      console.log(`[ ready ] ${url}`);
     });
   })
   .catch((error) => {

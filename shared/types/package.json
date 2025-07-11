@@ -1,5 +1,5 @@
 {
-  "name": "@shared/entities",
+  "name": "@shared/types",
   "version": "0.0.1",
   "private": true,
   "main": "./src/index.js",
@@ -15,8 +15,6 @@
     }
   },
   "dependencies": {
-    "@shared/types": "^0.0.1",
-    "tslib": "^2.3.0",
-    "typeorm": "^0.3.25"
+    "tslib": "^2.3.0"
   }
 }
