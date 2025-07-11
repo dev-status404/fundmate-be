@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import axios from 'axios';
 import dotenv from 'dotenv';
-//dotenv.config();
+dotenv.config();
 // // .env.apikey 파일 로드 (openai_api_key 포함)
 dotenv.config({ path: '.env.apikey' });
 
 // // .env.development 파일 로드 (PEM_PATH, RDS_ENDPOINT, EC2_HOST 포함)
-dotenv.config({ path: __dirname + '/../../../../.env.development' });
+//dotenv.config({ path: __dirname + '/../../../../.env.development' });
 
 console.log('API KEY:', process.env.PEM_PATH);
 export const summarize = async (req: Request, res: Response) => {
