@@ -58,7 +58,7 @@ export const getMyFundingList = async (req: Request, res: Response) => {
     .createQueryBuilder('project')
     .select(['project.image_id', 'project.title', 'project.short_description', 'project.current_amount'])
     .addSelect('FLOOR((current_amount / goal_amount)*100) AS achievement')
-    .addSelect('DATEDIFF(project.end_date, NOW()) AS remaining_day')
+    .addSelect('GREATEST(DATEDIFF(project.end_date, NOW()), 0) AS remaining_day')
     .where('project.user_id = :userId', { userId: userId });
 
   try {
@@ -70,6 +70,7 @@ export const getMyFundingList = async (req: Request, res: Response) => {
 
     return res.status(StatusCodes.OK).json(queryResult);
   } catch (err) {
+    console.log(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '서버 문제가 발생했습니다.' });
   }
 };
@@ -84,7 +85,7 @@ export const getOthersFundingList = async (req: Request, res: Response) => {
     .createQueryBuilder('project')
     .select(['project.image_id', 'project.title', 'project.short_description', 'project.current_amount'])
     .addSelect('FLOOR((current_amount / goal_amount)*100) AS achievement')
-    .addSelect('DATEDIFF(project.end_date, NOW()) AS remaining_day')
+    .addSelect('GREATEST(DATEDIFF(project.end_date, NOW()), 0) AS remaining_day')
     .where('project.user_id = :userId', { userId: userId });
 
   try {
