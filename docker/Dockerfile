@@ -23,6 +23,7 @@ ENV HOST=$HOST
 ARG NODE_ENV
 ENV NODE_ENV=$NODE_ENV
 
+COPY --from=builder --chown=appuser:appgroup /app/.env ./.env
 COPY --from=builder --chown=appuser:appgroup /app/apps/${SERVICE}/dist ./dist
 COPY --from=builder --chown=appuser:appgroup /app/node_modules ./node_modules
 

@@ -1,11 +1,13 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import { serviceConfig, headerToLocals } from '@shared/config';
 dotenv.config();
 
-const host = process.env.HOST ?? 'localhost';
-const port = process.env.INTERACTION_SERVICE_PORT ? Number(process.env.INTERACTION_SERVICE_PORT) : 3000;
+const { port, host, url } = serviceConfig['interaction-service'];
 
 const app = express();
+app.use(headerToLocals);
+
 app.get('/', (req, res) => {
   res.send({ message: "Hello I'm interaction service" });
 });
@@ -16,5 +18,5 @@ app.get('/health', (_req, res) =>
 const likeRouter = require('./src/routes/likes');
 app.use('/users/likes', likeRouter);
 app.listen(port, host, () => {
-  console.log(`[ ready ] http://${host}:${port}`);
+  console.log(`[ ready ] ${url}`);
 });

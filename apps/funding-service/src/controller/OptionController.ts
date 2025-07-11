@@ -3,6 +3,8 @@ import { AppDataSource } from '../data-source';
 import { HttpStatusCode } from 'axios';
 import { OptionData } from '@shared/entities';
 import { requestBodyValidation } from '../modules/RequestBodyValidation';
+import { ensureAuthorization } from '../modules/ensureAuthorization';
+import { jwtErrorHandler } from '../modules/jwtErrorHandler';
 
 type OptionType = {
   title: string;
@@ -12,7 +14,11 @@ type OptionType = {
 
 // [WIP] 테스트 중인 API입니다.
 export const createOption = async (req: Request, res: Response) => {
-  // [todo] 로그인 확인용 로직 추가
+  const getToken = ensureAuthorization(req);
+
+  if (getToken instanceof Error) {
+    return jwtErrorHandler(getToken, res);
+  }
 
   const { title, description, price }: OptionType = req.body;
 
