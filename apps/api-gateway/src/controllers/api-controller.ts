@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import StatusCode from 'http-status-codes';
-import { serviceConfig, HTTPMethod, JwtRule } from '@shared/config';
+import { serviceConfig, HTTPMethod, JwtRule, serviceClients } from '@shared/config';
 import { jwtMiddleware } from '../middlewares/jwt-middleware';
 
 // 서버 결정 미들웨어
@@ -30,20 +30,18 @@ export function decideJwt(req: Request, res: Response, next: NextFunction) {
 // 라우터 미들웨어
 export async function forwardRequest(req: Request, res: Response, next: NextFunction) {
   try {
-    const headers = { ...req.headers };
+    const client = serviceClients[res.locals.service.name];
     if (res.locals.user) {
-      headers['authorization'] = `Bearer ${res.locals.user.token}`;
-      headers['x-user-id'] = String(res.locals.user.userId);
-      headers['x-user-email'] = String(res.locals.user.email);
+      client.setAuthContext(res.locals.user);
     }
-    const { status, data } = await res.locals.client.request(
-      req.method as HTTPMethod,
-      req.path.replace(res.locals.client.config.base[0], ''),
-      req.body,
-      req.query,
-      { headers, withCredentials: true }
-    );
-    res.status(status).send(data);
+    const response = await client.request(req.method as HTTPMethod, req.path, req.body, req.query);
+
+    const setCookie = response.headers['set-cookie'];
+    if (setCookie) {
+      res.setHeader('set-cookie', setCookie).status(response.status).json(response.data);
+    } else {
+      res.status(response.status).json(response.data);
+    }
   } catch (err) {
     next(err);
   }
