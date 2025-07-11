@@ -12,7 +12,6 @@ type OptionType = {
   price: number;
 };
 
-// [WIP] 테스트 중인 API입니다.
 export const createOption = async (req: Request, res: Response) => {
   const getToken = ensureAuthorization(req);
 
