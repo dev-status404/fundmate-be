@@ -3,6 +3,12 @@ import StatusCode from 'http-status-codes';
 import { serviceConfig, HTTPMethod, JwtRule, serviceClients } from '@shared/config';
 import { jwtMiddleware } from '../middlewares/jwt-middleware';
 
+function pathToRegExp(path: string): RegExp {
+  const escaped = path.replace(/([.+?^=!:${}()|[\]\\/])/g, '\\$1');
+  const replaced = escaped.replace(/\\:([^\\/]+)/g, '[^/]+');
+  return new RegExp(`^${replaced}(?:/.*)?$`);
+}
+
 // 서버 결정 미들웨어
 export function decideService(req: Request, res: Response, next: NextFunction) {
   const service = Object.values(serviceConfig).find((s) => s.base.some((base) => req.path.startsWith(base)));
@@ -16,13 +22,10 @@ export function decideService(req: Request, res: Response, next: NextFunction) {
 // 토큰 확인 여부결정 미들웨어
 export function decideJwt(req: Request, res: Response, next: NextFunction) {
   const rules = res.locals.service.jwtRules;
-  const rule = rules.find(
-    (r: JwtRule) => (r.method === 'ALL' || r.method === req.method) && req.path.startsWith(r.path)
-  ) ?? {
-    required: true,
-    path: '',
-    method: 'ALL',
-  };
+  const candidates = rules
+    .filter((r: JwtRule) => (r.method === 'ALL' || r.method === req.method) && pathToRegExp(r.path).test(req.path))
+    .sort((a: JwtRule, b: JwtRule) => b.path.length - a.path.length);
+  const rule = candidates[0] ?? { required: false, path: '', method: 'ALL' };
 
   return jwtMiddleware(rule.required)(req, res, next);
 }

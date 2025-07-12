@@ -5,11 +5,12 @@ import { StatusCodes } from 'http-status-codes';
 
 export function jwtMiddleware(required: boolean) {
   return (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies?.accessToken;
+    const accessToken = req.cookies?.accessToken;
+    const refreshToken = req.cookies?.refreshToken;
 
-    if (!token) {
+    if (!accessToken && !refreshToken) {
       if (required) {
-        return res.status(StatusCodes.NOT_FOUND).json({ message: '로그인이 필요합니다.' });
+        return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
       }
       return next();
     }
@@ -17,10 +18,10 @@ export function jwtMiddleware(required: boolean) {
     const result = ensureAuthorization(req);
     if (result instanceof Error) {
       if (required) return jwtErrorHandler(result, res);
-      else return next();
+      return next();
+    } else {
+      res.locals.user = { userId: result.userId, email: result.email, accessToken, refreshToken };
+      return next();
     }
-
-    res.locals.user = { userId: result.userId, email: result.email, token };
-    return next();
   };
 }
