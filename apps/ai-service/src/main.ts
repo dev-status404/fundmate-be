@@ -1,8 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-// import dotenv from 'dotenv';
-// dotenv.config();
-
 import AiChat from './routes/aichat.js';
 import { serviceConfig, headerToLocals } from '@shared/config';
 import dotenv from 'dotenv';
