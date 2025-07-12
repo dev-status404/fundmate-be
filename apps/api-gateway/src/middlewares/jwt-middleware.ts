@@ -10,7 +10,7 @@ export function jwtMiddleware(required: boolean) {
 
     if (!accessToken && !refreshToken) {
       if (required) {
-        return res.status(StatusCodes.NOT_FOUND).json({ message: '로그인이 필요합니다.' });
+        return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
       }
       return next();
     }
