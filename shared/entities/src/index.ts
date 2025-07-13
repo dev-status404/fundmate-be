@@ -19,3 +19,4 @@ export { Like, Comment };
 
 export const authEntities = [Age, Category, EmailVerification, Image, InterestCategory, Token, User];
 export const fundingEntities = [Project, OptionData, User, Image, Category, Like, Comment, ...authEntities];
+export const interactionEntities = [User, Project, Like, Age, Image, Category, OptionData, Comment];
