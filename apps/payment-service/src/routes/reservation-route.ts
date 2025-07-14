@@ -23,8 +23,7 @@ router.get('/count', async (req, res) => {
     const paymentHistoryRepo = AppDataSource.getRepository(PaymentHistory);
 
     const countBySchedule = await paymentScheduleRepo.count({ where: { userId } });
-    // TODO: status가 true인것만으로 조건 추가
-    const countByHistory = await paymentHistoryRepo.count({ where: { userId } });
+    const countByHistory = await paymentHistoryRepo.count({ where: { userId, status: 'success' } });
 
     return res
       .status(StatusCodes.OK)
