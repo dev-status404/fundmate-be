@@ -92,7 +92,7 @@ export const createFunding = async (req: Request, res: Response) => {
       throw new Error('프로젝트 생성에 실패했습니다.');
     }
   } catch (err) {
-    console.log(err);
+    console.error(err);
     await queryRunner.rollbackTransaction();
     return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
   } finally {
@@ -173,7 +173,7 @@ export const getFundingDetail = async (req: Request, res: Response) => {
       return res.status(HttpStatusCode.NotFound).json({ message: '프로젝트 정보를 찾을 수 없습니다.' });
     }
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
   }
 };
