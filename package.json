@@ -6,8 +6,10 @@
     "dev:all": "nx run-many -t serve --all",
     "build:all": "nx run-many -t build --all",
     "test:all": "nx run-many -t test --all",
-    "clean": "./scripts/clean_repo.sh",
-    "start:all": "node scripts/dev.mjs --service=all"
+    "start:all": "node scripts/dev.mjs --service=all",
+    "clean:sh": "cd scripts && bash clean_repo.sh",
+    "clean:ps1": "cd scripts && powershell -ExecutionPolicy Bypass -File clean_repo.ps1",
+    "clean": "node -e \"require('child_process').execSync(process.platform==='win32' ? 'npm run clean:ps1' : 'npm run clean:sh', {stdio:'inherit'});\" && npx nx show projects"
   },
   "private": true,
   "dependencies": {
@@ -19,12 +21,12 @@
     "express": "^4.21.2",
     "express-validator": "^7.2.1",
     "helmet": "^8.1.0",
+    "http-errors": "^2.0.0",
     "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.14.1",
     "nx": "^21.2.1",
     "pino": "^9.7.0",
-    "reflect-metadata": "^0.2.2",
     "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.25"
   },
@@ -56,6 +58,7 @@
     "node-notifier": "^10.0.1",
     "prettier": "^2.6.2",
     "reflect-metadata": "^0.2.2",
+    "rimraf": "^6.0.1",
     "ts-jest": "^29.1.0",
     "ts-node": "10.9.1",
     "tslib": "^2.3.0",
@@ -64,8 +67,6 @@
   },
   "workspaces": [
     "apps/*",
-    "apps",
-    "shared/type",
-    "shared/entities"
+    "shared/*"
   ]
 }

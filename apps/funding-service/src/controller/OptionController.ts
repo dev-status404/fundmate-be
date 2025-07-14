@@ -3,6 +3,8 @@ import { AppDataSource } from '../data-source';
 import { HttpStatusCode } from 'axios';
 import { OptionData } from '@shared/entities';
 import { requestBodyValidation } from '../modules/RequestBodyValidation';
+import { ensureAuthorization } from '../modules/ensureAuthorization';
+import { jwtErrorHandler } from '../modules/jwtErrorHandler';
 
 type OptionType = {
   title: string;
@@ -10,9 +12,12 @@ type OptionType = {
   price: number;
 };
 
-// [WIP] 테스트 중인 API입니다.
 export const createOption = async (req: Request, res: Response) => {
-  // [todo] 로그인 확인용 로직 추가
+  const getToken = ensureAuthorization(req);
+
+  if (getToken instanceof Error) {
+    return jwtErrorHandler(getToken, res);
+  }
 
   const { title, description, price }: OptionType = req.body;
 
@@ -40,7 +45,7 @@ export const createOption = async (req: Request, res: Response) => {
 
     return res.status(HttpStatusCode.Created).json({ option_id: optionId });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
   }
 };

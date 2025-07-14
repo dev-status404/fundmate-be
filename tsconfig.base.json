@@ -9,6 +9,8 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "noEmitOnError": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
@@ -20,7 +22,11 @@
     "baseUrl": ".",
     "paths": {
       "@shared/entities": ["dist/shared/entities/index"],
-      "@shared/entities/*": ["dist/shared/entities/*"]
+      "@shared/entities/*": ["dist/shared/entities/*"],
+      "@shared/config": ["dist/shared/config/index"],
+      "@shared/config/*": ["dist/shared/config/*"],
+      "@shared/types": ["dist/shared/types/index"],
+      "@shared/types/*": ["dist/shared/types/*"]
     }
   }
 }

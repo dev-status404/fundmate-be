@@ -15,6 +15,7 @@
     }
   },
   "dependencies": {
+    "@shared/types": "^0.0.1",
     "tslib": "^2.3.0",
     "typeorm": "^0.3.25"
   }

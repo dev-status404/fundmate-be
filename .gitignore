@@ -5,7 +5,10 @@ dist
 tmp
 out-tsc
 .env
-
+.env.development
+.env.production
+.env.test
+.env.apikey
 # dependencies
 node_modules
 
@@ -46,3 +49,5 @@ Thumbs.db
 
 test-output
 .env
+
+.env.apikey
