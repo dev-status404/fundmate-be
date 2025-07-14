@@ -13,7 +13,7 @@ export class User {
 
   @ManyToOne(() => Image, { nullable: true })
   @JoinColumn({ name: 'image_id' })
-  image?: Image;
+  image?: Image | null;
 
   @Column({ type: 'varchar', length: 45, default: 'FundiFriend' })
   nickname!: string;

@@ -1,4 +1,5 @@
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import { AppDataSource } from './data-source';
 import userRouter from './routes/users';
 import dotenv from 'dotenv';
@@ -20,6 +21,7 @@ app.get('/health', (_req, res) =>
   res.status(200).json({ status: 'ok', service: 'user-service', timestamp: new Date().toISOString() })
 );
 
+app.use(cookieParser());
 app.use('/users', userRouter);
 
 AppDataSource.initialize()
