@@ -86,7 +86,7 @@ export const getMyPage = async (req: Request, res: Response) => {
 
 export const getMyProfile = async (req: Request, res: Response) => {
   const userRepo = AppDataSource.getRepository(User);
-  const interestCategoryRepo = AppDataSource.getRepository('InterestCategory');
+  const interestCategoryRepo = AppDataSource.getRepository(InterestCategory);
   const { userId } = res.locals.user;
 
   try {
