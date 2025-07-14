@@ -66,16 +66,23 @@ export const getMyPage = async (req: Request, res: Response) => {
     const followerCount = await followRepo.count({ where: { followingId: userId } });
 
     const fundingClient = serviceClients['funding-service'];
+    fundingClient.setAuthContext({ userId });
     const fundingList = await fundingClient.get(`/api/projects/recent?project_id=${projectIds}`);
+
     const paymentClient = serviceClients['payment-service'];
+    paymentClient.setAuthContext({ userId });
     const paymentList = await paymentClient.get(`/api/reservation/count`);
+
+    const interactionClient = serviceClients['interaction-service'];
+    interactionClient.setAuthContext({ userId });
+    const interactionList = await interactionClient.get(`/interactionmain`);
 
     return res.status(StatusCode.OK).json({
       followingCount,
       followerCount,
       paymentCount: paymentList.data.count ?? 0,
-      // 찜 카운트
-      // 후기 카운트
+      likeCount: interactionList.data.likeCount ?? 0,
+      commentCount: interactionList.data.commentCount ?? 0,
       fundingGetList: fundingList.data,
     });
   } catch (err) {
@@ -188,22 +195,96 @@ export const UpdateMyProfile = async (req: Request, res: Response) => {
   }
 };
 
-export const getMySupportedProjects = (req: Request, res: Response) => {
-  return res.json('마이 페이지 후원한 프로젝트 조회');
+export const getMySupportedProjects = async (req: Request, res: Response) => {
+  const { userId } = res.locals.user;
+
+  try {
+    const paymentClient = serviceClients['payment-service'];
+    paymentClient.setAuthContext({ userId });
+    const paymentList = await paymentClient.get(`/api/reservation`);
+
+    return res.status(StatusCode.OK).json({
+      paymentGetList: paymentList.data,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: '마이 페이지 후원한 프로젝트 조회 실패' });
+  }
 };
 
-export const getMyComments = (req: Request, res: Response) => {
-  return res.json('마이 페이지 내 후기 조회');
+export const getMyComments = async (req: Request, res: Response) => {
+  const { userId } = res.locals.user;
+
+  try {
+    const fundingClient = serviceClients['funding-service'];
+    fundingClient.setAuthContext({ userId });
+    const fundingList = await fundingClient.get(`/profiles/my-comments`);
+
+    return res.status(StatusCode.OK).json({
+      commentsList: fundingList.data,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: '마이 페이지 후기 내역 조회 실패' });
+  }
 };
 
-export const getMyCreatedProjects = (req: Request, res: Response) => {
-  return res.json('마이 페이지 내 펀딩 프로젝트 목록 조회');
+export const getMyCreatedProjects = async (req: Request, res: Response) => {
+  const { userId } = res.locals.user;
+
+  try {
+    const fundingClient = serviceClients['funding-service'];
+    fundingClient.setAuthContext({ userId });
+    const completedFundingList = await fundingClient.get(`/profiles/recent-completed`);
+    const fundingList = await fundingClient.get(`/profiles/my-projects`);
+
+    return res.status(StatusCode.OK).json({
+      completedFunding: completedFundingList.data,
+      fundingList: fundingList.data,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: '마이 페이지 펀딩 내역 조회 실패' });
+  }
 };
 
-export const getMyProjectStatistics = (req: Request, res: Response) => {
-  return res.json('마이 페이지 통계 조회');
+export const getMyProjectStatistics = async (req: Request, res: Response) => {
+  const { userId } = res.locals.user;
+  const makerId = userId;
+  const startDate = req.query.start;
+  const endDate = req.query.end;
+
+  try {
+    const fundingClient = serviceClients['funding-service'];
+    const fundingList = await fundingClient.get(`/profiles/${makerId}`);
+
+    const paymentClient = serviceClients['payment-service'];
+    paymentClient.setAuthContext({ userId });
+    const paymentList = await paymentClient.get(`/api/statistics?start=${startDate}&end=${endDate}`);
+
+    return res.status(StatusCode.OK).json({
+      fundingCount: fundingList.data.length,
+      statistic: paymentList.data,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: '마이 페이지 통계 관리 조회 실패' });
+  }
 };
 
-export const getMyProjectPayments = (req: Request, res: Response) => {
-  return res.json('마이 페이지 내 결제 조회');
+export const getMyProjectPayments = async (req: Request, res: Response) => {
+  const { userId } = res.locals.user;
+
+  try {
+    const paymentClient = serviceClients['payment-service'];
+    paymentClient.setAuthContext({ userId });
+    const paymentList = await paymentClient.get(`/api/reservation/history`);
+
+    return res.status(StatusCode.OK).json({
+      paymentList: paymentList.data,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: '마이 페이지 결제 관리 조회 실패' });
+  }
 };
