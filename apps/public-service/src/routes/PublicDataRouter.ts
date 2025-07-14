@@ -3,7 +3,7 @@ import { getDataByKeyword, getDataByOption } from '../controller/PublicDataContr
 
 const router = express.Router();
 
-router.get('/option', getDataByOption);
-router.get('/keyword', getDataByKeyword);
+router.post('/option', getDataByOption);
+router.post('/keyword', getDataByKeyword);
 
 export default router;

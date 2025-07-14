@@ -58,7 +58,7 @@ export const getAllProjects = async (req: Request, res: Response) => {
 
     return res.status(HttpStatusCode.Ok).json(result);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
   }
 };
@@ -115,7 +115,7 @@ export const getRecentlyViewedFundingList = async (req: Request, res: Response) 
 
     return res.status(HttpStatusCode.Ok).json(result);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
   }
 };
@@ -150,7 +150,7 @@ export const getDeadlineFundingList = async (req: Request, res: Response) => {
 
     return res.status(HttpStatusCode.Ok).json(queryResult);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
   }
 };
@@ -186,7 +186,7 @@ export const getNewFundingList = async (req: Request, res: Response) => {
 
     return res.status(HttpStatusCode.Ok).json(queryResult);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
   }
 };
@@ -231,7 +231,7 @@ export const getFundingListByCategoryId = async (req: Request, res: Response) =>
 
     return res.status(HttpStatusCode.Ok).json(queryResult);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
   }
 };

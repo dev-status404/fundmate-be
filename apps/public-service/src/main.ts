@@ -8,6 +8,7 @@ const { port, host, url } = serviceConfig['public-service'];
 
 const app = express();
 app.use(headerToLocals);
+app.use(express.json());
 
 app.use('/datas', PublicDataRouter);
 
