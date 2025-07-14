@@ -22,12 +22,12 @@ export const interactMain = async (req: Request, res: Response): Promise<Respons
     const likeRepo = AppDataSource.getRepository(Like);
     const commentRepo = AppDataSource.getRepository(Comment);
 
-    const [like_Count, comment_Count] = await Promise.all([
+    const [likeCount, commentCount] = await Promise.all([
       likeRepo.count({ where: { userId: authorization.userId } }),
       commentRepo.count({ where: { userId: Equal(authorization.userId) } }),
     ]);
 
-    return res.status(StatusCodes.OK).json({ like_Count, comment_Count });
+    return res.status(StatusCodes.OK).json({ likeCount, commentCount });
   } catch (err) {
     console.error(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '정보 조회 실패' });
