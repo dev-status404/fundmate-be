@@ -8,9 +8,12 @@ router.get('/request-other-service', async (req, res) => {
   // ex. 원하는 서버에 Path를 추가하여 원하는 정보 꺼내기
   // 2. 현재 서버가 받은 userId, email, token등등을 통신하기전에 보내줘야합니다!
   //    근데 꼭 보내줘야 하는건 아니고, 사용하고자 하는 엔드포인트에 필요하다면 보내주면 됩니다.
-  const { userId, email, token } = res.locals.user || {};
+  const { userId, email } = res.locals.user || {};
+  const accessToken = req.header('x-access-token') || '';
+  const refreshToken = req.header('x-refresh-token') || '';
+
   const fundingClient = serviceClients['funding-service'];
-  fundingClient.setAuthContext({ userId, email, token });
+  fundingClient.setAuthContext({ userId, email, accessToken, refreshToken });
 
   // 3. 이렇게 셋팅한 후 원하는 서버정보를 요청(get), 삽입(post,put), 편집(PATCH), 삭제(DELETE)등을 할 수 있습니다.
   const response = await fundingClient.get('/projects/:id');

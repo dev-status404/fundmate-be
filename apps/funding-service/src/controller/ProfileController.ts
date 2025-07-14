@@ -114,7 +114,7 @@ export const getFundingComments = async (req: Request, res: Response) => {
   const ProjectRepo = AppDataSource.getRepository(Project);
 
   const query = ProjectRepo.createQueryBuilder('project')
-    .innerJoin('project.comment', 'comment')
+    .innerJoin('project.comments', 'comment')
     .select(['project.image_id AS image_id', 'project.title AS title', 'comment.content AS content'])
     .where('comment.user_id = :userId', { userId: userId });
 
