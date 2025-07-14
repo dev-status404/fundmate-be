@@ -1,7 +1,7 @@
-import express, { Request, Response, Router } from 'express';
+import express from 'express';
 import { addComment, removeComment, commentList } from '../controller/CommentController';
 
-const router: Router = express.Router();
+const router = express.Router();
 
 // JSON body 파싱
 router.use(express.json());
