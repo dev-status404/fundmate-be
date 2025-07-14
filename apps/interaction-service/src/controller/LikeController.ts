@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken';
+//import { TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken';
 import { AppDataSource } from '../data-source';
-import { ensureAuthorization } from '../modules/ensureAuthorization';
+//import { ensureAuthorization } from '../modules/ensureAuthorization';
 import { Like } from '@shared/entities';
 //import { Project } from '@shared/entities';
 //import { User } from '@shared/entities';
@@ -10,23 +10,13 @@ import { Like } from '@shared/entities';
 // 좋아요 추가
 export const addLike = async (req: Request, res: Response): Promise<Response | void> => {
   const projectId = parseInt(req.params.id, 10);
-  const authorization = ensureAuthorization(req);
 
-  if (authorization instanceof Error) {
-    if (authorization instanceof TokenExpiredError) {
-      return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인 세션이 만료되었습니다. 다시 로그인하세요.' });
-    } else if (authorization instanceof JsonWebTokenError) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: '잘못된 토큰입니다.' });
-    } else {
-      return res.status(StatusCodes.UNAUTHORIZED).json({ message: '인증되지 않은 사용자입니다.' });
-    }
-  }
-
+  const { userId } = res.locals.user;
   try {
     const likeRepo = AppDataSource.getRepository(Like);
 
     const newLike = likeRepo.create({
-      userId: authorization.userId,
+      userId: userId,
       projectId: projectId,
     });
 
@@ -41,23 +31,13 @@ export const addLike = async (req: Request, res: Response): Promise<Response | v
 // 좋아요 제거
 export const removeLike = async (req: Request, res: Response): Promise<Response | void> => {
   const projectId = parseInt(req.params.id, 10);
-  const authorization = ensureAuthorization(req);
 
-  if (authorization instanceof Error) {
-    if (authorization instanceof TokenExpiredError) {
-      return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인 세션이 만료되었습니다. 다시 로그인하세요.' });
-    } else if (authorization instanceof JsonWebTokenError) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: '잘못된 토큰입니다.' });
-    } else {
-      return res.status(StatusCodes.UNAUTHORIZED).json({ message: '인증되지 않은 사용자입니다.' });
-    }
-  }
-
+  const { userId } = res.locals.user;
   try {
     const likeRepo = AppDataSource.getRepository(Like);
 
     await likeRepo.delete({
-      userId: authorization.userId,
+      userId: userId,
       projectId: projectId,
     });
 
@@ -69,22 +49,12 @@ export const removeLike = async (req: Request, res: Response): Promise<Response 
 };
 
 export const myLikeList = async (req: Request, res: Response): Promise<Response | void> => {
-  const authorization = ensureAuthorization(req);
-
-  if (authorization instanceof Error) {
-    if (authorization instanceof TokenExpiredError) {
-      return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인 세션이 만료되었습니다. 다시 로그인하세요.' });
-    } else if (authorization instanceof JsonWebTokenError) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: '잘못된 토큰입니다.' });
-    } else {
-      return res.status(StatusCodes.UNAUTHORIZED).json({ message: '인증되지 않은 사용자입니다.' });
-    }
-  }
+  const { userId } = res.locals.user;
 
   try {
     const likeRepo = AppDataSource.getRepository(Like);
     const likes = await likeRepo.find({
-      where: { userId: authorization.userId },
+      where: { userId: userId },
       relations: ['project'],
     });
 
