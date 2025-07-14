@@ -2,10 +2,10 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { HTTPMethod, ServiceConfig } from '@shared/config';
 
 interface authContextType {
-  refreshToken: string;
-  accessToken: string;
-  userId: number;
-  email: string;
+  refreshToken?: string;
+  accessToken?: string;
+  userId?: number;
+  email?: string;
 }
 
 export class ServiceClient {

@@ -10,7 +10,7 @@
     "test:auth": "cd ../.. && nx test auth-service",
     "clean:sh": "cd ../../scripts && bash clean_repo.sh",
     "clean:ps1": "cd ../../scripts && powershell -ExecutionPolicy Bypass -File clean_repo.ps1",
-    "clean": "node -e \"require('child_process').execSync(process.platform==='win32' ? 'npm run clean:ps1' : 'npm run clean:sh', {stdio:'inherit'});\""
+    "clean": "node -e \"require('child_process').execSync(process.platform==='win32' ? 'npm run clean:ps1' : 'npm run clean:sh', {stdio:'inherit'});\" && npx nx show projects"
   },
   "dependencies": {
     "nodemailer": "^7.0.3"
