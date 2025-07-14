@@ -17,4 +17,5 @@ export const AppDataSource = new DataSource({
   synchronize: false,
   logging: true,
   timezone: '+09:00',
+  charset: 'utf8mb4',
 });
