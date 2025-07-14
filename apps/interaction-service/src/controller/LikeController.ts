@@ -91,7 +91,7 @@ export const myLikeList = async (req: Request, res: Response): Promise<Response 
     const response = likes.map((like) => ({
       project_id: like.projectId,
       title: like.project.title,
-      img_id: like.project.image,
+      img_id: like.project.image?.imageId,
       current_amount: like.project.currentAmount,
       goal_amount: like.project.goalAmount,
       description: like.project.description,
