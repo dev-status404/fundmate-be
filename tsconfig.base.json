@@ -9,6 +9,8 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "noEmitOnError": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
