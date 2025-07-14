@@ -20,7 +20,7 @@ router.get('/count', async (req, res) => {
     return res
       .status(StatusCodes.OK)
       .json({ count: countBySchedule + countByHistory, countBySchedule, countByHistory });
-  } catch (err: any) {
+  } catch (err) {
     console.log(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '펀딩 갯수 조회 실패' });
   }
@@ -29,12 +29,13 @@ router.get('/count', async (req, res) => {
 // 펀딩 결제 및 예약 내역 전체 조회
 router.get('/', async (req, res) => {
   const { userId } = res.locals.user;
+  if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
   try {
     const paymentScheduleRepo = AppDataSource.getRepository(PaymentSchedule);
     const findBySchedule = await paymentScheduleRepo.findBy({ userId });
     if (findBySchedule.length === 0) throw createError(StatusCodes.NOT_FOUND, '예약된 정보가 없습니다.');
     return res.status(StatusCodes.OK).json(findBySchedule);
-  } catch (err: any) {
+  } catch (err) {
     console.log(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '전체 펀딩 조회 실패' });
   }
@@ -43,31 +44,84 @@ router.get('/', async (req, res) => {
 // 펀딩 결제 및 예약 내역 상세 조회
 router.get('/:id', (req, res) => {
   const { userId } = res.locals.user;
+  if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
   const reservationId = +req.params.id;
   try {
     const paymentScheduleRepo = AppDataSource.getRepository(PaymentSchedule);
     const findBySchedule = paymentScheduleRepo.findOneBy({ id: reservationId, userId });
     if (!findBySchedule) throw createError(StatusCodes.NOT_FOUND, '예약된 정보가 없습니다.');
     return res.status(StatusCodes.OK).json(findBySchedule);
-  } catch (err: any) {
+  } catch (err) {
     console.log(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '펀딩 조회 실패' });
   }
 });
 
 // 펀딩 결제 및 예약 등록
-router.post('/', (req, res) => {
-  return res.status(StatusCodes.OK).json({ message: '펀딩 결제 및 예약 등록' });
+router.post('/', async (req, res) => {
+  const { userId } = res.locals.user;
+  if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
+  const { paymentInfoId, rewardId, projectId, amount, totalAmount, scheduleDate, address, addressNumber, addressInfo } =
+    req.body;
+  if (!paymentInfoId || !projectId || !amount || !totalAmount || !scheduleDate) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: '펀딩 등록 정보가 누락 되었습니다.' });
+  }
+  try {
+    const scheduleRepo = AppDataSource.getRepository(PaymentSchedule);
+    const newSchedule = scheduleRepo.create({
+      userId,
+      rewardId,
+      paymentInfoId,
+      projectId,
+      amount,
+      totalAmount,
+      scheduleDate,
+      address,
+      addressNumber,
+      addressInfo,
+    });
+    const savedSchedule = await scheduleRepo.save(newSchedule);
+    return res.status(StatusCodes.CREATED).json(savedSchedule);
+  } catch (err) {
+    console.error(err);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '펀딩 등록 실패' });
+  }
 });
 
 // 펀딩 결제 및 예약 정보 수정
-router.patch('/:id', (req, res) => {
-  return res.status(StatusCodes.OK).json({ message: '펀딩 결제 및 예약 정보 수정' });
+router.patch('/:id', async (req, res) => {
+  const { userId } = res.locals.user;
+  if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
+  const reservationId = +req.params.id;
+  // TODO: 이부분 어떤 정보 들어오는지 물어봐야겠다
+  const updates = req.body;
+  try {
+    const scheduleRepo = AppDataSource.getRepository(PaymentSchedule);
+    const schedule = await scheduleRepo.findOneBy({ id: reservationId, userId });
+    if (!schedule) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: '예약된 정보가 없습니다.' });
+    }
+    const now = new Date();
+    const payDate = schedule.scheduleDate;
+    const isOneDayAgo = payDate.getTime() - now.getTime();
+    const oneDayMs = 24 * 60 * 60 * 1000;
+    if (isOneDayAgo <= oneDayMs) {
+      return res
+        .status(StatusCodes.FORBIDDEN)
+        .json({ message: '결제 예정일 하루 전에는 결제 정보를 수정할 수 없습니다.' });
+    }
+    await scheduleRepo.update(reservationId, updates);
+    return res.status(StatusCodes.OK).json({ message: '펀딩 정보가 정상적으로 수정되었습니다.' });
+  } catch (err) {
+    console.error(err);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '펀딩 수정 실패' });
+  }
 });
 
 // 결제 정보 수정
 router.patch('/:id/payment_methods', async (req, res) => {
   const { userId } = res.locals.user;
+  if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
   const reservationId = +req.params.id;
   const { method, bank, token, masked, extra } = req.body;
   if (!method || !bank || !token || !masked || !extra) {
@@ -105,8 +159,29 @@ router.patch('/:id/payment_methods', async (req, res) => {
 });
 
 // 펀딩 결제 예약 취소
-router.delete('/:id', (req, res) => {
-  return res.status(StatusCodes.OK).json({ message: '펀딩 결제 예약 취소' });
+router.delete('/:id', async (req, res) => {
+  const { userId } = res.locals.user;
+  if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
+  const reservationId = +req.params.id;
+  try {
+    await AppDataSource.transaction(async (manager) => {
+      const schedule = await manager.findOneBy(PaymentSchedule, { id: reservationId, userId });
+      if (!schedule) throw createError(404, '예약된 정보가 없습니다.');
+      const { id, ...restForHistory } = schedule;
+      const history = manager.create(PaymentHistory, {
+        ...restForHistory,
+        scheduleId: id,
+        status: 'cancel',
+      });
+      await manager.save(history);
+      await manager.remove(schedule);
+    });
+    return res.status(StatusCodes.OK).json({ message: '예약이 취소되었습니다.' });
+  } catch (err: any) {
+    console.error(err);
+    const status = err.status || StatusCodes.INTERNAL_SERVER_ERROR;
+    return res.status(status).json({ message: '예약 취소 실패' });
+  }
 });
 
 export default router;

@@ -21,8 +21,23 @@ export class PaymentHistory {
   @Column({ name: 'project_id', type: 'int' })
   projectId!: number;
 
-  @Column({ type: 'decimal', precision: 12, scale: 2 })
+  @Column({ name: 'amount', type: 'int' })
   amount!: number;
+
+  @Column({ name: 'donate_amount', type: 'int', nullable: true })
+  donateAmount?: number;
+
+  @Column({ name: 'total_amount', type: 'int' })
+  totalAmount!: number;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  address?: string;
+
+  @Column({ name: 'address_number', type: 'int', nullable: true })
+  addressNumber?: number;
+
+  @Column({ name: 'address_info', type: 'varchar', length: 255, nullable: true })
+  addressInfo?: string;
 
   @Column({ name: 'executed_at', type: 'datetime', nullable: true })
   executedAt?: Date;
@@ -88,8 +103,11 @@ export class PaymentSchedule {
   @Column({ name: 'project_id', type: 'int' })
   projectId!: number;
 
-  @Column({ name: 'extra_amount', type: 'int', nullable: true })
-  extraAmount?: number;
+  @Column({ name: 'amount', type: 'int' })
+  amount!: number;
+
+  @Column({ name: 'donate_amount', type: 'int', nullable: true })
+  donateAmount?: number;
 
   @Column({ name: 'total_amount', type: 'int' })
   totalAmount!: number;
