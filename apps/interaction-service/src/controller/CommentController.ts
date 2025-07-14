@@ -94,7 +94,7 @@ export const commentList = async (req: Request, res: Response): Promise<Response
       commentId: c.commentId,
       userId: c.userId.userId,
       nickname: c.userId.nickname,
-      imgId: c.userId.image,
+      imgId: c.userId.image?.imageId,
       content: c.content,
       createdAt: c.createdAt,
     }));
