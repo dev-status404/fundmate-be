@@ -1,31 +1,22 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken';
+//import { TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken';
 import { AppDataSource } from '../data-source';
-import { ensureAuthorization } from '../modules/ensureAuthorization';
+//import { ensureAuthorization } from '../modules/ensureAuthorization';
 import { Comment, User, Project } from '@shared/entities';
 
 export const addComment = async (req: Request, res: Response): Promise<Response | void> => {
   const projectId = Number(req.params.id);
   const { contents } = req.body;
 
-  const authorization = ensureAuthorization(req);
-  if (authorization instanceof Error) {
-    if (authorization instanceof TokenExpiredError) {
-      return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인 세션이 만료되었습니다. 다시 로그인하세요.' });
-    } else if (authorization instanceof JsonWebTokenError) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: '잘못된 토큰입니다.' });
-    } else {
-      return res.status(StatusCodes.UNAUTHORIZED).json({ message: '인증되지 않은 사용자입니다.' });
-    }
-  }
+  const { userId } = res.locals.user;
 
   try {
     const userRepo = AppDataSource.getRepository(User);
     const projectRepo = AppDataSource.getRepository(Project);
     const commentRepo = AppDataSource.getRepository(Comment);
 
-    const user = await userRepo.findOneBy({ userId: authorization.userId });
+    const user = await userRepo.findOneBy({ userId: userId });
     const project = await projectRepo.findOneBy({ projectId: projectId });
 
     if (!user || !project) {
@@ -48,17 +39,7 @@ export const addComment = async (req: Request, res: Response): Promise<Response 
 
 export const removeComment = async (req: Request, res: Response): Promise<Response | void> => {
   const commentId = Number(req.params.id);
-  const authorization = ensureAuthorization(req);
-
-  if (authorization instanceof Error) {
-    if (authorization instanceof TokenExpiredError) {
-      return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인 세션이 만료되었습니다. 다시 로그인하세요.' });
-    } else if (authorization instanceof JsonWebTokenError) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: '잘못된 토큰입니다.' });
-    } else {
-      return res.status(StatusCodes.UNAUTHORIZED).json({ message: '인증되지 않은 사용자입니다.' });
-    }
-  }
+  const { userId } = res.locals.user;
 
   try {
     const commentRepo = AppDataSource.getRepository(Comment);
@@ -67,7 +48,7 @@ export const removeComment = async (req: Request, res: Response): Promise<Respon
       relations: ['userId'],
     });
 
-    if (!comment || comment.userId.userId !== authorization.userId) {
+    if (!comment || comment.userId.userId !== userId) {
       return res.status(StatusCodes.FORBIDDEN).json({ message: '댓글 삭제 권한이 없습니다.' });
     }
 

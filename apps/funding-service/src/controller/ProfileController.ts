@@ -1,19 +1,12 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { Project } from '@shared/entities';
-import { ensureAuthorization } from '../modules/ensureAuthorization';
-import { jwtErrorHandler } from '../modules/jwtErrorHandler';
 import { HttpStatusCode } from 'axios';
 import { StatusCodes } from 'http-status-codes';
 
 // 마이페이지 - 최근 완료된 펀딩
 export const getMyFundingRecentlyFinished = async (req: Request, res: Response) => {
-  const getUser = ensureAuthorization(req);
-  if (getUser instanceof Error) {
-    return jwtErrorHandler(getUser, res);
-  }
-
-  const userId = getUser.userId;
+  const { userId } = res.locals.user;
 
   const projectRepo = AppDataSource.getRepository(Project);
 
@@ -45,12 +38,7 @@ export const getMyFundingRecentlyFinished = async (req: Request, res: Response) 
 
 // 마이페이지 - 내가 올린 펀딩 목록
 export const getMyFundingList = async (req: Request, res: Response) => {
-  const getUser = ensureAuthorization(req);
-  if (getUser instanceof Error) {
-    return jwtErrorHandler(getUser, res);
-  }
-
-  const userId = getUser.userId;
+  const { userId } = res.locals.user;
 
   const projectRepo = AppDataSource.getRepository(Project);
 
@@ -104,12 +92,7 @@ export const getOthersFundingList = async (req: Request, res: Response) => {
 
 // 펀딩 후기
 export const getFundingComments = async (req: Request, res: Response) => {
-  const getUser = ensureAuthorization(req);
-  if (getUser instanceof Error) {
-    return jwtErrorHandler(getUser, res);
-  }
-
-  const userId = getUser.userId;
+  const { userId } = res.locals.user;
 
   const ProjectRepo = AppDataSource.getRepository(Project);
 

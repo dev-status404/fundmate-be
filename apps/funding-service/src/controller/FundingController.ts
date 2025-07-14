@@ -3,18 +3,10 @@ import { AppDataSource } from '../data-source';
 import { Project, OptionData } from '@shared/entities';
 import { HttpStatusCode } from 'axios';
 import { requestBodyValidation } from '../modules/RequestBodyValidation';
-import { ensureAuthorization } from '../modules/ensureAuthorization';
-import { jwtErrorHandler } from '../modules/jwtErrorHandler';
 
 // 프로젝트 생성
 export const createFunding = async (req: Request, res: Response) => {
-  const getToken = ensureAuthorization(req);
-
-  if (getToken instanceof Error) {
-    return jwtErrorHandler(getToken, res);
-  }
-
-  const user = getToken.userId;
+  const { userId } = res.locals.user;
 
   const {
     image_id: imageId,
@@ -33,7 +25,7 @@ export const createFunding = async (req: Request, res: Response) => {
 
   const values = [
     imageId,
-    user,
+    userId,
     category,
     title,
     goalAmount,
@@ -61,7 +53,7 @@ export const createFunding = async (req: Request, res: Response) => {
   try {
     const newFunding = fundingRepo.create({
       image: { imageId },
-      user: { userId: user },
+      user: { userId: userId },
       category: { categoryId: category },
       goalAmount,
       currentAmount: 0,
