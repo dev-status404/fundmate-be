@@ -13,7 +13,7 @@ type ProjectType = {
   remainingDay: number;
 };
 
-// [todo] popular, getMyFunding, getFollowersRecentlyFinished 개발하기
+// [todo] popular 개발하기
 // [todo] 중복 코드 모듈화
 
 // 전체 프로젝트 조회 (메인 화면)
@@ -193,6 +193,18 @@ export const getNewFundingList = async (req: Request, res: Response) => {
 
 // 인기 프로젝트 목록
 export const getPopularFundingList = async (req: Request, res: Response) => {
+  // const projectRepo = AppDataSource.getRepository(Project);
+  // const result = projectRepo
+  //   .createQueryBuilder('project')
+  //   .select([
+  //     'project.image_id AS image_id',
+  //     'project.title AS title',
+  //     'project.shortDescription AS short_description',
+
+  //     'project.currentAmount AS current_amount',
+  //     'DATEDIFF(project.end_date, NOW()) AS remaining_day',
+  //   ]);
+
   res.send('get Popular Funding List');
 };
 
