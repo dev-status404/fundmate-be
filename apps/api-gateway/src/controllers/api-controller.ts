@@ -13,10 +13,10 @@ function pathToRegExp(path: string): RegExp {
 export function decideService(req: Request, res: Response, next: NextFunction) {
   const service = Object.values(serviceConfig).find((s) => s.base.some((base) => req.path.startsWith(base)));
   if (!service) {
-    res.status(StatusCode.NOT_FOUND).json({ message: 'Service not found' });
+    return res.status(StatusCode.NOT_FOUND).json({ message: 'Service not found' });
   }
   res.locals.service = service;
-  next();
+  return next();
 }
 
 // 토큰 확인 여부결정 미들웨어
