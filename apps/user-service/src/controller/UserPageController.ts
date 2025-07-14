@@ -1,9 +1,7 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import StatusCode from 'http-status-codes';
-import dotenv from 'dotenv';
 import { Follow, User } from '@shared/entities';
-dotenv.config();
 
 export const getMakerProfile = async (req: Request, res: Response) => {
   const makerId = Number(req.params.user_id);

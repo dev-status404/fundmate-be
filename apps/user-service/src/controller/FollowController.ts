@@ -3,19 +3,12 @@ import { AppDataSource } from '../data-source';
 import { User } from '@shared/entities';
 import { Follow } from '@shared/entities';
 import StatusCode from 'http-status-codes';
-import { ensureAuthorization } from '../middleware/ensureAuthorization';
-import { jwtErrorHandler } from '../middleware/jwtErrorHandler';
 
 export const addFollow = async (req: Request, res: Response) => {
   const userRepo = AppDataSource.getRepository(User);
   const followRepo = AppDataSource.getRepository(Follow);
-  const authorization = ensureAuthorization(req);
 
-  if (authorization instanceof Error) {
-    return jwtErrorHandler(authorization, res);
-  }
-
-  const followerId = authorization.userId;
+  const followerId = res.locals.user.userId;
   const followingId = req.body.following_id;
 
   if (!followingId) {
@@ -54,13 +47,8 @@ export const addFollow = async (req: Request, res: Response) => {
 export const deleteFollow = async (req: Request, res: Response) => {
   const userRepo = AppDataSource.getRepository(User);
   const followRepo = AppDataSource.getRepository(Follow);
-  const authorization = ensureAuthorization(req);
 
-  if (authorization instanceof Error) {
-    return jwtErrorHandler(authorization, res);
-  }
-
-  const followerId = authorization.userId;
+  const followerId = res.locals.user.userId;
   const followingId = req.body.following_id;
 
   if (!followingId) {
@@ -93,13 +81,8 @@ export const deleteFollow = async (req: Request, res: Response) => {
 
 export const getMyFollowing = async (req: Request, res: Response) => {
   const followRepo = AppDataSource.getRepository(Follow);
-  const authorization = ensureAuthorization(req);
 
-  if (authorization instanceof Error) {
-    return jwtErrorHandler(authorization, res);
-  }
-
-  const followerId = authorization.userId;
+  const followerId = res.locals.user.userId;
 
   try {
     const followingCount = await followRepo.count({
@@ -131,13 +114,8 @@ export const getMyFollowing = async (req: Request, res: Response) => {
 
 export const getMyFollower = async (req: Request, res: Response) => {
   const followRepo = AppDataSource.getRepository(Follow);
-  const authorization = ensureAuthorization(req);
 
-  if (authorization instanceof Error) {
-    return jwtErrorHandler(authorization, res);
-  }
-
-  const followingId = authorization.userId;
+  const followingId = res.locals.user.userId;
 
   try {
     const followerCount = await followRepo.count({

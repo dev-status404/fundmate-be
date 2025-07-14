@@ -9,8 +9,6 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 import StatusCode from 'http-status-codes';
-import { ensureAuthorization } from '../middleware/ensureAuthorization';
-import { jwtErrorHandler } from '../middleware/jwtErrorHandler';
 dotenv.config();
 
 export const sendVerificationCode = async (req: Request, res: Response) => {
@@ -212,7 +210,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const refreshAccessToken = async (req: Request, res: Response) => {
   const tokenRepo = AppDataSource.getRepository(Token);
-  const refreshToken = req.cookies.refreshToken;
+  const refreshToken = req.header('x-refresh-token');
 
   if (!refreshToken) {
     return res.status(StatusCode.UNAUTHORIZED).json({ message: '리프레시 토큰 필요' });
@@ -295,13 +293,8 @@ export const resetPassword = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
   const tokenRepo = AppDataSource.getRepository(Token);
-  const authorization = ensureAuthorization(req);
-
-  if (authorization instanceof Error) {
-    return jwtErrorHandler(authorization, res);
-  }
-
-  const refreshToken = req.cookies.refreshToken;
+  const { userId } = res.locals.user;
+  const refreshToken = req.header('x-refresh-token');
 
   if (!refreshToken) {
     return res.status(StatusCode.UNAUTHORIZED).json({ message: '리프레시 토큰 필요' });
@@ -310,7 +303,7 @@ export const logout = async (req: Request, res: Response) => {
   try {
     const tokenRecord = await tokenRepo.findOne({
       where: {
-        user: { userId: authorization.userId },
+        user: { userId: userId },
         refreshToken,
         revoke: false,
       },

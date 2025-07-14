@@ -3,19 +3,13 @@ import { AppDataSource } from '../data-source';
 import { Age, Category, Follow, Image, InterestCategory, User } from '@shared/entities';
 import { Token } from '@shared/entities';
 import StatusCode from 'http-status-codes';
-import { ensureAuthorization } from '../middleware/ensureAuthorization';
-import { jwtErrorHandler } from '../middleware/jwtErrorHandler';
 
 export const deleteUser = async (req: Request, res: Response) => {
   const userRepo = AppDataSource.getRepository(User);
   const tokenRepo = AppDataSource.getRepository(Token);
-  const authorization = ensureAuthorization(req);
 
-  if (authorization instanceof Error) {
-    return jwtErrorHandler(authorization, res);
-  }
-
-  const refreshToken = req.cookies.refreshToken;
+  const { userId } = res.locals.user;
+  const refreshToken = req.header('x-refresh-token');
 
   if (!refreshToken) {
     return res.status(StatusCode.UNAUTHORIZED).json({ message: '리프레시 토큰 필요' });
@@ -24,7 +18,7 @@ export const deleteUser = async (req: Request, res: Response) => {
   try {
     const tokenRecord = await tokenRepo.findOne({
       where: {
-        user: { userId: authorization.userId },
+        user: { userId: userId },
         refreshToken,
         revoke: false,
       },
@@ -36,7 +30,7 @@ export const deleteUser = async (req: Request, res: Response) => {
       await tokenRepo.save(tokenRecord);
     }
 
-    await userRepo.delete({ userId: authorization.userId });
+    await userRepo.delete({ userId: userId });
 
     res.clearCookie('accessToken', {
       httpOnly: false,
@@ -58,13 +52,8 @@ export const deleteUser = async (req: Request, res: Response) => {
 
 export const getMyPage = async (req: Request, res: Response) => {
   const followRepo = AppDataSource.getRepository(Follow);
-  const authorization = ensureAuthorization(req);
 
-  if (authorization instanceof Error) {
-    return jwtErrorHandler(authorization, res);
-  }
-
-  const userId = authorization.userId;
+  const { userId } = res.locals.user;
 
   try {
     const followingCount = await followRepo.count({ where: { followerId: userId } });
@@ -89,13 +78,7 @@ export const getMyPage = async (req: Request, res: Response) => {
 export const getMyProfile = async (req: Request, res: Response) => {
   const userRepo = AppDataSource.getRepository(User);
   const interestCategoryRepo = AppDataSource.getRepository('InterestCategory');
-  const authorization = ensureAuthorization(req);
-
-  if (authorization instanceof Error) {
-    return jwtErrorHandler(authorization, res);
-  }
-
-  const userId = authorization.userId;
+  const { userId } = res.locals.user;
 
   try {
     const user = await userRepo.findOne({
@@ -140,13 +123,8 @@ export const UpdateMyProfile = async (req: Request, res: Response) => {
   const interestCategoryRepo = AppDataSource.getRepository(InterestCategory);
   const categoryRepo = AppDataSource.getRepository(Category);
 
-  const authorization = ensureAuthorization(req);
+  const { userId } = res.locals.user;
 
-  if (authorization instanceof Error) {
-    return jwtErrorHandler(authorization, res);
-  }
-
-  const userId = authorization.userId;
   const { image_url, nickname, gender, age_id, contents, category_id } = req.body;
   const imageUrl = image_url;
   const ageId = age_id;
