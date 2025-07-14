@@ -45,7 +45,7 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url' | 'host'>> = {
     name: 'funding-service',
     swagger: 'funding.json',
     port: Number(process.env.FUNDING_SERVICE_PORT) || 3003,
-    base: ['/projects', '/options', '/api/projects'],
+    base: ['/projects', '/options', '/api/projects', '/profiles'],
     jwtRules: [
       { method: 'GET', path: '/project/:id', required: false },
       { method: 'GET', path: '/project/recent-completed', required: true },
@@ -54,6 +54,7 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url' | 'host'>> = {
       { method: 'POST', path: '/projects', required: true },
       { method: 'POST', path: '/options', required: true },
       { method: 'ALL', path: '/api/projects', required: false },
+      { method: 'GET', path: '/profiles/:id', required: false },
     ],
   },
   'interaction-service': {
@@ -85,8 +86,12 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url' | 'host'>> = {
     name: 'user-service',
     swagger: 'users.json',
     port: Number(process.env.USER_SERVICE_PORT) || 3007,
-    base: ['/users'],
-    jwtRules: [{ method: 'ALL', path: '/users', required: true }],
+    base: ['/users', '/users/maker', 'users/supporter'],
+    jwtRules: [
+      { method: 'ALL', path: '/users', required: true },
+      { method: 'ALL', path: '/users/maker/:user_id', required: false },
+      { method: 'ALL', path: '/users/supporter/:user_id', required: false },
+    ],
   },
 };
 

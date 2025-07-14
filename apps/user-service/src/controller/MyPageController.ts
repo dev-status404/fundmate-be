@@ -3,6 +3,7 @@ import { AppDataSource } from '../data-source';
 import { Age, Category, Follow, Image, InterestCategory, User } from '@shared/entities';
 import { Token } from '@shared/entities';
 import StatusCode from 'http-status-codes';
+import { serviceClients } from '@shared/config';
 
 export const deleteUser = async (req: Request, res: Response) => {
   const userRepo = AppDataSource.getRepository(User);
@@ -54,20 +55,28 @@ export const getMyPage = async (req: Request, res: Response) => {
   const followRepo = AppDataSource.getRepository(Follow);
 
   const { userId } = res.locals.user;
+  let projectIds = req.query.project_id;
+
+  if (typeof projectIds === 'string') {
+    projectIds = [projectIds];
+  }
 
   try {
     const followingCount = await followRepo.count({ where: { followerId: userId } });
     const followerCount = await followRepo.count({ where: { followingId: userId } });
 
-    // 외부 서버에서 정보 가져오기
+    const fundingClient = serviceClients['funding-service'];
+    const fundingList = await fundingClient.get(`/api/projects/recent?project_id=${projectIds}`);
+    const paymentClient = serviceClients['payment-service'];
+    const paymentList = await paymentClient.get(`/api/reservation/count`);
 
     return res.status(StatusCode.OK).json({
       followingCount,
       followerCount,
-      // 펀딩 후원 카운트
+      paymentCount: paymentList.data.count ?? 0,
       // 찜 카운트
       // 후기 카운트
-      // 최근 본 프로젝트 목록
+      fundingGetList: fundingList.data,
     });
   } catch (err) {
     console.error(err);

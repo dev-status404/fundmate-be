@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import StatusCode from 'http-status-codes';
 import { Follow, User } from '@shared/entities';
+import { serviceClients } from '@shared/config';
 
 export const getMakerProfile = async (req: Request, res: Response) => {
   const makerId = Number(req.params.user_id);
@@ -21,7 +22,8 @@ export const getMakerProfile = async (req: Request, res: Response) => {
     const followingCount = await followRepo.count({ where: { followerId: makerId } });
     const followerCount = await followRepo.count({ where: { followingId: makerId } });
 
-    // 외부 서버에서 정보 가져오기
+    const fundingClient = serviceClients['funding-service'];
+    const fundingList = await fundingClient.get(`/profiles/${makerId}`);
 
     return res.status(StatusCode.OK).json({
       imageId: user.image?.imageId ?? null,
@@ -30,8 +32,8 @@ export const getMakerProfile = async (req: Request, res: Response) => {
       contents: user.contents,
       followingCount,
       followerCount,
-      // 개설한 프로젝트 카운트
-      // 개설한 프로젝트 리스트
+      fundingList: fundingList.data,
+      fundingCount: fundingList.data.length,
     });
   } catch (err) {
     console.error(err);
