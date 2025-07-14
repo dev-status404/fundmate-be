@@ -6,10 +6,10 @@ dotenv.config();
 
 export const ensureAuthorization = (req: Request): DecodedJwt | Error => {
   try {
-    const token = req.cookies.accessToken;
+    const token = req.cookies?.accessToken;
 
     if (token) {
-      const decodedJwt = jwt.verify(token, process.env.PRIVATE_KEY as string) as DecodedJwt;
+      const decodedJwt = jwt.verify(token, process.env.PRIVATE_KEY as String) as DecodedJwt;
       return decodedJwt;
     } else {
       throw new ReferenceError('JWT must be provided');
