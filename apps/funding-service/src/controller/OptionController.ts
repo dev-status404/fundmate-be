@@ -45,7 +45,7 @@ export const createOption = async (req: Request, res: Response) => {
 
     return res.status(HttpStatusCode.Created).json({ option_id: optionId });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
   }
 };
