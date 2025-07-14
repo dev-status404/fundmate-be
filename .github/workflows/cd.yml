@@ -22,14 +22,16 @@ jobs:
         uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
-
-      - name: git pull & create .env file
+      - name: git pull & deploy via SSH
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
-          cd fundmate-be
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          set -euo pipefail
+
+          cd ~/fundmate-be
           git pull origin main
 
-          cat > .env <<EOL
+          # ─── .env 파일 생성 ───────────────────────────────────────────
+          cat > .env << 'EOL'
           API_GATEWAY_PORT=3000
           AI_SERVICE_PORT=3001
           AUTH_SERVICE_PORT=3002
@@ -53,8 +55,8 @@ jobs:
           GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID}}
           GOOGLE_CLIENT_SECRET=${{secrets.GOOGLE_CLIENT_SECRET}}
           GOOGLE_REDIRECT_URI=http://localhost:3002/oauth/google/callback
-          KAKAO_CLIENT_ID=${{secrets.KAKAO_CLIENT_ID}}
-          KAKAO_CLIENT_SECRET=${{secrets.KAKAO_CLIENT_SECRET}}
+          KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}
+          KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}
           KAKAO_REDIRECT_URI=http://localhost:3002/oauth/kakao/callback
           NAVER_CLIENT_ID=${{secrets.NAVER_CLIENT_ID}}
           NAVER_CLIENT_SECRET=${{secrets.NAVER_CLIENT_SECRET}}
