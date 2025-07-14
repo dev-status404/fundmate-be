@@ -86,7 +86,7 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url' | 'host'>> = {
     name: 'user-service',
     swagger: 'users.json',
     port: Number(process.env.USER_SERVICE_PORT) || 3007,
-    base: ['/users', '/users/maker', 'users/supporter'],
+    base: ['/users', '/users/maker', '/users/supporter'],
     jwtRules: [
       { method: 'ALL', path: '/users', required: true },
       { method: 'ALL', path: '/users/maker/:user_id', required: false },
