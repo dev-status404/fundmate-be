@@ -14,7 +14,7 @@ export const AppDataSource = new DataSource({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   entities: interactionEntities,
-  synchronize: true,
+  synchronize: false,
   logging: true,
   timezone: '+09:00',
 });

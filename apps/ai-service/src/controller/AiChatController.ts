@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 dotenv.config({ path: '.env.apikey' });
 
-console.log('API KEY:', process.env.PEM_PATH);
 export const summarize = async (req: Request, res: Response) => {
   const { message } = req.body as { message?: string };
 

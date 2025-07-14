@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { authEntities } from '@shared/entities';
+import { userEntities } from '@shared/entities';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -10,10 +10,8 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  entities: authEntities,
-  migrationsRun: false,
+  entities: userEntities,
   synchronize: false,
   logging: true,
   timezone: '+09:00',
-  charset: 'utf8mb4',
 });
