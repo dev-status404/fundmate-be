@@ -85,7 +85,7 @@ export const commentList = async (req: Request, res: Response): Promise<Response
   try {
     const commentRepo = AppDataSource.getRepository(Comment);
     const comments = await commentRepo.find({
-      where: { project: { projectId: projectId } },
+      where: { project: { projectId } },
       relations: ['userId'],
       order: { createdAt: 'DESC' },
     });

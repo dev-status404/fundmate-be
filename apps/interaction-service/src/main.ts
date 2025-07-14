@@ -23,10 +23,9 @@ app.get('/health', (_req, res) =>
   res.status(200).json({ status: 'ok', service: 'interaction-service', timestamp: new Date().toISOString() })
 );
 
-
 app.use('/users/likes', likeRouter);
 app.use('/comment', commentRouter);
-app.use('/interactionMain', interactMainRouter);
+app.use('/interactionmain', interactMainRouter);
 AppDataSource.initialize()
   .then(() => {
     console.log('데이터베이스 연결 성공');
@@ -37,4 +36,3 @@ AppDataSource.initialize()
   .catch((error) => {
     console.error('데이터베이스 연결 실패:', error);
   });
-

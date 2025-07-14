@@ -60,8 +60,16 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url' | 'host'>> = {
     name: 'interaction-service',
     swagger: 'interactions.json',
     port: Number(process.env.INTERACTION_SERVICE_PORT) || 3004,
-    base: ['/interactions'],
-    jwtRules: [{ method: 'ALL', path: '/interactions', required: true }],
+    base: ['/interactionmain', '/users', '/comment'],
+    jwtRules: [
+      { method: 'POST', path: '/users/likes/:id', required: true },
+      { method: 'DELETE', path: '/users/likes/:id', required: true },
+      { method: 'GET', path: '/users/likes/', required: true },
+      { method: 'POST', path: '/comment/:id', required: true },
+      { method: 'DELETE', path: '/comment/:id', required: true },
+      { method: 'GET', path: '/comment/:id', required: true },
+      { method: 'GET', path: '/interactionmain', required: true },
+    ],
   },
   'payment-service': {
     name: 'payment-service',

@@ -13,7 +13,7 @@ interface DecodedJwt {
 
 export const ensureAuthorization = (req: Request): DecodedJwt | Error => {
   try {
-    const token = req.cookies.accessToken;
+    const token = req.header('x-access-token');
 
     if (token) {
       const decodedJwt = jwt.verify(token, process.env.PRIVATE_KEY as string) as DecodedJwt;
