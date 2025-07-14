@@ -6,6 +6,7 @@ import { AppDataSource } from './data-source';
 import { serviceConfig, headerToLocals } from '@shared/config';
 import likeRouter from './routes/likes';
 import commentRouter from './routes/comment';
+import interactMainRouter from './routes/interaction-main';
 dotenv.config();
 
 const { port, host, url } = serviceConfig['interaction-service'];
@@ -24,7 +25,7 @@ app.get('/health', (_req, res) =>
 
 app.use('/users/likes', likeRouter);
 app.use('/comment', commentRouter);
-
+app.use('/interactionMain', interactMainRouter);
 AppDataSource.initialize()
   .then(() => {
     console.log('데이터베이스 연결 성공');
