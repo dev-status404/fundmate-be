@@ -62,6 +62,7 @@ jobs:
           NAVER_CLIENT_ID=${{secrets.NAVER_CLIENT_ID}}
           NAVER_CLIENT_SECRET=${{secrets.NAVER_CLIENT_SECRET}}
           NAVER_REDIRECT_URI=http://localhost:3002/oauth/naver/callback 
+          EOL
           
           sudo rm -rf /home/ubuntu/.vscode-serve
           sudo docker system prune -a --volumes --force
