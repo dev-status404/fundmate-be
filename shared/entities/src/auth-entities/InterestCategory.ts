@@ -11,7 +11,7 @@ export class InterestCategory {
   @JoinColumn({ name: 'category_id' })
   category!: Category;
 
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user!: User;
 }
