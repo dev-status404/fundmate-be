@@ -16,7 +16,8 @@ export const ensureAuthorization = (req: Request): DecodedJwt | Error => {
     const token = req.header('x-access-token');
 
     if (token) {
-      const decodedJwt = jwt.verify(token, process.env.PRIVATE_KEY as string) as DecodedJwt;
+      const secretOrKey = process.env.JWT_PUBLIC_KEY || process.env.PRIVATE_KEY!;
+      const decodedRaw = jwt.verify(token, secretOrKey);
       return decodedJwt;
     } else {
       throw new ReferenceError('JWT must be provided');
