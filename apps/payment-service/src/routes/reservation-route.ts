@@ -64,7 +64,7 @@ router.post('/', async (req, res) => {
   const { paymentInfoId, rewardId, projectId, amount, totalAmount, scheduleDate, address, addressNumber, addressInfo } =
     req.body;
   if (!paymentInfoId || !projectId || !amount || !totalAmount || !scheduleDate) {
-    return res.status(StatusCodes.BAD_GATEWAY).json({ message: '펀딩 등록 정보가 누락 되었습니다.' });
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: '펀딩 등록 정보가 누락 되었습니다.' });
   }
   try {
     const scheduleRepo = AppDataSource.getRepository(PaymentSchedule);
@@ -104,7 +104,7 @@ router.patch('/:id', async (req, res) => {
     const now = new Date();
     const payDate = schedule.scheduleDate;
     const isOneDayAgo = payDate.getTime() - now.getTime();
-    const oneDayMs = 24 * 60 * 60 * 100;
+    const oneDayMs = 24 * 60 * 60 * 1000;
     if (isOneDayAgo <= oneDayMs) {
       return res
         .status(StatusCodes.FORBIDDEN)
@@ -167,18 +167,10 @@ router.delete('/:id', async (req, res) => {
     await AppDataSource.transaction(async (manager) => {
       const schedule = await manager.findOneBy(PaymentSchedule, { id: reservationId, userId });
       if (!schedule) throw createError(404, '예약된 정보가 없습니다.');
+      const { id, ...restForHistory } = schedule;
       const history = manager.create(PaymentHistory, {
-        userId,
-        scheduleId: schedule.id,
-        paymentInfoId: schedule.paymentInfoId,
-        rewardId: schedule.rewardId,
-        projectId: schedule.projectId,
-        amount: schedule.amount,
-        donateAmount: schedule.donateAmount,
-        totalAmount: schedule.totalAmount,
-        address: schedule.address,
-        addressNumber: schedule.addressNumber,
-        addressInfo: schedule.addressInfo,
+        ...restForHistory,
+        scheduleId: id,
         status: 'cancel',
       });
       await manager.save(history);
