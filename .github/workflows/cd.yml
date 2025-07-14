@@ -22,14 +22,16 @@ jobs:
         uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
-
-      - name: git pull & create .env file
+      - name: git pull & deploy via SSH
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
-          cd fundmate-be
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          set -euo pipefail
+
+          cd ~/fundmate-be
           git pull origin main
 
-          cat > .env <<EOL
+          # ─── .env 파일 생성 ───────────────────────────────────────────
+          cat > .env << 'EOL'
           API_GATEWAY_PORT=3000
           AI_SERVICE_PORT=3001
           AUTH_SERVICE_PORT=3002
@@ -38,15 +40,14 @@ jobs:
           PAYMENT_SERVICE_PORT=3005
           PUBLIC_SERVICE_PORT=3006
           USER_SERVICE_PORT=3007
-          DB_HOST=${{ secrets.RDS_ENDPOINT }}
+          DB_HOST=${{ secrets.DB_HOST }}
           DB_USER=${{ secrets.DB_USER }}
           DB_PASSWORD=${{ secrets.DB_PASSWORD }}
           DB_NAME=${{ secrets.DB_NAME }}
           DB_PORT=3306
           OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
-          HOST='HOST'
           HOST=localhost
-          SMTP_SERVICE = 'Gmail'
+          SMTP_SERVICE = Gmail
           SMTP_USER = fundmate0721@gmail.com
           SMTP_PASSWORD = ${{ secrets.SMTP_PASSWORD }}
           PRIVATE_KEY = ${{ secrets.PRIVATE_KEY}}
@@ -54,18 +55,19 @@ jobs:
           GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID}}
           GOOGLE_CLIENT_SECRET=${{secrets.GOOGLE_CLIENT_SECRET}}
           GOOGLE_REDIRECT_URI=http://localhost:3002/oauth/google/callback
-          KAKAO_CLIENT_ID=${{secrets.KAKAO_CLIENT_ID}}
-          KAKAO_CLIENT_SECRET=${{secrets.KAKAO_CLIENT_SECRET}}
+          KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}
+          KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}
           KAKAO_REDIRECT_URI=http://localhost:3002/oauth/kakao/callback
           NAVER_CLIENT_ID=${{secrets.NAVER_CLIENT_ID}}
           NAVER_CLIENT_SECRET=${{secrets.NAVER_CLIENT_SECRET}}
           NAVER_REDIRECT_URI=http://localhost:3002/oauth/naver/callback 
+          PUBLIC_CONSUMER_KEY=${{secrets.PUBLIC_CONSUMER_KEY}}
+          PUBLIC_CONSUMER_SECRET=${{secrets.PUBLIC_CONSUMER_SECRET}}
           EOL
 
-      - name: clean up Drive & Start docker
-        run: |
           sudo rm -rf /home/ubuntu/.vscode-serve
-          sudo docker system prune -a --volumes  
+          sudo docker system prune -a --volumes --force
           sudo docker-compose down
           sudo docker-compose up -d --build
+
           EOF
