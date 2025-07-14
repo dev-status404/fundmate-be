@@ -1,9 +1,16 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { HTTPMethod, ServiceConfig } from '@shared/config';
 
+interface authContextType {
+  refreshToken: string;
+  accessToken: string;
+  userId: number;
+  email: string;
+}
+
 export class ServiceClient {
   private readonly client: AxiosInstance;
-  private authContext: { token: string; userId: number; email: string } | null = null;
+  private authContext: authContextType | null = null;
 
   constructor(private readonly config: ServiceConfig) {
     this.client = axios.create({
@@ -13,11 +20,12 @@ export class ServiceClient {
         'Content-Type': 'application/json',
         // 여기에 공통 헤더(ex. 인증토큰 등)를 추가할 수도 있습니다.
       },
+      validateStatus: (status) => status < 500,
     });
   }
 
   // header에 넣어야 하는거 이걸로 넣기
-  public setAuthContext(context: { token: string; userId: number; email: string }) {
+  public setAuthContext(context: authContextType) {
     this.authContext = context;
   }
 
@@ -33,7 +41,8 @@ export class ServiceClient {
       ...(extraConfig?.headers || {}),
     };
     if (this.authContext) {
-      mergedHeaders['Authorization'] = `Bearer ${this.authContext.token}`;
+      mergedHeaders['x-access-token'] = this.authContext.accessToken;
+      mergedHeaders['x-refresh-token'] = this.authContext.refreshToken;
       mergedHeaders['x-user-id'] = String(this.authContext.userId);
       mergedHeaders['x-user-email'] = this.authContext.email;
     }

@@ -148,19 +148,7 @@ export const getDeadlineFundingList = async (req: Request, res: Response) => {
       return res.status(HttpStatusCode.Ok).json([]);
     }
 
-    const result = queryResult.map((row) => {
-      const achievement = (row.currentAmount / row.goalAmount) * 100;
-
-      return {
-        title: row.title,
-        short_description: row.shortDescription,
-        achievement: achievement,
-        current_amount: row.currentAmount,
-        remaining_day: row.remainingDay,
-      };
-    });
-
-    return res.status(HttpStatusCode.Ok).json(result);
+    return res.status(HttpStatusCode.Ok).json(queryResult);
   } catch (err) {
     console.log(err);
     return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
@@ -183,7 +171,7 @@ export const getNewFundingList = async (req: Request, res: Response) => {
     ])
     .addSelect('DATEDIFF(project.created_at, NOW()) AS created_before')
     .addSelect('DATEDIFF(project.end_date, NOW()) AS remaining_day')
-    .orderBy('project.created_before', 'ASC');
+    .orderBy('project.created_at', 'DESC');
 
   if (limit) {
     query.take(limit);
@@ -196,19 +184,7 @@ export const getNewFundingList = async (req: Request, res: Response) => {
       return res.status(HttpStatusCode.Ok).json([]);
     }
 
-    const result = queryResult.map((row) => {
-      const achievement = (row.currentAmount / row.goalAmount) * 100;
-
-      return {
-        title: row.title,
-        short_description: row.shortDescription,
-        achievement: achievement,
-        current_amount: row.currentAmount,
-        remaining_day: row.remainingDay,
-      };
-    });
-
-    return res.status(HttpStatusCode.Ok).json(result);
+    return res.status(HttpStatusCode.Ok).json(queryResult);
   } catch (err) {
     console.log(err);
     return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
@@ -233,14 +209,14 @@ export const getFundingListByCategoryId = async (req: Request, res: Response) =>
   const query = projectRepo
     .createQueryBuilder('project')
     .select([
-      'project.user_id AS userId',
+      'project.image_id AS image_id',
       'project.title AS title',
-      'project.shortDescription AS shortDescription',
-      'project.goalAmount AS goalAmount',
-      'project.currentAmount AS currentAmount',
+      'project.shortDescription AS short_description',
+      'project.goalAmount AS goal_amount',
+      'project.currentAmount AS current_amount',
     ])
-    .addSelect('DATEDIFF(project.end_date, NOW()) AS remainingDay')
-    .where('project.categoryId = :categoryId', { categoryId: parseInt(categoryId) });
+    .addSelect('DATEDIFF(project.end_date, NOW()) AS remaining_day')
+    .where('project.category_id = :categoryId', { categoryId: parseInt(categoryId) });
 
   if (limit) {
     query.take(limit);
@@ -253,19 +229,7 @@ export const getFundingListByCategoryId = async (req: Request, res: Response) =>
       return res.status(HttpStatusCode.Ok).json([]);
     }
 
-    const result = queryResult.map((row) => {
-      const achievement = (row.currentAmount / row.goalAmount) * 100;
-
-      return {
-        title: row.title,
-        short_description: row.shortDescription,
-        achievement: achievement,
-        current_amount: row.currentAmount,
-        remaining_day: row.remainingDay,
-      };
-    });
-
-    return res.status(HttpStatusCode.Ok).json(result);
+    return res.status(HttpStatusCode.Ok).json(queryResult);
   } catch (err) {
     console.log(err);
     return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
