@@ -4,7 +4,8 @@ const router = express.Router();
 import {
   deleteUser,
   getMyPage,
-  UpdateMyPage,
+  getMyProfile,
+  UpdateMyProfile,
   getMySupportedProjects,
   getMyComments,
   getMyCreatedProjects,
@@ -18,7 +19,8 @@ router.use(express.json());
 
 router.delete('/account', deleteUser);
 router.get('/mypage', getMyPage);
-router.put('/mypage', UpdateMyPage);
+router.get('/mypage/profile', getMyProfile);
+router.put('/mypage/profile', UpdateMyProfile);
 router.get('/mypage/payments', getMySupportedProjects);
 router.get('/mypage/comments', getMyComments);
 router.get('/projects', getMyCreatedProjects);
