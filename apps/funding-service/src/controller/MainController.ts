@@ -68,7 +68,7 @@ export const getRecentlyViewedFundingList = async (req: Request, res: Response) 
   let projectIds = req.query.project_id;
 
   if (!projectIds) {
-    return res.status(HttpStatusCode.BadRequest).json({ message: '최근 조회한 프로젝트 ID가 없습니다.' });
+    return res.status(HttpStatusCode.Ok).json([]);
   }
 
   if (typeof projectIds === 'string') {
