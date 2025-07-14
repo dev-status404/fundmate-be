@@ -6,7 +6,7 @@ import { requestBodyValidation } from '../modules/RequestBodyValidation';
 
 // 프로젝트 생성
 export const createFunding = async (req: Request, res: Response) => {
-  const { userId } = res.locals.userId;
+  const { userId } = res.locals.user;
 
   const {
     image_id: imageId,
