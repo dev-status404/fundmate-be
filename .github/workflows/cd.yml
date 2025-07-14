@@ -27,6 +27,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
           sudo apt-get update -y
+          sudo apt-get install -y docker-compose-plugin
           sudo apt-get upgrade -y
           cd fundmate-be
           git pull origin main
@@ -69,6 +70,6 @@ jobs:
           # 심볼릭 링크로 만들어봄
           sudo rm -rf /home/ubuntu/.vscode-serve
           sudo docker system prune -a --volumes --force
-          docker-compose down
-          docker-compose up -d --build
+          sudo docker-compose down
+          sudo docker-compose up -d --build
           EOF
