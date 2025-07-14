@@ -65,7 +65,7 @@ jobs:
       - name: clean up Drive & Start docker
         run: |
           sudo rm -rf /home/ubuntu/.vscode-serve
-          sudo docker system prune -a --volumes  
+          sudo docker system prune -a --volumes -f
           sudo docker-compose down
           sudo docker-compose up -d --build
           EOF
