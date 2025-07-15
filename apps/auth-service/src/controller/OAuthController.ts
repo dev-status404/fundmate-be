@@ -76,13 +76,13 @@ export const googleCallBack = async (req: Request, res: Response) => {
 
     res.cookie('accessToken', accessToken, {
       httpOnly: false,
-      secure: true,
+      secure: false,
       sameSite: 'none',
     });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: false,
-      secure: true,
+      secure: false,
       sameSite: 'none',
     });
 
@@ -164,13 +164,13 @@ export const kakaoCallBack = async (req: Request, res: Response) => {
 
     res.cookie('accessToken', accessToken, {
       httpOnly: false,
-      secure: true,
+      secure: false,
       sameSite: 'none',
     });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: false,
-      secure: true,
+      secure: false,
       sameSite: 'none',
     });
 
@@ -249,13 +249,13 @@ export const naverCallBack = async (req: Request, res: Response) => {
 
     res.cookie('accessToken', accessToken, {
       httpOnly: false,
-      secure: true,
+      secure: false,
       sameSite: 'none',
     });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: false,
-      secure: true,
+      secure: false,
       sameSite: 'none',
     });
 

@@ -191,13 +191,13 @@ export const login = async (req: Request, res: Response) => {
 
     res.cookie('accessToken', accessToken, {
       httpOnly: false,
-      secure: true,
+      secure: false,
       sameSite: 'none',
     });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: false,
-      secure: true,
+      secure: false,
       sameSite: 'none',
     });
 
@@ -238,7 +238,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
 
     res.cookie('accessToken', newAccessToken, {
       httpOnly: false,
-      secure: true,
+      secure: false,
       sameSite: 'none',
     });
 
@@ -317,12 +317,12 @@ export const logout = async (req: Request, res: Response) => {
 
     res.clearCookie('accessToken', {
       httpOnly: false,
-      secure: true,
+      secure: false,
       sameSite: 'none',
     });
     res.clearCookie('refreshToken', {
       httpOnly: false,
-      secure: true,
+      secure: false,
       sameSite: 'none',
     });
 

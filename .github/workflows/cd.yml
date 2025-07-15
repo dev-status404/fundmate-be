@@ -66,8 +66,10 @@ jobs:
           EOL
 
           sudo rm -rf /home/ubuntu/.vscode-serve
+          unset DOCKER_HOST
+          docker context use default
           sudo docker system prune -a --volumes --force
-          sudo docker-compose down
-          sudo docker-compose up -d --build
+          sudo docker compose down
+          sudo docker compose up -d --build
 
           EOF
