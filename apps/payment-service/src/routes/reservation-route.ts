@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import { AppDataSource } from '../data-source';
 import { PaymentHistory, PaymentInfo, PaymentSchedule } from '@shared/entities';
 import createError from 'http-errors';
+import { serviceClients } from '@shared/config';
 
 const router = Router();
 
@@ -13,8 +14,33 @@ router.get('/', async (req, res) => {
   try {
     const paymentScheduleRepo = AppDataSource.getRepository(PaymentSchedule);
     const findBySchedule = await paymentScheduleRepo.findBy({ userId });
-    if (findBySchedule.length === 0) throw createError(StatusCodes.NOT_FOUND, '예약된 정보가 없습니다.');
-    return res.status(StatusCodes.OK).json(findBySchedule);
+    if (findBySchedule.length === 0) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: '예약된 정보가 없습니다.' });
+    }
+    // funding 서비스에 프로젝트 정보 요청
+    const projectIds = Array.from(new Set(findBySchedule.map((s) => s.projectId)));
+    const projectsClient = serviceClients['projects-service'];
+
+    const { email } = res.locals.user || {};
+    const accessToken = req.header('x-access-token') || '';
+    const refreshToken = req.header('x-refresh-token') || '';
+    projectsClient.setAuthContext({ userId: userId, email, accessToken, refreshToken });
+
+    const response = await projectsClient.get('/projects/summary', { ids: projectIds });
+    const projectSummaries = response.data.data;
+    const summaryMap = new Map(
+      projectSummaries.map((p: { projectId: number; title: string; image: string }) => [p.projectId, p])
+    );
+    const data = findBySchedule.map((schedule) => ({
+      ...schedule,
+      project: summaryMap.get(schedule.projectId) || {
+        projectId: schedule.projectId,
+        title: null,
+        image: null,
+      },
+    }));
+
+    return res.status(StatusCodes.OK).json(data);
   } catch (err) {
     console.log(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '전체 펀딩 조회 실패' });
