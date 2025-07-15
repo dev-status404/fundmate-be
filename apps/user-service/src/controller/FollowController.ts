@@ -91,14 +91,15 @@ export const getMyFollowing = async (req: Request, res: Response) => {
 
     const followingList = await followRepo.find({
       where: { followerId },
-      relations: ['following'],
+      relations: ['following', 'following.image'],
     });
 
     const result = followingList.map((follow) => {
       return {
         userId: follow.following.userId,
         nickname: follow.following.nickname,
-        image: follow.following.image ?? null,
+        imageId: follow.following.image?.imageId ?? null,
+        imageUrl: follow.following.image?.url ?? null,
       };
     });
 
@@ -124,14 +125,15 @@ export const getMyFollower = async (req: Request, res: Response) => {
 
     const followerList = await followRepo.find({
       where: { followingId },
-      relations: ['follower'],
+      relations: ['follower', 'follower.image'],
     });
 
     const result = followerList.map((follow) => {
       return {
         userId: follow.follower.userId,
         nickname: follow.follower.nickname,
-        image: follow.follower.image ?? null,
+        imageId: follow.follower.image?.imageId ?? null,
+        imageUrl: follow.follower.image?.url ?? null,
       };
     });
 
