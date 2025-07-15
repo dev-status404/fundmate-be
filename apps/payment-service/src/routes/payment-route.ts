@@ -31,7 +31,17 @@ router.post('/', async (req: Request, res: Response) => {
 
 // 결제 정보 삭제 -> 이건 아마 함수로만 구현할듯
 router.delete('/:id', (req, res) => {
-  return res.status(StatusCodes.OK).json({ message: '결제 수단 삭제' });
+  const paymentInfoId = +req.params.id;
+  const { userId } = res.locals.user;
+  try {
+    const repo = AppDataSource.getRepository(PaymentInfo);
+    repo.delete({ id: paymentInfoId, userId });
+
+    return res.status(StatusCodes.OK).json({ message: '결제정보가 정상적으로 삭제되었습니다.' });
+  } catch (err) {
+    console.error(err);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '결제정보 삭제 실패' });
+  }
 });
 
 // 결제 정보 전체 조회

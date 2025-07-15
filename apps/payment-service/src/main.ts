@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import healthRouter from './routes/health-route';
 import paymentRouter from './routes/payment-route';
 import reservationRouter from './routes/reservation-route';
+import statisticsRouter from './routes/statistics-route';
 import { AppDataSource } from './data-source';
 import { serviceConfig, headerToLocals } from '@shared/config';
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(headerToLocals);
 app.use('/health', healthRouter);
 app.use('/payments', paymentRouter);
 app.use('/reservations', reservationRouter);
+app.use('/statistics', statisticsRouter);
 
 AppDataSource.initialize()
   .then(() => {
