@@ -193,19 +193,35 @@ export const getNewFundingList = async (req: Request, res: Response) => {
 
 // 인기 프로젝트 목록
 export const getPopularFundingList = async (req: Request, res: Response) => {
-  // const projectRepo = AppDataSource.getRepository(Project);
-  // const result = projectRepo
-  //   .createQueryBuilder('project')
-  //   .select([
-  //     'project.image_id AS image_id',
-  //     'project.title AS title',
-  //     'project.shortDescription AS short_description',
+  const projectRepo = AppDataSource.getRepository(Project);
+  const query = projectRepo
+    .createQueryBuilder('project')
+    .leftJoin('project.likes', 'like')
+    .select([
+      'project.image_id AS image_id',
+      'project.title AS title',
+      'project.shortDescription AS short_description',
+      'project.currentAmount AS current_amount',
+      'DATEDIFF(project.end_date, NOW()) AS remaining_day',
+    ])
+    .addSelect('FLOOR((project.currentAmount / project.goalAmount) * 100)', 'achievement')
+    .groupBy('project.projectId')
+    .where('end_date > NOW()')
+    .orderBy('COUNT(like.project_id)', 'DESC')
+    .limit(8);
 
-  //     'project.currentAmount AS current_amount',
-  //     'DATEDIFF(project.end_date, NOW()) AS remaining_day',
-  //   ]);
+  try {
+    const result = await query.getRawMany();
 
-  res.send('get Popular Funding List');
+    if (result.length == 0) {
+      return res.status(HttpStatusCode.Ok).json([]);
+    }
+
+    return res.status(HttpStatusCode.Ok).json(result);
+  } catch (err) {
+    console.error(err);
+    return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
+  }
 };
 
 // 카테고리별 프로젝트 목록
