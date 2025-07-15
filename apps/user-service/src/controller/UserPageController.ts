@@ -32,8 +32,8 @@ export const getMakerProfile = async (req: Request, res: Response) => {
       contents: user.contents,
       followingCount,
       followerCount,
-      fundingList: fundingList.data,
       fundingCount: fundingList.data.length ?? 0,
+      fundingList: fundingList.data,
     });
   } catch (err) {
     console.error(err);
@@ -62,7 +62,7 @@ export const getSupporterProfile = async (req: Request, res: Response) => {
 
     const paymentClient = serviceClients['payment-service'];
     paymentClient.setAuthContext({ userId });
-    const paymentList = await paymentClient.get(`/api/reservation/count`);
+    const paymentList = await paymentClient.get(`/reservations/count`);
 
     return res.status(StatusCode.OK).json({
       imageId: user.image?.imageId ?? null,
