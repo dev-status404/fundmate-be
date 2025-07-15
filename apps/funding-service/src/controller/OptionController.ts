@@ -12,7 +12,7 @@ type OptionType = {
 
 export const createOption = async (req: Request, res: Response) => {
   const { title, description, price }: OptionType = req.body;
-  const { userId } = res.locals.user ? res.locals.user : null;
+const { userId } = res.locals.user || {};
 
   if (!userId) {
     return res.status(HttpStatusCode.Unauthorized).json({ message: '로그인이 필요합니다.' });
