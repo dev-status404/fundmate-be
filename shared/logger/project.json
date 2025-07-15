@@ -1,0 +1,19 @@
+{
+  "name": "@shared/logger",
+  "root": "shared/logger",
+  "sourceRoot": "shared/logger/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "main": "shared/logger/src/index.ts",
+        "tsConfig": "shared/logger/tsconfig.lib.json",
+        "outputPath": "shared/logger/dist",
+        "externalDependencies": []
+      }
+    }
+  },
+  "tags": ["scope:shared", "type:logger"]
+}

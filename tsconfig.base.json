@@ -21,12 +21,14 @@
     "customConditions": ["development"],
     "baseUrl": ".",
     "paths": {
-      "@shared/entities": ["dist/shared/entities/index"],
-      "@shared/entities/*": ["dist/shared/entities/*"],
       "@shared/config": ["dist/shared/config/index"],
       "@shared/config/*": ["dist/shared/config/*"],
+      "@shared/entities": ["dist/shared/entities/index"],
+      "@shared/entities/*": ["dist/shared/entities/*"],
       "@shared/types": ["dist/shared/types/index"],
-      "@shared/types/*": ["dist/shared/types/*"]
+      "@shared/types/*": ["dist/shared/types/*"],
+      "@shared/logger": ["dist/shared/logger/index"],
+      "@shared/logger/*": ["dist/shared/logger/*"]
     }
   }
 }

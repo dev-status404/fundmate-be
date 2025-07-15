@@ -3,36 +3,9 @@ import { StatusCodes } from 'http-status-codes';
 import { AppDataSource } from '../data-source';
 import { PaymentHistory, PaymentInfo, PaymentSchedule } from '@shared/entities';
 import createError from 'http-errors';
+import { serviceClients } from '@shared/config';
 
 const router = Router();
-
-/**
- * TODO:
- * - 총 모금액, 총 후원자 수
- * - 오늘 내 프로젝트 결제 건수, 오늘까지의 모든 프로젝트 총 수익, 오늘까지의 모든 프로젝트 미결제 및 실패 수,
- *   결제 내역 리스트(상품 이미지, 상품명, 옵션명, 결제 날짜, 금액, 상태)
- * - 오늘 내 프로젝트 결제 건수, 오늘까지의 모든 프로젝트 총 수익, 오늘까지의 모든 프로젝트 미결제 및 실패 수, 결제 내역 리스트(상품 이미지, 상품명, 옵션명, 결제 날짜, 금액, 상태)
- **/
-
-// 펀딩 전체 갯수
-router.get('/count', async (req, res) => {
-  const { userId } = res.locals.user;
-  if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
-  try {
-    const paymentScheduleRepo = AppDataSource.getRepository(PaymentSchedule);
-    const paymentHistoryRepo = AppDataSource.getRepository(PaymentHistory);
-
-    const countBySchedule = await paymentScheduleRepo.count({ where: { userId } });
-    const countByHistory = await paymentHistoryRepo.count({ where: { userId, status: 'success' } });
-
-    return res
-      .status(StatusCodes.OK)
-      .json({ count: countBySchedule + countByHistory, countBySchedule, countByHistory });
-  } catch (err) {
-    console.log(err);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '펀딩 갯수 조회 실패' });
-  }
-});
 
 // 펀딩 결제 및 예약 내역 전체 조회
 router.get('/', async (req, res) => {
@@ -41,8 +14,33 @@ router.get('/', async (req, res) => {
   try {
     const paymentScheduleRepo = AppDataSource.getRepository(PaymentSchedule);
     const findBySchedule = await paymentScheduleRepo.findBy({ userId });
-    if (findBySchedule.length === 0) throw createError(StatusCodes.NOT_FOUND, '예약된 정보가 없습니다.');
-    return res.status(StatusCodes.OK).json(findBySchedule);
+    if (findBySchedule.length === 0) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: '예약된 정보가 없습니다.' });
+    }
+    // funding 서비스에 프로젝트 정보 요청
+    const projectIds = Array.from(new Set(findBySchedule.map((s) => s.projectId)));
+    const projectsClient = serviceClients['projects-service'];
+
+    const { email } = res.locals.user || {};
+    const accessToken = req.header('x-access-token') || '';
+    const refreshToken = req.header('x-refresh-token') || '';
+    projectsClient.setAuthContext({ userId: userId, email, accessToken, refreshToken });
+
+    const response = await projectsClient.get('/projects/summary', { ids: projectIds });
+    const projectSummaries = response.data.data;
+    const summaryMap = new Map(
+      projectSummaries.map((p: { projectId: number; title: string; image: string }) => [p.projectId, p])
+    );
+    const data = findBySchedule.map((schedule) => ({
+      ...schedule,
+      project: summaryMap.get(schedule.projectId) || {
+        projectId: schedule.projectId,
+        title: null,
+        image: null,
+      },
+    }));
+
+    return res.status(StatusCodes.OK).json(data);
   } catch (err) {
     console.log(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '전체 펀딩 조회 실패' });
@@ -89,7 +87,7 @@ router.post('/', async (req, res) => {
       addressInfo,
     });
     const savedSchedule = await scheduleRepo.save(newSchedule);
-    return res.status(StatusCodes.CREATED).json(savedSchedule);
+    return res.status(StatusCodes.CREATED).json(savedSchedule.id);
   } catch (err) {
     console.error(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '펀딩 등록 실패' });

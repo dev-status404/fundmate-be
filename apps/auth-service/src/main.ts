@@ -2,6 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import { AppDataSource } from './data-source';
 import { serviceConfig, headerToLocals } from '@shared/config';
+import { httpLogger } from '@shared/logger';
 import authRouter from './routes/auth';
 import oauthRouter from './routes/oauth';
 import dotenv from 'dotenv';
@@ -10,6 +11,7 @@ dotenv.config();
 const { port, host, url } = serviceConfig['auth-service'];
 
 const app = express();
+app.use(httpLogger);
 app.use(express.json());
 app.use(headerToLocals);
 

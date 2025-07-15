@@ -51,6 +51,7 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url' | 'host'>> = {
     base: ['/projects', '/options', '/api/projects', '/profiles'],
     jwtRules: [
       { method: 'GET', path: '/project/:id', required: false },
+      { method: 'GET', path: '/projects/summery', required: false },
       { method: 'GET', path: '/project/recent-completed', required: true },
       { method: 'GET', path: '/project/my-projects', required: true },
       { method: 'GET', path: '/project/comments', required: true },
@@ -80,11 +81,11 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url' | 'host'>> = {
     name: 'payment-service',
     swagger: 'payment.json',
     port: Number(process.env.PAYMENT_SERVICE_PORT) || 3005,
-    base: ['/payments', '/reservations', '/payment-methods'],
+    base: ['/payments', '/reservations', '/statistics'],
     jwtRules: [
       { method: 'ALL', path: '/payments', required: true },
       { method: 'ALL', path: '/reservations', required: true },
-      { method: 'ALL', path: '/payment-methods', required: true },
+      { method: 'ALL', path: '/statistics', required: true },
     ],
   },
   'public-service': {
