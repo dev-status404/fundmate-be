@@ -71,7 +71,7 @@ export const getMyPage = async (req: Request, res: Response) => {
 
     const paymentClient = serviceClients['payment-service'];
     paymentClient.setAuthContext({ userId });
-    const paymentList = await paymentClient.get(`/api/reservation/count`);
+    const paymentList = await paymentClient.get(`/reservations/count`);
 
     const interactionClient = serviceClients['interaction-service'];
     interactionClient.setAuthContext({ userId });
@@ -201,11 +201,9 @@ export const getMySupportedProjects = async (req: Request, res: Response) => {
   try {
     const paymentClient = serviceClients['payment-service'];
     paymentClient.setAuthContext({ userId });
-    const paymentList = await paymentClient.get(`/api/reservation`);
+    const paymentList = await paymentClient.get(`/reservations`);
 
-    return res.status(StatusCode.OK).json({
-      paymentGetList: paymentList.data,
-    });
+    return res.status(StatusCode.OK).json(paymentList.data);
   } catch (err) {
     console.error(err);
     return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: '마이 페이지 후원한 프로젝트 조회 실패' });
@@ -218,11 +216,9 @@ export const getMyComments = async (req: Request, res: Response) => {
   try {
     const fundingClient = serviceClients['funding-service'];
     fundingClient.setAuthContext({ userId });
-    const fundingList = await fundingClient.get(`/profiles/my-comments`);
+    const CommentsList = await fundingClient.get(`/profiles/my-comments`);
 
-    return res.status(StatusCode.OK).json({
-      commentsList: fundingList.data,
-    });
+    return res.status(StatusCode.OK).json(CommentsList.data);
   } catch (err) {
     console.error(err);
     return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: '마이 페이지 후기 내역 조회 실패' });
@@ -260,7 +256,7 @@ export const getMyProjectStatistics = async (req: Request, res: Response) => {
 
     const paymentClient = serviceClients['payment-service'];
     paymentClient.setAuthContext({ userId });
-    const paymentList = await paymentClient.get(`/api/statistics?start=${startDate}&end=${endDate}`);
+    const paymentList = await paymentClient.get(`/statistics?start=${startDate}&end=${endDate}`);
 
     return res.status(StatusCode.OK).json({
       fundingCount: fundingList.data.length,
@@ -278,11 +274,9 @@ export const getMyProjectPayments = async (req: Request, res: Response) => {
   try {
     const paymentClient = serviceClients['payment-service'];
     paymentClient.setAuthContext({ userId });
-    const paymentList = await paymentClient.get(`/api/reservation/history`);
+    const paymentList = await paymentClient.get(`/reservations/history`);
 
-    return res.status(StatusCode.OK).json({
-      paymentList: paymentList.data,
-    });
+    return res.status(StatusCode.OK).json(paymentList.data);
   } catch (err) {
     console.error(err);
     return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: '마이 페이지 결제 관리 조회 실패' });
