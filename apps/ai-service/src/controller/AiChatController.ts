@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import axios from 'axios';
 import dotenv from 'dotenv';
+import { getDataByUrl } from '../modules/GetDataByUrl';
 dotenv.config();
 dotenv.config({ path: '.env.apikey' });
 
@@ -63,16 +64,74 @@ export const summarize = async (req: Request, res: Response) => {
   }
 };
 
-const getAdditionalData = async (category: string, gender: string, age: string, housing: string) => {
-  // TODO: 여기에 공공데이터 DB 조회 로직 추가
-  // 아래는 예시
-  return {
-    trend: '최근 20세대의 반려동물 문화가 확산 중입니다.',
-    stat: '1인 가구 비중은 전체의 35%를 차지합니다.',
-    interest: '해당 연령대는 자기계발, 반려동물, 홈인테리어에 관심이 많습니다.',
-  };
-};
+const years = [2019, 2020, 2021, 2022, 2023];
 
+// 공공데이터 분석 함수
+const getAdditionalData = async (
+  category: string,
+  gender: string,
+  age: string,
+  housing: string,
+  area = '11000' // 기본: 서울
+) => {
+  try {
+    // 인구 데이터
+    const populationData = await Promise.all(
+      years.map((year) =>
+        getDataByUrl('https://sgisapi.kostat.go.kr/OpenAPI3/stats/searchpopulation.json', {
+          year,
+          gender,
+          adm_cd: area,
+          age_type: age,
+        })
+      )
+    );
+
+    // 가구 데이터
+    const householdData = await Promise.all(
+      years.map((year) =>
+        getDataByUrl('https://sgisapi.kostat.go.kr/OpenAPI3/stats/household.json', {
+          year,
+        })
+      )
+    );
+
+    // 주택 데이터
+    const houseData = await Promise.all(
+      years.map((year) =>
+        getDataByUrl('https://sgisapi.kostat.go.kr/OpenAPI3/stats/house.json', {
+          year,
+        })
+      )
+    );
+
+    // 가공 예시
+    const lastPop = populationData.at(-1)?.[0]?.data || [];
+    const lastHousehold = householdData.at(-1)?.[0]?.data || [];
+    const lastHouse = houseData.at(-1)?.[0]?.data || [];
+
+    const totalPop = lastPop.reduce((sum: number, d: any) => sum + Number(d.dataval || 0), 0);
+    const onePersonRate =
+      lastHousehold[0]?.one_person_household && lastHousehold[0]?.total_household
+        ? Math.round((Number(lastHousehold[0]?.one_person_household) / Number(lastHousehold[0]?.total_household)) * 100)
+        : null;
+
+    const trend = `최근 ${years.at(-1)}년 기준 인구는 약 ${totalPop.toLocaleString()}명입니다.`;
+    const stat = onePersonRate
+      ? `1인 가구 비율은 전체 가구 중 약 ${onePersonRate}%로 추정됩니다.`
+      : `1인 가구 비율 정보를 불러오지 못했습니다.`;
+    const interest = '해당 연령대는 자기계발, 반려동물, 홈인테리어에 대한 관심이 높은 것으로 조사됩니다.';
+
+    return { trend, stat, interest };
+  } catch (err) {
+    console.error('getAdditionalData 오류:', err);
+    return {
+      trend: '트렌드 정보를 불러오는 데 실패했습니다.',
+      stat: '통계 정보를 불러오는 데 실패했습니다.',
+      interest: '관심사 정보를 불러오는 데 실패했습니다.',
+    };
+  }
+};
 const sanitizeOutput = (text: string): string => {
   return text
     .replace(/interactive/gi, '상호작용형')
