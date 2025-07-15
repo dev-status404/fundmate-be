@@ -35,12 +35,12 @@ export const deleteUser = async (req: Request, res: Response) => {
 
     res.clearCookie('accessToken', {
       httpOnly: false,
-      secure: true,
+      secure: false,
       sameSite: 'none',
     });
     res.clearCookie('refreshToken', {
       httpOnly: false,
-      secure: true,
+      secure: false,
       sameSite: 'none',
     });
 
