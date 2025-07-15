@@ -16,7 +16,19 @@
         "bundle": true,
         "main": "apps/api-gateway/src/main.ts",
         "tsConfig": "apps/api-gateway/tsconfig.app.json",
-        "assets": ["apps/api-gateway/src/assets/**/*"]
+        "assets": [
+          "apps/api-gateway/src/assets/**/*",
+          {
+            "glob": "worker.js",
+            "input": "node_modules/pino/lib",
+            "output": "lib"
+          },
+          {
+            "glob": "worker.js",
+            "input": "node_modules/pino",
+            "output": "."
+          }
+        ]
       },
       "configurations": {
         "development": {

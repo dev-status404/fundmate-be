@@ -35,6 +35,9 @@
     },
     {
       "path": "./shared/config"
+    },
+    {
+      "path": "./shared/logger"
     }
   ]
 }

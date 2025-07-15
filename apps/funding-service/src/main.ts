@@ -6,6 +6,7 @@ import MainRouter from './routes/MainRouter';
 import { AppDataSource } from './data-source';
 import dotenv from 'dotenv';
 import { serviceConfig, headerToLocals } from '@shared/config';
+import { httpLogger } from '@shared/logger';
 import ProfileRouter from './routes/ProfileRouter';
 
 dotenv.config();
@@ -13,6 +14,7 @@ dotenv.config();
 const { port, host, url } = serviceConfig['funding-service'];
 
 const app = express();
+app.use(httpLogger);
 app.use(cookieParser());
 app.use(express.json());
 app.use(headerToLocals);
