@@ -4,6 +4,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { AppDataSource } from './data-source';
 import { serviceConfig, headerToLocals } from '@shared/config';
+import { httpLogger } from '@shared/logger';
 import likeRouter from './routes/likes';
 import commentRouter from './routes/comment';
 import interactMainRouter from './routes/interaction-main';
@@ -12,6 +13,7 @@ dotenv.config();
 const { port, host, url } = serviceConfig['interaction-service'];
 
 const app = express();
+app.use(httpLogger);
 app.use(cookieParser());
 app.use(headerToLocals);
 

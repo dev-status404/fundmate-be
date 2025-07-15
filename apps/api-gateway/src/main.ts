@@ -4,15 +4,25 @@ import { healthCheck } from './controllers/health-controller';
 import docsRoutes from './routes/docs-route';
 import apiRoutes from './routes/api-route';
 import path from 'path';
+import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import { httpLogger } from '@shared/logger';
 dotenv.config();
 
 const host = process.env.HOST ? process.env.HOST : 'localhost';
 const port = process.env.API_GATEWAY_PORT ? Number(process.env.API_GATEWAY_PORT) : 3000;
 
 const app = express();
+app.use(cors());
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  })
+);
 
 app.use(express.json());
+app.use(httpLogger);
 app.use(cookieParser());
 
 app.get('/', (req: Request, res: Response) => {
