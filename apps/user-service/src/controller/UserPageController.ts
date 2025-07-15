@@ -32,8 +32,8 @@ export const getMakerProfile = async (req: Request, res: Response) => {
       contents: user.contents,
       followingCount,
       followerCount,
+      fundingCount: fundingList.data.length ?? 0,
       fundingList: fundingList.data,
-      fundingCount: fundingList.data.length,
     });
   } catch (err) {
     console.error(err);
@@ -45,6 +45,7 @@ export const getSupporterProfile = async (req: Request, res: Response) => {
   const supporterId = Number(req.params.user_id);
   const userRepo = AppDataSource.getRepository(User);
   const followRepo = AppDataSource.getRepository(Follow);
+  const userId = supporterId;
 
   try {
     const user = await userRepo.findOne({
@@ -59,7 +60,9 @@ export const getSupporterProfile = async (req: Request, res: Response) => {
     const followingCount = await followRepo.count({ where: { followerId: supporterId } });
     const followerCount = await followRepo.count({ where: { followingId: supporterId } });
 
-    // 외부 서버에서 정보 가져오기
+    const paymentClient = serviceClients['payment-service'];
+    paymentClient.setAuthContext({ userId });
+    const paymentList = await paymentClient.get(`/reservations/count`);
 
     return res.status(StatusCode.OK).json({
       imageId: user.image?.imageId ?? null,
@@ -68,7 +71,7 @@ export const getSupporterProfile = async (req: Request, res: Response) => {
       contents: user.contents,
       followingCount,
       followerCount,
-      // 후원한 펀딩 카운트
+      paymentCount: paymentList.data.count ?? 0,
     });
   } catch (err) {
     console.error(err);
