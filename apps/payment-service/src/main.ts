@@ -2,7 +2,6 @@ import express from 'express';
 import dotenv from 'dotenv';
 import healthRouter from './routes/health-route';
 import paymentRouter from './routes/payment-route';
-import methodRouter from './routes/method-route';
 import reservationRouter from './routes/reservation-route';
 import { AppDataSource } from './data-source';
 import { serviceConfig, headerToLocals } from '@shared/config';
@@ -16,8 +15,7 @@ app.use(express.json());
 app.use(headerToLocals);
 
 app.use('/health', healthRouter);
-app.use('/payments', paymentRouter); // <- 다른 서버 연결 예제입니다!
-app.use('/payment-methods', methodRouter);
+app.use('/payments', paymentRouter);
 app.use('/reservations', reservationRouter);
 
 AppDataSource.initialize()

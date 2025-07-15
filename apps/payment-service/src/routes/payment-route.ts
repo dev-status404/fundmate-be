@@ -1,25 +1,75 @@
-import { Router } from 'express';
-import { serviceClients } from '@shared/config';
+import { Response, Request, Router } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import { AppDataSource } from '../data-source';
+import { PaymentInfo } from '@shared/entities';
 
 const router = Router();
+// 결제 정보 등록
+router.post('/', async (req: Request, res: Response) => {
+  const { method, bank, token, masked, extra } = req.body;
+  const { userId } = res.locals.user;
+  if (!method || !bank || !token || !masked || !extra) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: '올바른 결제정보를 입력해주세요' });
+  }
+  try {
+    const repo = AppDataSource.getRepository(PaymentInfo);
+    const paymentInfo = await repo.save({
+      userId,
+      method,
+      code: bank,
+      token: token,
+      displayInfo: masked,
+      details: extra,
+    });
+    const insertedId = paymentInfo.id;
+    return res.status(StatusCodes.CREATED).json({ insertedId });
+  } catch (err) {
+    console.error(err);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '결제정보 등록 실패' });
+  }
+});
 
-router.get('/request-other-service', async (req, res) => {
-  // 1. serviceConfig를 통해 불러올 서버정보를 꺼내옴, 들어가서 코드를 확인하면 다른 옵션들도 있긴한데, 대부분 url을 위해 존재하는 요소들이기에 url만 사용하시면 됩니다.
-  // ex. 원하는 서버에 Path를 추가하여 원하는 정보 꺼내기
-  // 2. 현재 서버가 받은 userId, email, token등등을 통신하기전에 보내줘야합니다!
-  //    근데 꼭 보내줘야 하는건 아니고, 사용하고자 하는 엔드포인트에 필요하다면 보내주면 됩니다.
-  const { userId, email } = res.locals.user || {};
-  const accessToken = req.header('x-access-token') || '';
-  const refreshToken = req.header('x-refresh-token') || '';
+// 결제 정보 삭제 -> 이건 아마 함수로만 구현할듯
+router.delete('/:id', (req, res) => {
+  return res.status(StatusCodes.OK).json({ message: '결제 수단 삭제' });
+});
 
-  const fundingClient = serviceClients['funding-service'];
-  fundingClient.setAuthContext({ userId, email, accessToken, refreshToken });
+// 결제 정보 전체 조회
+router.get('/', async (req: Request, res: Response) => {
+  try {
+    const { userId } = res.locals.user;
 
-  // 3. 이렇게 셋팅한 후 원하는 서버정보를 요청(get), 삽입(post,put), 편집(PATCH), 삭제(DELETE)등을 할 수 있습니다.
-  const response = await fundingClient.get('/projects/:id');
-  console.log(response.data);
-  // npm run start:all을 해서 http://localhost:3003/projects/3 이나 http://localhost:3000/projects/3을 열면 'funding detail'가 나오는 것을 확인할 수 있다.
-  return res.status(200).json({ isOterServiceMessage: response.data });
+    const repo = AppDataSource.getRepository(PaymentInfo);
+    const list = await repo.find({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+    });
+
+    return res.status(StatusCodes.OK).json({ data: list });
+  } catch (err) {
+    console.error(err);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '결제 수단 조회 실패' });
+  }
+});
+
+// 결제 정보 조회
+router.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const { userId } = res.locals.user;
+    const paymentInfoId = +req.params.id;
+
+    const repo = AppDataSource.getRepository(PaymentInfo);
+    const item = await repo.findOneBy({ id: paymentInfoId, userId });
+
+    if (!item) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: '결제 수단을 찾을 수 없습니다.' });
+    }
+
+    return res.status(StatusCodes.OK).json({ data: item });
+  } catch (err) {
+    console.error(err);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '결제 수단 조회 실패' });
+  }
 });
 
 export default router;

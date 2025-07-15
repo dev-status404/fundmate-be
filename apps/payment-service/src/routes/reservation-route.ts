@@ -89,7 +89,7 @@ router.post('/', async (req, res) => {
       addressInfo,
     });
     const savedSchedule = await scheduleRepo.save(newSchedule);
-    return res.status(StatusCodes.CREATED).json(savedSchedule);
+    return res.status(StatusCodes.CREATED).json(savedSchedule.id);
   } catch (err) {
     console.error(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '펀딩 등록 실패' });
