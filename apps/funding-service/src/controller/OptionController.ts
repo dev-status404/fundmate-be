@@ -3,8 +3,6 @@ import { AppDataSource } from '../data-source';
 import { HttpStatusCode } from 'axios';
 import { OptionData } from '@shared/entities';
 import { requestBodyValidation } from '../modules/RequestBodyValidation';
-import { ensureAuthorization } from '../modules/ensureAuthorization';
-import { jwtErrorHandler } from '../modules/jwtErrorHandler';
 
 type OptionType = {
   title: string;
@@ -13,13 +11,12 @@ type OptionType = {
 };
 
 export const createOption = async (req: Request, res: Response) => {
-  const getToken = ensureAuthorization(req);
-
-  if (getToken instanceof Error) {
-    return jwtErrorHandler(getToken, res);
-  }
-
   const { title, description, price }: OptionType = req.body;
+  const { userId } = res.locals.user;
+
+  if (!userId) {
+    return res.status(HttpStatusCode.Unauthorized).json({ message: '로그인이 필요합니다.' });
+  }
 
   const values = [title, description, price];
 
