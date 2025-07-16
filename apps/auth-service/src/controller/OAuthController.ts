@@ -75,15 +75,19 @@ export const googleCallBack = async (req: Request, res: Response) => {
     await tokenRepo.save(newToken);
 
     res.cookie('accessToken', accessToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: false,
-      sameSite: 'none',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: false,
-      sameSite: 'none',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
     return res.redirect('http://localhost:3000');
@@ -163,15 +167,19 @@ export const kakaoCallBack = async (req: Request, res: Response) => {
     await tokenRepo.save(newToken);
 
     res.cookie('accessToken', accessToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: false,
-      sameSite: 'none',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: false,
-      sameSite: 'none',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
     return res.redirect('http://localhost:3000');
@@ -248,15 +256,19 @@ export const naverCallBack = async (req: Request, res: Response) => {
     await tokenRepo.save(newToken);
 
     res.cookie('accessToken', accessToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: false,
-      sameSite: 'none',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: false,
-      sameSite: 'none',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
     return res.redirect('http://localhost:3000');

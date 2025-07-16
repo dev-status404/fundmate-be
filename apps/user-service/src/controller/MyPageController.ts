@@ -34,14 +34,16 @@ export const deleteUser = async (req: Request, res: Response) => {
     await userRepo.delete({ userId: userId });
 
     res.clearCookie('accessToken', {
-      httpOnly: false,
+      httpOnly: true,
       secure: false,
-      sameSite: 'none',
+      sameSite: 'lax',
+      path: '/',
     });
     res.clearCookie('refreshToken', {
-      httpOnly: false,
+      httpOnly: true,
       secure: false,
-      sameSite: 'none',
+      sameSite: 'lax',
+      path: '/',
     });
 
     return res.status(StatusCode.OK).json({ message: '회원 탈퇴 성공' });
