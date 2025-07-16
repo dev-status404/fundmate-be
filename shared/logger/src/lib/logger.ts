@@ -17,9 +17,14 @@ export const logger = pino({
         },
 });
 
+// log에 불필요한 url
+const skipUrlsSet = new Set(['/health-checks', '/health', '/favicon.ico', '/assets', '/docs']);
+
 export const httpLogger = pinoHttp({
   logger,
-  autoLogging: { ignore: (req) => req.url === '/health-check' || req.url === '/health' },
+  autoLogging: {
+    ignore: (req) => skipUrlsSet.has(req.url as string),
+  },
   serializers: {
     req(req) {
       return { method: req.method, url: req.url, headers: req.headers };
