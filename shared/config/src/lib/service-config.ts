@@ -40,7 +40,7 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url' | 'host'>> = {
       { method: 'POST', path: '/auth/login', required: false },
       { method: 'POST', path: '/auth/token', required: true },
       { method: 'POST', path: '/auth/logout', required: true },
-      { method: 'PATCH', path: '/auth/password', required: true },
+      { method: 'PATCH', path: '/auth/password', required: false },
       { method: 'ALL', path: '/oauth', required: false },
     ],
   },
