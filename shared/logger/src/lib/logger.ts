@@ -1,7 +1,6 @@
 import pino from 'pino';
 import pinoHttp from 'pino-http';
 
-// 1) Pino 로거 인스턴스
 export const logger = pino({
   level: process.env.LOG_LEVEL || 'info',
   transport:
@@ -20,7 +19,7 @@ export const logger = pino({
 
 export const httpLogger = pinoHttp({
   logger,
-  autoLogging: { ignore: (req) => req.url === '/health' },
+  autoLogging: { ignore: (req) => req.url === '/health-check' },
   serializers: {
     req(req) {
       return { method: req.method, url: req.url, headers: req.headers };
@@ -29,5 +28,4 @@ export const httpLogger = pinoHttp({
       return { statusCode: res.statusCode };
     },
   },
-  genReqId: (req) => (req.headers['x-request-id'] as string) || Date.now().toString(),
 });
