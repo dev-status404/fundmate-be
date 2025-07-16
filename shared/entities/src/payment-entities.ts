@@ -3,6 +3,7 @@ import { OptionData } from './funding-entities/OptionData';
 import { Project } from './funding-entities/Project';
 import * as Types from '@shared/types';
 
+
 @Entity('payment_histories')
 export class PaymentHistory {
   @PrimaryGeneratedColumn()
@@ -128,7 +129,7 @@ export class PaymentSchedule {
   @JoinColumn({ name: 'payment_info_id' })
   paymentInfo!: PaymentInfo;
 
-  @ManyToOne(() => Project, { nullable: false, onDelete: 'SET NULL' })
+  @ManyToOne(() => Project, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'project_id' })
   project!: Project;
 
