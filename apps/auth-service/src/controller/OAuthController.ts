@@ -79,7 +79,7 @@ export const googleCallBack = async (req: Request, res: Response) => {
       secure: false,
       sameSite: 'lax',
       path: '/',
-      maxAge: 1000 * 60 * 60 * 24 * 7,
+      maxAge: 1000 * 60 * 30,
     });
 
     res.cookie('refreshToken', refreshToken, {
@@ -90,7 +90,7 @@ export const googleCallBack = async (req: Request, res: Response) => {
       maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
-    return res.redirect('http://localhost:3000');
+    return res.redirect('http://localhost:5000');
   } catch (err) {
     console.error(err);
     return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Google 로그인 실패' });
@@ -171,7 +171,7 @@ export const kakaoCallBack = async (req: Request, res: Response) => {
       secure: false,
       sameSite: 'lax',
       path: '/',
-      maxAge: 1000 * 60 * 60 * 24 * 7,
+      maxAge: 1000 * 60 * 30,
     });
 
     res.cookie('refreshToken', refreshToken, {
@@ -182,7 +182,7 @@ export const kakaoCallBack = async (req: Request, res: Response) => {
       maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
-    return res.redirect('http://localhost:3000');
+    return res.redirect('http://localhost:5000');
   } catch (err) {
     console.error(err);
     return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: 'KaKao 로그인 실패' });
@@ -260,7 +260,7 @@ export const naverCallBack = async (req: Request, res: Response) => {
       secure: false,
       sameSite: 'lax',
       path: '/',
-      maxAge: 1000 * 60 * 60 * 24 * 7,
+      maxAge: 1000 * 60 * 30,
     });
 
     res.cookie('refreshToken', refreshToken, {
@@ -271,7 +271,7 @@ export const naverCallBack = async (req: Request, res: Response) => {
       maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
-    return res.redirect('http://localhost:3000');
+    return res.redirect('http://localhost:5000');
   } catch (err) {
     console.error(err);
     return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Naver 로그인 실패' });

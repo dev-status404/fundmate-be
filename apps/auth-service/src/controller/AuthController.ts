@@ -194,7 +194,7 @@ export const login = async (req: Request, res: Response) => {
       secure: false,
       sameSite: 'lax',
       path: '/',
-      maxAge: 1000 * 60 * 60 * 24 * 7,
+      maxAge: 1000 * 60 * 30,
     });
 
     res.cookie('refreshToken', refreshToken, {
@@ -245,7 +245,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
       secure: false,
       sameSite: 'lax',
       path: '/',
-      maxAge: 1000 * 60 * 60 * 24 * 7,
+      maxAge: 1000 * 60 * 30,
     });
 
     return res.status(StatusCode.OK).json({ message: '토큰 갱신 완료' });
