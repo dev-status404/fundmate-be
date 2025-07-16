@@ -1,12 +1,11 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
-import { In } from 'typeorm';
 import { Project, OptionData } from '@shared/entities';
 import { HttpStatusCode } from 'axios';
 import { requestBodyValidation } from '../modules/RequestBodyValidation';
 
 // 프로젝트 생성
-export const createFunding = async (req: Request, res: Response) => {
+export const createFundingAndOption = async (req: Request, res: Response) => {
   const { userId } = res.locals.user;
 
   const {
@@ -19,7 +18,7 @@ export const createFunding = async (req: Request, res: Response) => {
     short_description: shortDescription,
     description,
     category_id: category,
-    option_ids: optionIds,
+    options,
     gender,
     age_group: ageGroup,
   } = req.body;
@@ -35,7 +34,7 @@ export const createFunding = async (req: Request, res: Response) => {
     deliveryDate,
     shortDescription,
     description,
-    optionIds,
+    options,
     gender,
     ageGroup,
   ];
@@ -71,23 +70,33 @@ export const createFunding = async (req: Request, res: Response) => {
 
     const fundingResult = await fundingRepo.save(newFunding);
 
-    const optionResult = await optionRepo
-      .createQueryBuilder()
-      .update()
-      .set({ project: { projectId: fundingResult.projectId } })
-      .where('option_id IN (:...optionIds)', { optionIds })
-      .execute();
-
-    if (fundingResult && optionResult.affected && optionResult.affected === optionIds.length) {
-      await queryRunner.commitTransaction();
-      return res.status(HttpStatusCode.Created).json({ message: '프로젝트 생성이 완료되었습니다.' });
-    } else {
-      throw new Error('프로젝트 생성에 실패했습니다.');
+    if(!fundingResult.projectId) {
+      throw new Error("프로젝트 생성 실패");
     }
+
+    for (const option of options) {
+      const newOption: OptionData = optionRepo.create({
+        title: option.title,
+        description: option.description,
+        price: option.price,
+        project: { projectId: fundingResult.projectId },
+      });
+
+      const savedOption = await optionRepo.save(newOption);
+
+      if (!savedOption.optionId) {
+        throw new Error("옵션 생성 실패");
+      }
+    }
+      
+    
+    await queryRunner.commitTransaction();
+    return res.status(HttpStatusCode.Created).json({project_id: fundingResult.projectId});
+    
   } catch (err) {
     console.error(err);
     await queryRunner.rollbackTransaction();
-    return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
+    return res.status(HttpStatusCode.InternalServerError).json({ message: '프로젝트 & 옵션 생성을 실패하였습니다.' });
   } finally {
     await queryRunner.release();
   }
@@ -167,30 +176,6 @@ export const getFundingDetail = async (req: Request, res: Response) => {
     }
   } catch (err) {
     console.error(err);
-    return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
-  }
-};
-
-export const getFundingSummary = async (req: Request, res: Response) => {
-  const projectDetailIdList = req.body.project_ids;
-
-  if (!projectDetailIdList) {
-    return res.status(HttpStatusCode.BadRequest).json({ message: '잘못된 프로젝트 ID 값입니다.' });
-  }
-  try {
-    const projectRepo = AppDataSource.getRepository(Project);
-    const findProject = await projectRepo.find({
-      where: { projectId: In(projectDetailIdList) },
-      select: ['projectId', 'title', 'image'],
-    });
-    const data = findProject.map((project) => ({
-      projectId: project.projectId,
-      title: project.title,
-      image: project.image ?? null,
-    }));
-    return res.status(HttpStatusCode.Ok).json({ data });
-  } catch (err) {
-    console.log(err);
     return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
   }
 };

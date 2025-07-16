@@ -40,7 +40,7 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url' | 'host'>> = {
       { method: 'POST', path: '/auth/login', required: false },
       { method: 'POST', path: '/auth/token', required: true },
       { method: 'POST', path: '/auth/logout', required: true },
-      { method: 'PATCH', path: '/auth/password', required: true },
+      { method: 'PATCH', path: '/auth/password', required: false },
       { method: 'ALL', path: '/oauth', required: false },
     ],
   },
@@ -51,7 +51,6 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url' | 'host'>> = {
     base: ['/projects', '/options', '/api/projects', '/profiles'],
     jwtRules: [
       { method: 'GET', path: '/project/:id', required: false },
-      { method: 'GET', path: '/projects/summery', required: false },
       { method: 'GET', path: '/project/recent-completed', required: true },
       { method: 'GET', path: '/project/my-projects', required: true },
       { method: 'GET', path: '/project/comments', required: true },
@@ -84,6 +83,7 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url' | 'host'>> = {
     base: ['/payments', '/reservations', '/statistics'],
     jwtRules: [
       { method: 'ALL', path: '/payments', required: true },
+      { method: 'PUT', path: '/reservations/:id/payment-info', required: true },
       { method: 'ALL', path: '/reservations', required: true },
       { method: 'ALL', path: '/statistics', required: true },
     ],
