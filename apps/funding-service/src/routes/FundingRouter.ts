@@ -5,6 +5,5 @@ const router = express.Router();
 
 router.post('/', createFundingAndOption);
 router.get('/:id', getFundingDetail);
-router.get('/summary', getFundingSummary);
 
 export default router;

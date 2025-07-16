@@ -10,13 +10,17 @@ import { Project } from './funding-entities/Project';
 import { OptionData } from './funding-entities/OptionData';
 import { Like } from './interaction-entities/Like';
 import { Comment } from './interaction-entities/Comment';
+import { PaymentHistory } from './payment-entities';
+import { PaymentSchedule } from './payment-entities';
+import { PaymentInfo } from './payment-entities';
 
 export { Age, Category, EmailVerification, Image, InterestCategory, Token, User, Follow };
 export { Project, OptionData };
-export * from './payment-entities';
+export { PaymentHistory, PaymentSchedule, PaymentInfo };
 export { Like, Comment };
 
 export const authEntities = [Age, Category, EmailVerification, Image, InterestCategory, Token, User];
 export const fundingEntities = [Project, OptionData, User, Image, Category, Like, Comment, ...authEntities];
 export const userEntities = [Age, Category, Image, InterestCategory, User, Follow, Token];
 export const interactionEntities = [User, Project, Like, Age, Image, Category, OptionData, Comment];
+export const paymentEntities = [PaymentHistory, PaymentSchedule, PaymentInfo, ...fundingEntities];
