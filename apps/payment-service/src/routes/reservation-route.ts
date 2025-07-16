@@ -110,6 +110,7 @@ router.post('/', async (req, res) => {
       paymentInfo: { id: paymentInfoId },
       project: { projectId },
       donateAmount,
+      amount,
       totalAmount,
       scheduleDate,
       address,
@@ -195,7 +196,7 @@ router.patch('/:id', async (req, res) => {
 });
 
 // 결제 정보 수정
-router.put('/:id/payment_methods', async (req, res) => {
+router.put('/:id/payment_info', async (req, res) => {
   const { userId } = res.locals.user;
   if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
   const reservationId = +req.params.id;
@@ -260,7 +261,7 @@ router.delete('/:id', async (req, res) => {
         address: schedule.address ?? null,
         addressNumber: schedule.addressNumber ?? null,
         addressInfo: schedule.addressInfo ?? null,
-        executedAt: schedule.executed ?? null,
+        executedAt: new Date(),
         status: 'cancel',
         createdAt: schedule.createdAt,
         errorLog: schedule.lastErrorMessage ?? null,
