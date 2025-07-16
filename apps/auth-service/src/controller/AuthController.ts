@@ -190,15 +190,19 @@ export const login = async (req: Request, res: Response) => {
     await tokenRepo.save(newToken);
 
     res.cookie('accessToken', accessToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: false,
-      sameSite: 'none',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: false,
-      sameSite: 'none',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
     return res.status(StatusCode.OK).json({ message: '로그인 성공' });
@@ -237,9 +241,11 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
     });
 
     res.cookie('accessToken', newAccessToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: false,
-      sameSite: 'none',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
     return res.status(StatusCode.OK).json({ message: '토큰 갱신 완료' });
@@ -316,14 +322,16 @@ export const logout = async (req: Request, res: Response) => {
     }
 
     res.clearCookie('accessToken', {
-      httpOnly: false,
+      httpOnly: true,
       secure: false,
-      sameSite: 'none',
+      sameSite: 'lax',
+      path: '/',
     });
     res.clearCookie('refreshToken', {
-      httpOnly: false,
+      httpOnly: true,
       secure: false,
-      sameSite: 'none',
+      sameSite: 'lax',
+      path: '/',
     });
 
     return res.status(StatusCode.OK).json({ message: '로그아웃 성공' });
