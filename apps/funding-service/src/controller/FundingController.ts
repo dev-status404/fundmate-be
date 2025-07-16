@@ -92,7 +92,7 @@ export const createFundingAndOption = async (req: Request, res: Response) => {
       
     
     await queryRunner.commitTransaction();
-    return res.status(HttpStatusCode.Created).json({ message: '프로젝트 & 옵션 생성이 완료되었습니다.' });
+    return res.status(HttpStatusCode.Created).json({project_id: fundingResult.projectId});
     
   } catch (err) {
     console.error(err);
