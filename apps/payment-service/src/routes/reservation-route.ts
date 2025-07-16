@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
   if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
   try {
     const paymentScheduleRepo = AppDataSource.getRepository(PaymentSchedule);
-    const findBySchedule = await paymentScheduleRepo.find({
+    const [findBySchedule, count] = await paymentScheduleRepo.findAndCount({
       where: { userId },
       relations: ['project', 'option'],
     });
@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
       createdAt: schedule.createdAt,
     }));
 
-    return res.status(StatusCodes.OK).json({ data });
+    return res.status(StatusCodes.OK).json({ data, count });
   } catch (err) {
     console.log(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '전체 펀딩 조회 실패' });
