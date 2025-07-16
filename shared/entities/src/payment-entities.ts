@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { OptionData } from './funding-entities/OptionData';
+import { Project } from './funding-entities/Project';
 import * as Types from '@shared/types';
 
 @Entity('payment_histories')
@@ -15,11 +17,35 @@ export class PaymentHistory {
   @Column({ name: 'payment_info_id', type: 'int' })
   paymentInfoId!: number;
 
+  @Column({ name: 'payment_method', type: 'varchar', length: 30 })
+  paymentMethod!: string;
+
+  @Column({ name: 'bank_code', type: 'varchar', length: 30, nullable: true })
+  bankCode?: string;
+
+  @Column({ name: 'display_info', type: 'varchar', length: 255, nullable: true })
+  displayInfo?: string;
+
+  @Column({ name: 'transaction_id', type: 'varchar', length: 100, nullable: true })
+  transactionId?: string;
+
   @Column({ name: 'reward_id', type: 'int', nullable: true })
   rewardId?: number;
 
   @Column({ name: 'project_id', type: 'int' })
   projectId!: number;
+
+  @Column({ name: 'option_title', type: 'varchar', length: 255, nullable: true })
+  optionTitle?: string;
+
+  @Column({ name: 'option_amount', type: 'int', nullable: true })
+  optionAmount?: number;
+
+  @Column({ name: 'project_title', type: 'varchar', length: 255, nullable: true })
+  projectTitle!: string;
+
+  @Column({ name: 'project_image', type: 'varchar', length: 255, nullable: true })
+  projectImage!: string;
 
   @Column({ name: 'amount', type: 'int' })
   amount!: number;
@@ -94,14 +120,17 @@ export class PaymentSchedule {
   @Column({ name: 'user_id', type: 'int' })
   userId!: number;
 
-  @Column({ name: 'reward_id', type: 'int', nullable: true })
-  rewardId?: number;
+  @ManyToOne(() => OptionData, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'reward_id' })
+  option?: OptionData;
 
-  @Column({ name: 'payment_info_id', type: 'int' })
-  paymentInfoId!: number;
+  @ManyToOne(() => PaymentInfo, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'payment_info_id' })
+  paymentInfo!: PaymentInfo;
 
-  @Column({ name: 'project_id', type: 'int' })
-  projectId!: number;
+  @ManyToOne(() => Project, { nullable: false, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'project_id' })
+  project!: Project;
 
   @Column({ name: 'amount', type: 'int' })
   amount!: number;
