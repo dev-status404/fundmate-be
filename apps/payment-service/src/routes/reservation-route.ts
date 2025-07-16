@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { AppDataSource } from '../data-source';
-import { PaymentHistory, PaymentInfo, PaymentSchedule, OptionData } from '@shared/entities';
+import { PaymentHistory, PaymentInfo, PaymentSchedule, OptionData, Project } from '@shared/entities';
 import createError from 'http-errors';
 import { DeepPartial } from 'typeorm';
 
@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
   if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
   try {
     const paymentScheduleRepo = AppDataSource.getRepository(PaymentSchedule);
-    const findBySchedule = await paymentScheduleRepo.find({
+    const [findBySchedule, count] = await paymentScheduleRepo.findAndCount({
       where: { userId },
       relations: ['project', 'option'],
     });
@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
       createdAt: schedule.createdAt,
     }));
 
-    return res.status(StatusCodes.OK).json({ data });
+    return res.status(StatusCodes.OK).json({ data, count });
   } catch (err) {
     console.log(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '전체 펀딩 조회 실패' });
@@ -103,6 +103,27 @@ router.post('/', async (req, res) => {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: '금액이 맞지 않습니다' });
   }
   try {
+    // 사전 검증: 외래키 참조 대상이 존재하는지 확인
+    const paymentInfoRepo = AppDataSource.getRepository(PaymentInfo);
+    const projectRepo = AppDataSource.getRepository(Project);
+    const optionRepo = AppDataSource.getRepository(OptionData);
+
+    const paymentInfoExist = await paymentInfoRepo.findOneBy({ id: paymentInfoId });
+    if (!paymentInfoExist) {
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: '유효하지 않은 결제 수단 ID입니다.' });
+    }
+
+    const projectExist = await projectRepo.findOneBy({ projectId });
+    if (!projectExist) {
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: '유효하지 않은 프로젝트 ID입니다.' });
+    }
+
+    if (rewardId !== undefined && rewardId !== null) {
+      const optionExist = await optionRepo.findOneBy({ optionId: rewardId });
+      if (!optionExist) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: '유효하지 않은 옵션 ID입니다.' });
+      }
+    }
     const scheduleRepo = AppDataSource.getRepository(PaymentSchedule);
     const newSchedule = scheduleRepo.create({
       userId,
@@ -200,13 +221,16 @@ router.put('/:id/payment_info', async (req, res) => {
   const { userId } = res.locals.user;
   if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
   const reservationId = +req.params.id;
-  const { method, bank, token, masked, extra } = req.body;
-  if (!method || !bank || !token || !masked || !extra) {
+  const { method, code, token, displayInfo, details } = req.body;
+  if (!method || !code || !token || !displayInfo || !details) {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: '올바른 결제정보를 입력해주세요' });
   }
   try {
     await AppDataSource.transaction(async (manager) => {
-      const reservation = await manager.findOneBy(PaymentSchedule, { id: reservationId, userId });
+      const reservation = await manager.findOne(PaymentSchedule, {
+        where: { id: reservationId, userId },
+        relations: ['paymentInfo'],
+      });
       if (!reservation) throw createError(StatusCodes.NOT_FOUND, '예약된 정보가 없습니다.');
 
       const now = new Date();
@@ -217,14 +241,16 @@ router.put('/:id/payment_info', async (req, res) => {
         throw createError(StatusCodes.FORBIDDEN, '결제 예정일 하루 에는 결제 정보를 수정할 수 없습니다.');
       }
 
-      const paymentInfo = await manager.findOneBy(PaymentInfo, { id: reservation.paymentInfo.id, userId });
+      const paymentInfo = await manager.findOneBy(PaymentInfo, { id: reservation.paymentInfo.id });
       if (!paymentInfo) throw createError(404, '연결된 결제수단을 찾을 수 없습니다.');
 
-      paymentInfo.method = method;
-      paymentInfo.code = bank;
-      paymentInfo.displayInfo = masked;
-      paymentInfo.details = extra;
-      await manager.save(paymentInfo);
+      await manager.save(PaymentInfo, {
+        id: paymentInfo.id,
+        method,
+        code,
+        displayInfo,
+        details,
+      });
     });
 
     return res.status(StatusCodes.OK).json({ message: '결제정보가 정상적으로 수정되었습니다.' });
