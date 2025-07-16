@@ -73,7 +73,7 @@ export const getMyPage = async (req: Request, res: Response) => {
 
     const paymentClient = serviceClients['payment-service'];
     paymentClient.setAuthContext({ userId });
-    const paymentList = await paymentClient.get(`/reservations/count`);
+    const paymentList = await paymentClient.get(`/statistics/count`);
 
     const interactionClient = serviceClients['interaction-service'];
     interactionClient.setAuthContext({ userId });
@@ -258,7 +258,7 @@ export const getMyProjectStatistics = async (req: Request, res: Response) => {
 
     const paymentClient = serviceClients['payment-service'];
     paymentClient.setAuthContext({ userId });
-    const paymentList = await paymentClient.get(`/statistics?start=${startDate}&end=${endDate}`);
+    const paymentList = await paymentClient.get(`/statistics/summary?start=${startDate}&end=${endDate}`);
 
     return res.status(StatusCode.OK).json({
       fundingCount: fundingList.data.length,
@@ -276,7 +276,7 @@ export const getMyProjectPayments = async (req: Request, res: Response) => {
   try {
     const paymentClient = serviceClients['payment-service'];
     paymentClient.setAuthContext({ userId });
-    const paymentList = await paymentClient.get(`/reservations/history`);
+    const paymentList = await paymentClient.get(`/statistics/history`);
 
     return res.status(StatusCode.OK).json(paymentList.data);
   } catch (err) {
