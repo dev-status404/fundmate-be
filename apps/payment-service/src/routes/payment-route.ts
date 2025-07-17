@@ -6,7 +6,7 @@ import { PaymentInfo } from '@shared/entities';
 const router = Router();
 // 결제 정보 등록
 router.post('/', async (req: Request, res: Response) => {
-  const { method, bank, token, masked, extra } = req.body;
+  const { method, code, token, displayInfo, details } = req.body;
   const { userId } = res.locals.user;
   if (!method || !bank || !masked || !extra) {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: '올바른 결제정보를 입력해주세요' });

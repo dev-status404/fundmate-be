@@ -4,19 +4,37 @@ import { Age, Category, Follow, Image, InterestCategory, User } from '@shared/en
 import { Token } from '@shared/entities';
 import StatusCode from 'http-status-codes';
 import { serviceClients } from '@shared/config';
+import crypto from 'crypto';
 
 export const deleteUser = async (req: Request, res: Response) => {
   const userRepo = AppDataSource.getRepository(User);
   const tokenRepo = AppDataSource.getRepository(Token);
 
   const { userId } = res.locals.user;
+  const { password } = req.body;
   const refreshToken = req.header('x-refresh-token');
 
   if (!refreshToken) {
     return res.status(StatusCode.UNAUTHORIZED).json({ message: '리프레시 토큰 필요' });
   }
 
+  if (!password) {
+    return res.status(StatusCode.BAD_REQUEST).json({ message: '비밀번호 필요' });
+  }
+
   try {
+    const user = await userRepo.findOneBy({ userId });
+
+    if (!user || !user.password || !user.salt) {
+      return res.status(StatusCode.NOT_FOUND).json({ message: '존재하지 않는 유저' });
+    }
+
+    const hashPassword = crypto.pbkdf2Sync(password, user.salt, 10000, 64, 'sha512').toString('base64');
+
+    if (hashPassword !== user.password) {
+      return res.status(StatusCode.UNAUTHORIZED).json({ message: '비밀번호 불일치' });
+    }
+
     const tokenRecord = await tokenRepo.findOne({
       where: {
         user: { userId: userId },
@@ -272,11 +290,13 @@ export const getMyProjectStatistics = async (req: Request, res: Response) => {
 
 export const getMyProjectPayments = async (req: Request, res: Response) => {
   const { userId } = res.locals.user;
+  const page = req.query.page || 1;
+  const limit = req.query.limit;
 
   try {
     const paymentClient = serviceClients['payment-service'];
     paymentClient.setAuthContext({ userId });
-    const paymentList = await paymentClient.get(`/statistics/history`);
+    const paymentList = await paymentClient.get(`/statistics/history?page=${page}&limit=${limit}`);
 
     return res.status(StatusCode.OK).json(paymentList.data);
   } catch (err) {
