@@ -4,7 +4,7 @@ import { Project } from '@shared/entities';
 import { HttpStatusCode } from 'axios';
 
 type ProjectType = {
-  imageUrl: number;
+  imageUrl: string;
   title: string;
   shortDescription: string;
   goalAmount: number;
