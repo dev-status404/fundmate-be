@@ -110,7 +110,6 @@ export const getFundingDetail = async (req: Request, res: Response) => {
     return res.status(HttpStatusCode.BadRequest).json({ message: '잘못된 프로젝트 ID 값입니다.' });
   }
 
-  // [TODO] 프로젝트 좋아요 수 출력
   const projectRepo = AppDataSource.getRepository(Project);
   const optionRepo = AppDataSource.getRepository(OptionData);
 
@@ -120,6 +119,7 @@ export const getFundingDetail = async (req: Request, res: Response) => {
     .leftJoin('project.paymentSchedule', 'schedule')
     .leftJoin('project.likes', 'like')
     .select([
+      'project.projectId AS project_id',
       'project.image_url AS project_image_url',
       'project.title AS title',
       'project.current_amount AS current_price',
@@ -136,6 +136,8 @@ export const getFundingDetail = async (req: Request, res: Response) => {
 
       'DATE_ADD(project.end_date, INTERVAL 1 DAY) AS payment_date',
       'COUNT(schedule.payment_info_id) AS sponsor',
+
+      'COUNT(DISTINCT like.userId) AS likes',
     ])
     .where('project.projectId = :projectId', { projectId: projectDetailId });
 
@@ -152,6 +154,7 @@ export const getFundingDetail = async (req: Request, res: Response) => {
 
     if (projectQueryResult && optionQueryResult) {
       const project = {
+        project_id: projectQueryResult.project_id,
         image_url: projectQueryResult.project_image_url,
         title: projectQueryResult.title,
         current_price: projectQueryResult.current_price,
@@ -163,6 +166,7 @@ export const getFundingDetail = async (req: Request, res: Response) => {
         description: projectQueryResult.description,
         payment_date: projectQueryResult.payment_date,
         sponsor: Number(projectQueryResult.sponsor),
+        likes: Number(projectQueryResult.likes),
       };
 
       const users = {
