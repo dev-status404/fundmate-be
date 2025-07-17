@@ -6,9 +6,9 @@ import { PaymentInfo } from '@shared/entities';
 const router = Router();
 // 결제 정보 등록
 router.post('/', async (req: Request, res: Response) => {
-  const { method, bank, token, masked, extra } = req.body;
+  const { method, code, token, displayInfo, details } = req.body;
   const { userId } = res.locals.user;
-  if (!method || !bank || !token || !masked || !extra) {
+  if (!method || !code || !token || !displayInfo || !details) {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: '올바른 결제정보를 입력해주세요' });
   }
   try {
@@ -16,10 +16,10 @@ router.post('/', async (req: Request, res: Response) => {
     const paymentInfo = await repo.save({
       userId,
       method,
-      code: bank,
-      token: token,
-      displayInfo: masked,
-      details: extra,
+      code,
+      token,
+      displayInfo,
+      details,
     });
     const insertedId = paymentInfo.id;
     return res.status(StatusCodes.CREATED).json({ insertedId });

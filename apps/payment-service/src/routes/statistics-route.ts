@@ -37,7 +37,6 @@ router.get('/summary', async (req, res) => {
     const paymentScheduleRepo = AppDataSource.getRepository(PaymentSchedule);
     const paymentHistoryRepo = AppDataSource.getRepository(PaymentHistory);
 
-    // 1) 전체 스케줄과 히스토리 집계
     const [allSchedules, allScheduleCount] = await paymentScheduleRepo.findAndCount({ where: { userId } });
     const allScheduleAmount = allSchedules.reduce((sum, s) => sum + s.totalAmount, 0);
     const [allHistories, allHistoryCount] = await paymentHistoryRepo.findAndCount({
@@ -47,23 +46,21 @@ router.get('/summary', async (req, res) => {
     const totalAmountAll = allScheduleAmount + allHistoryAmount;
     const countAll = allScheduleCount + allHistoryCount;
 
-    // 2) 쿼리가 없으면 전체만 반환
     if (typeof startDate !== 'string' || typeof endDate !== 'string') {
       return res.status(StatusCodes.OK).json({ totalAmount: totalAmountAll, count: countAll });
     }
 
-    // 3) 기간 필터 적용
-    // 조건 객체 생성
-    const where: any = { userId, status: 'success' };
-    // 기간 필터 적용
+    const historyWhere: any = { userId, status: 'success' };
     if (typeof startDate === 'string' && typeof endDate === 'string') {
-      where.executedAt = Between(new Date(startDate), new Date(endDate));
+      historyWhere.executedAt = Between(new Date(startDate), new Date(endDate));
     }
+
     const scheduleWhere: any = { userId, scheduleDate: Between(new Date(startDate), new Date(endDate)) };
+
     const [periodSchedules, periodScheduleCount] = await paymentScheduleRepo.findAndCount({ where: scheduleWhere });
     const periodScheduleAmount = periodSchedules.reduce((sum, s) => sum + s.totalAmount, 0);
 
-    const [periodHistories, periodHistoryCount] = await paymentHistoryRepo.findAndCount({ where });
+    const [periodHistories, periodHistoryCount] = await paymentHistoryRepo.findAndCount({ where: historyWhere });
     const periodHistoryAmount = periodHistories.reduce((sum, h) => sum + h.totalAmount, 0);
 
     const totalAmountPeriod = periodScheduleAmount + periodHistoryAmount;
@@ -72,7 +69,7 @@ router.get('/summary', async (req, res) => {
     return res.status(StatusCodes.OK).json({
       totalAmount: totalAmountAll,
       count: countAll,
-      period: {
+      meta: {
         startDate,
         endDate,
         totalAmount: totalAmountPeriod,
@@ -91,6 +88,10 @@ router.get('/history', async (req, res) => {
   if (!userId) {
     return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
   }
+
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+  const offset = (page - 1) * limit;
   try {
     const paymentScheduleRepo = AppDataSource.getRepository(PaymentSchedule);
     const schedules = await paymentScheduleRepo.find({
@@ -119,10 +120,23 @@ router.get('/history', async (req, res) => {
       status: h.status,
     }));
 
-    const data = [...scheduleData, ...historyData].sort(
+    const totalData = [...scheduleData, ...historyData].sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
-    return res.status(StatusCodes.OK).json({ data });
+
+    const totalItems = totalData.length;
+    const totalPages = Math.ceil(totalItems / limit);
+    const data = totalData.slice(offset, offset + limit);
+
+    return res.status(StatusCodes.OK).json({
+      meta: {
+        totalItems,
+        totalPages,
+        currentPage: page,
+        limit,
+      },
+      data,
+    });
   } catch (err) {
     console.error(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '결제 내역 조회 실패' });

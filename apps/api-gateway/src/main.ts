@@ -1,12 +1,14 @@
 import express, { Request, Response } from 'express';
-import dotenv from 'dotenv';
+import cors, { CorsOptions } from 'cors';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import { httpLogger } from '@shared/logger';
+
 import { healthCheck } from './controllers/health-controller';
 import docsRoutes from './routes/docs-route';
 import apiRoutes from './routes/api-route';
-import path from 'path';
-import cors, { CorsOptions } from 'cors';
-import cookieParser from 'cookie-parser';
-import { httpLogger } from '@shared/logger';
+import awsRoutes from './routes/aws-route';
+import dotenv from 'dotenv';
 dotenv.config();
 
 const host = process.env.HOST ? process.env.HOST : 'localhost';
@@ -48,9 +50,10 @@ app.get('/', (req: Request, res: Response) => {
   return res.send({ message: "Hello I'm api gateway" });
 });
 
-app.get('/health-checks', healthCheck);
-app.use('/assets', express.static(path.join(__dirname, 'src/assets')));
 app.use('/docs', docsRoutes);
+app.use('/assets', express.static(path.join(__dirname, 'src/assets')));
+app.get('/health-checks', healthCheck);
+app.use('/upload', awsRoutes);
 app.use('/', apiRoutes);
 
 app.listen(port, host, () => {

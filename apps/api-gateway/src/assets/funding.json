@@ -7,8 +7,14 @@
   },
   "servers": [
     {
-      "url": "https://fundmat.store/api/fundings",
-      "description": "Fundings service"
+      "url": "https://fundmate.store/api/fundings",
+      "description": "Production 서버"
+    }
+  ],
+  "tags": [
+    {
+      "name": "fundings",
+      "description": "프로젝트·리워드·옵션 조회 및 생성 API"
     }
   ],
   "paths": {
@@ -16,28 +22,93 @@
       "get": {
         "tags": ["fundings"],
         "summary": "전체 프로젝트 목록 조회",
+        "description": "페이지네이션을 지원합니다.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/page"
+          },
+          {
+            "$ref": "#/components/parameters/pageSize"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "프로젝트 리스트",
+            "description": "프로젝트 리스트 조회 성공",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/Project" }
+                  "items": {
+                    "$ref": "#/components/schemas/Project"
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "summary": "예시 응답",
+                    "value": [
+                      {
+                        "project_id": 123,
+                        "user_id": 45,
+                        "title": "환경 보호 캠페인",
+                        "goal_amount": 1000000,
+                        "current_amount": 500000,
+                        "start_date": "2025-07-01",
+                        "end_date": "2025-08-01",
+                        "is_active": true
+                      }
+                    ]
+                  }
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
           }
         }
       },
       "post": {
         "tags": ["fundings"],
         "summary": "새 프로젝트 생성",
+        "description": "새 프로젝트를 등록합니다.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/Project" }
+              "schema": {
+                "$ref": "#/components/schemas/Project"
+              },
+              "examples": {
+                "sample": {
+                  "summary": "생성 요청 예시",
+                  "value": {
+                    "user_id": 45,
+                    "image_id": 10,
+                    "category_id": 3,
+                    "title": "새로운 프로젝트",
+                    "description": "프로젝트 설명",
+                    "story": "상세 스토리",
+                    "goal_amount": 2000000,
+                    "start_date": "2025-07-20",
+                    "end_date": "2025-09-20",
+                    "delivery_date": "2025-10-01",
+                    "is_active": true
+                  }
+                }
+              }
             }
           }
         },
@@ -46,9 +117,17 @@
             "description": "프로젝트 생성 성공",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Project" }
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
           }
         }
       }
@@ -57,22 +136,32 @@
       "get": {
         "tags": ["fundings"],
         "summary": "프로젝트 상세 조회",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
-            "name": "project_id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "integer" }
+            "$ref": "#/components/parameters/projectId"
           }
         ],
         "responses": {
           "200": {
-            "description": "단일 프로젝트",
+            "description": "단일 프로젝트 조회 성공",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Project" }
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
               }
             }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
           }
         }
       }
@@ -81,25 +170,35 @@
       "get": {
         "tags": ["fundings"],
         "summary": "특정 프로젝트 리워드 목록 조회",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
-            "name": "project_id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "integer" }
+            "$ref": "#/components/parameters/projectId"
           }
         ],
         "responses": {
           "200": {
-            "description": "리워드 리스트",
+            "description": "리워드 리스트 조회 성공",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/Reward" }
+                  "items": {
+                    "$ref": "#/components/schemas/Reward"
+                  }
                 }
               }
             }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
           }
         }
       }
@@ -108,77 +207,273 @@
       "get": {
         "tags": ["fundings"],
         "summary": "특정 프로젝트 옵션 목록 조회",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
-            "name": "project_id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "integer" }
+            "$ref": "#/components/parameters/projectId"
           }
         ],
         "responses": {
           "200": {
-            "description": "옵션 리스트",
+            "description": "옵션 리스트 조회 성공",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/OptionData" }
+                  "items": {
+                    "$ref": "#/components/schemas/OptionData"
+                  }
                 }
               }
             }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
           }
         }
       }
     }
   },
   "components": {
+    "parameters": {
+      "page": {
+        "name": "page",
+        "in": "query",
+        "description": "페이지 번호 (1부터 시작)",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        }
+      },
+      "pageSize": {
+        "name": "pageSize",
+        "in": "query",
+        "description": "한 페이지당 항목 수",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
+        }
+      },
+      "projectId": {
+        "name": "project_id",
+        "in": "path",
+        "required": true,
+        "description": "프로젝트 고유 ID",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
     "schemas": {
       "Project": {
         "type": "object",
+        "required": ["title", "goal_amount"],
         "properties": {
-          "project_id": { "type": "integer" },
-          "user_id": { "type": "integer" },
-          "image_id": { "type": "integer" },
-          "category_id": { "type": "integer" },
-          "title": { "type": "string" },
-          "description": { "type": "string" },
-          "story": { "type": "string" },
-          "goal_amount": { "type": "integer" },
-          "current_amount": { "type": "integer" },
-          "start_date": { "type": "string", "format": "date" },
-          "end_date": { "type": "string", "format": "date" },
-          "delivery_date": { "type": "string", "format": "date" },
-          "is_active": { "type": "boolean" },
-          "created_at": { "type": "string", "format": "date-time" },
-          "gender": { "type": "integer" },
-          "age_group": { "type": "integer" }
-        },
-        "required": ["title", "goal_amount"]
+          "project_id": {
+            "type": "integer",
+            "example": 123
+          },
+          "user_id": {
+            "type": "integer",
+            "example": 45
+          },
+          "image_id": {
+            "type": "integer",
+            "example": 10
+          },
+          "category_id": {
+            "type": "integer",
+            "example": 3
+          },
+          "title": {
+            "type": "string",
+            "example": "환경 보호 캠페인"
+          },
+          "description": {
+            "type": "string",
+            "example": "상세 프로젝트 설명"
+          },
+          "story": {
+            "type": "string",
+            "example": "스토리 텍스트..."
+          },
+          "goal_amount": {
+            "type": "integer",
+            "example": 1000000
+          },
+          "current_amount": {
+            "type": "integer",
+            "example": 500000
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-07-01"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-08-01"
+          },
+          "delivery_date": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-09-01"
+          },
+          "is_active": {
+            "type": "boolean",
+            "example": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-07-10T14:30:00Z"
+          },
+          "gender": {
+            "type": "integer",
+            "description": "지원 대상 성별 코드",
+            "example": 0
+          },
+          "age_group": {
+            "type": "integer",
+            "description": "지원 대상 연령대 코드",
+            "example": 3
+          }
+        }
       },
       "Reward": {
         "type": "object",
+        "required": ["project_id", "amount", "stock"],
         "properties": {
-          "reward_id": { "type": "integer" },
-          "project_id": { "type": "integer" },
-          "name": { "type": "string" },
-          "description": { "type": "string" },
-          "amount": { "type": "integer" },
-          "stock": { "type": "integer" }
-        },
-        "required": ["project_id", "amount", "stock"]
+          "reward_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "project_id": {
+            "type": "integer",
+            "example": 123
+          },
+          "name": {
+            "type": "string",
+            "example": "스티커 세트"
+          },
+          "description": {
+            "type": "string",
+            "example": "프로젝트 로고 스티커"
+          },
+          "amount": {
+            "type": "integer",
+            "example": 5000
+          },
+          "stock": {
+            "type": "integer",
+            "example": 100
+          }
+        }
       },
       "OptionData": {
         "type": "object",
+        "required": ["project_id", "title", "price"],
         "properties": {
-          "option_id": { "type": "integer" },
-          "project_id": { "type": "integer" },
-          "title": { "type": "string" },
-          "description": { "type": "string" },
-          "price": { "type": "integer" }
-        },
-        "required": ["project_id", "title", "price"]
+          "option_id": {
+            "type": "integer",
+            "example": 2
+          },
+          "project_id": {
+            "type": "integer",
+            "example": 123
+          },
+          "title": {
+            "type": "string",
+            "example": "초기 엑세스"
+          },
+          "description": {
+            "type": "string",
+            "example": "베타 버전 이용권"
+          },
+          "price": {
+            "type": "integer",
+            "example": 15000
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "NOT_FOUND"
+          },
+          "message": {
+            "type": "string",
+            "example": "요청하신 자원을 찾을 수 없습니다."
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "잘못된 요청",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "인증 실패",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "리소스 없음",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "서버 내부 오류",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
-  }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
 }

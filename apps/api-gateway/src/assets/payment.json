@@ -3,25 +3,49 @@
   "info": {
     "title": "Payment Service API",
     "version": "1.0.0",
-    "description": "결제 처리 기능을 제공하는 마이크로서비스"
+    "description": "결제 처리 기능(스케줄·히스토리·수단)을 제공하는 마이크로서비스입니다."
   },
   "servers": [
     {
-      "url": "https://fundmat.store/api/payment",
-      "description": "Payment processing server"
+      "url": "https://fundmate.store/api/payment",
+      "description": "Production 서버"
+    }
+  ],
+  "tags": [
+    {
+      "name": "payment",
+      "description": "결제 스케줄·히스토리·수단 관련 API"
     }
   ],
   "paths": {
-    "/payment/schedules": {
+    "/schedules": {
       "post": {
         "tags": ["payment"],
         "summary": "결제 스케줄 생성",
+        "description": "후원자가 원하는 일정에 맞춰 결제 예약을 생성합니다.",
+        "security": [{ "bearerAuth": [] }],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PaymentScheduleRequest"
+              "schema": { "$ref": "#/components/schemas/PaymentScheduleRequest" },
+              "examples": {
+                "sample": {
+                  "summary": "생성 요청 예시",
+                  "value": {
+                    "user_id": 42,
+                    "reward_id": 5,
+                    "payment_info_id": 3,
+                    "project_id": 123,
+                    "amount": 10000,
+                    "donate_amount": 1000,
+                    "total_amount": 11000,
+                    "schedule_date": "2025-08-01T10:00:00Z",
+                    "address": "서울시 강남구 역삼동",
+                    "address_number": 202,
+                    "address_info": "202호"
+                  }
+                }
               }
             }
           }
@@ -31,21 +55,24 @@
             "description": "결제 스케줄 생성 성공",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PaymentScheduleResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/PaymentScheduleResponse" }
               }
             }
-          }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       },
       "get": {
         "tags": ["payment"],
         "summary": "사용자 결제 스케줄 목록 조회",
-        "parameters": [{ "name": "user_id", "in": "query", "required": true, "schema": { "type": "integer" } }],
+        "description": "특정 사용자의 모든 결제 예약 목록을 반환합니다.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "$ref": "#/components/parameters/userId" }],
         "responses": {
           "200": {
-            "description": "스케줄 목록",
+            "description": "스케줄 목록 조회 성공",
             "content": {
               "application/json": {
                 "schema": {
@@ -54,18 +81,23 @@
                 }
               }
             }
-          }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     },
-    "/payment/histories": {
+    "/histories": {
       "get": {
         "tags": ["payment"],
         "summary": "사용자 결제 히스토리 조회",
-        "parameters": [{ "name": "user_id", "in": "query", "required": true, "schema": { "type": "integer" } }],
+        "description": "특정 사용자의 결제 실행 내역을 반환합니다.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "$ref": "#/components/parameters/userId" }],
         "responses": {
           "200": {
-            "description": "결제 히스토리 목록",
+            "description": "결제 히스토리 목록 조회 성공",
             "content": {
               "application/json": {
                 "schema": {
@@ -74,20 +106,39 @@
                 }
               }
             }
-          }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     },
-    "/payment/info": {
+    "/info": {
       "post": {
         "tags": ["payment"],
         "summary": "결제 수단 등록",
+        "description": "사용자의 결제 수단을 새로 등록합니다.",
+        "security": [{ "bearerAuth": [] }],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PaymentInfoRequest"
+              "schema": { "$ref": "#/components/schemas/PaymentInfoRequest" },
+              "examples": {
+                "sample": {
+                  "summary": "등록 요청 예시",
+                  "value": {
+                    "user_id": 42,
+                    "payment_method": "card",
+                    "bank_code": "KB",
+                    "display_info": "카드 (국민은행 1111-2222-3333)",
+                    "details": {
+                      "cardNumber": "1111-2222-3333-4444",
+                      "expiry": "12/25"
+                    },
+                    "is_primary": true
+                  }
+                }
               }
             }
           }
@@ -100,16 +151,21 @@
                 "schema": { "$ref": "#/components/schemas/PaymentInfoResponse" }
               }
             }
-          }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       },
       "get": {
         "tags": ["payment"],
         "summary": "사용자 결제 수단 목록 조회",
-        "parameters": [{ "name": "user_id", "in": "query", "required": true, "schema": { "type": "integer" } }],
+        "description": "특정 사용자가 등록한 결제 수단들을 반환합니다.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "$ref": "#/components/parameters/userId" }],
         "responses": {
           "200": {
-            "description": "결제 수단 목록",
+            "description": "결제 수단 목록 조회 성공",
             "content": {
               "application/json": {
                 "schema": {
@@ -118,28 +174,74 @@
                 }
               }
             }
-          }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "parameters": {
+      "userId": {
+        "name": "user_id",
+        "in": "query",
+        "description": "사용자 고유 ID",
+        "required": true,
+        "schema": { "type": "integer" }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "잘못된 요청",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "인증 실패 (토큰 없음 또는 만료)",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "서버 내부 오류",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      }
+    },
     "schemas": {
       "PaymentScheduleRequest": {
         "type": "object",
+        "required": ["user_id", "amount", "total_amount", "schedule_date"],
         "properties": {
           "user_id": { "type": "integer" },
           "reward_id": { "type": "integer" },
           "payment_info_id": { "type": "integer" },
           "project_id": { "type": "integer" },
-          "extra_amount": { "type": "integer" },
+          "amount": { "type": "integer" },
+          "donate_amount": { "type": "integer" },
           "total_amount": { "type": "integer" },
           "schedule_date": { "type": "string", "format": "date-time" },
           "address": { "type": "string" },
           "address_number": { "type": "integer" },
           "address_info": { "type": "string" }
-        },
-        "required": ["user_id", "schedule_date", "total_amount"]
+        }
       },
       "PaymentScheduleResponse": {
         "allOf": [
@@ -148,7 +250,10 @@
             "type": "object",
             "properties": {
               "id": { "type": "integer" },
-              "executed": { "type": "boolean" }
+              "executed": { "type": "boolean" },
+              "created_at": { "type": "string", "format": "date-time" },
+              "retry_count": { "type": "integer" },
+              "last_error_message": { "type": "string" }
             }
           }
         ]
@@ -160,21 +265,39 @@
           "user_id": { "type": "integer" },
           "schedule_id": { "type": "integer" },
           "payment_info_id": { "type": "integer" },
-          "amount": { "type": "number", "format": "decimal" },
+          "payment_method": { "type": "string" },
+          "bank_code": { "type": "string" },
+          "display_info": { "type": "string" },
+          "transaction_id": { "type": "string" },
+          "reward_id": { "type": "integer" },
+          "project_id": { "type": "integer" },
+          "option_title": { "type": "string" },
+          "option_amount": { "type": "integer" },
+          "project_title": { "type": "string" },
+          "project_image": { "type": "string" },
+          "amount": { "type": "integer" },
+          "donate_amount": { "type": "integer" },
+          "total_amount": { "type": "integer" },
+          "address": { "type": "string" },
+          "address_number": { "type": "integer" },
+          "address_info": { "type": "string" },
           "executed_at": { "type": "string", "format": "date-time" },
-          "status": { "type": "string", "enum": ["success", "fail", "cancel"] }
+          "status": { "type": "string", "enum": ["success", "fail", "cancel"] },
+          "created_at": { "type": "string", "format": "date-time" },
+          "error_log": { "type": "string" }
         }
       },
       "PaymentInfoRequest": {
         "type": "object",
+        "required": ["user_id", "payment_method", "details"],
         "properties": {
           "user_id": { "type": "integer" },
           "payment_method": { "type": "string", "enum": ["bank_transfer", "card"] },
+          "bank_code": { "type": "string" },
           "display_info": { "type": "string" },
           "details": { "type": "object" },
           "is_primary": { "type": "boolean" }
-        },
-        "required": ["user_id", "payment_method", "details"]
+        }
       },
       "PaymentInfoResponse": {
         "allOf": [
@@ -188,7 +311,15 @@
             }
           }
         ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "string" },
+          "message": { "type": "string" }
+        }
       }
     }
-  }
+  },
+  "security": [{ "bearerAuth": [] }]
 }

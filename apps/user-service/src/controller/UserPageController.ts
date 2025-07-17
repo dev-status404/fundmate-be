@@ -62,7 +62,7 @@ export const getSupporterProfile = async (req: Request, res: Response) => {
 
     const paymentClient = serviceClients['payment-service'];
     paymentClient.setAuthContext({ userId });
-    const paymentList = await paymentClient.get(`/reservations/count`);
+    const paymentList = await paymentClient.get(`/statistics/count`);
 
     return res.status(StatusCode.OK).json({
       imageId: user.image?.imageId ?? null,
