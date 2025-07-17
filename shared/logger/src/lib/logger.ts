@@ -36,7 +36,7 @@ export const httpLogger = pinoHttp({
   },
   customReceivedMessage: (rawReq: IncomingMessage, _res) => {
     const req = rawReq as Request;
-    const parts = [`[REQUEST] ${req.method}: ${req.url}`];
+    const parts = [`[REQUEST] (---) ${req.method}: ${req.url}`];
     if (req.query && Object.keys(req.query).length > 0) {
       parts.push(`query=${JSON.stringify(req.query)}`);
     }

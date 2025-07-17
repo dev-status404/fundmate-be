@@ -8,7 +8,7 @@ const router = Router();
 router.post('/', async (req: Request, res: Response) => {
   const { method, bank, token, masked, extra } = req.body;
   const { userId } = res.locals.user;
-  if (!method || !bank || !token || !masked || !extra) {
+  if (!method || !bank || !masked || !extra) {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: '올바른 결제정보를 입력해주세요' });
   }
   try {
@@ -17,7 +17,6 @@ router.post('/', async (req: Request, res: Response) => {
       userId,
       method,
       code: bank,
-      token: token,
       displayInfo: masked,
       details: extra,
     });
