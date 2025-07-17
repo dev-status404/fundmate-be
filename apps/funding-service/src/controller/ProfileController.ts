@@ -61,7 +61,7 @@ export const getMyFundingList = async (req: Request, res: Response) => {
       return res.status(HttpStatusCode.Ok).json([]);
     }
 
-    return res.status(StatusCodes.OK).json(
+    return res.status(HttpStatusCode.Ok).json(
     queryResult.map((item) => ({
       ...item,
       achievement: Number(item.achievement),
@@ -95,12 +95,14 @@ export const getOthersFundingList = async (req: Request, res: Response) => {
       return res.status(HttpStatusCode.Ok).json([]);
     }
 
+    return res.status(HttpStatusCode.Ok).json(
     queryResult.map((item) => ({
       ...item,
       achievement: Number(item.achievement),
       remaining_day: Number(item.remaining_day),
       current_amount: Number(item.current_amount),
     }))
+  );
   } catch (err) {
     console.error(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '서버 문제가 발생했습니다.' });
