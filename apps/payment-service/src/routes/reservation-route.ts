@@ -285,6 +285,7 @@ router.delete('/:id', async (req, res) => {
         projectId: schedule.project.projectId,
         optionTitle: schedule.option?.title,
         optionAmount: schedule.option?.price,
+        project: schedule.project,
         projectTitle: schedule.project.title,
         projectImage: schedule.project.imageUrl,
         amount: schedule.amount,

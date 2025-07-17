@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import { AppDataSource } from '../data-source';
 import { PaymentHistory, PaymentSchedule } from '@shared/entities';
 import { Between } from 'typeorm';
+import { serviceClients } from '@shared/config';
 
 const router = Router();
 
@@ -143,4 +144,134 @@ router.get('/history', async (req, res) => {
   }
 });
 
+export interface MyProjectListItem {
+  project_id: number;
+  image_url: string;
+  title: string;
+  short_description: string;
+  current_amount: number;
+  achievement: number;
+  remaining_day: number;
+}
+
+// 통계용 그래프
+router.get("/graph", async (req, res)=>{
+  const { userId, email} = res.locals.user;
+  if (!userId) {
+    return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
+  }
+
+  let targetStr: string;
+  const { target } = req.query;
+  if (typeof target !== 'string' || target.trim() === '') {
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    // 월은 0부터 시작하므로 +1, 두 자리로 패딩
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    targetStr = `${yyyy}-${mm}`;
+  } else {
+    targetStr = target;
+  }
+
+    const regex = /^\d{4}-(0[1-9]|1[0-2])$/;
+  if (!regex.test(targetStr)) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: 'target 형식이 잘못되었습니다. "YYYY-MM" 형태여야 합니다.' });
+  }
+
+  const [yearStr, monthStr] = targetStr.split('-');
+  const year = parseInt(yearStr, 10);
+  const month = parseInt(monthStr, 10);
+  const start = new Date(year, month - 1, 1, 0, 0, 0);
+  const end   = new Date(year, month, 0, 23, 59, 59);
+  const daysInMonth = end.getDate();
+
+  try{
+    const fundingClient = serviceClients['funding-service'];
+    fundingClient.setAuthContext({
+      userId,
+      email,
+      accessToken:  req.header('x-access-token')  || '',
+      refreshToken: req.header('x-refresh-token') || '',
+    });
+    const projectList = await fundingClient.get<MyProjectListItem[]>('/profiles/my-projects');
+    const myFundingIdList = projectList.data.map( p => p.project_id);
+    if (myFundingIdList.length === 0) {
+
+      return res.status(StatusCodes.OK).json({
+          meta: {
+            year,
+            month,
+            daysInMonth,
+          },
+          data: [
+            { id: 'amount', data: [] },
+            { id: 'count',  data: [] },
+          ]
+        });
+      }
+
+    const emptyDayArray = Array.from({ length: daysInMonth }, (_, i) => i+1);
+
+    const historyRepo = AppDataSource.getRepository(PaymentHistory);
+    const rawHistory = await historyRepo
+      .createQueryBuilder('h')
+      .select("DAY(CONVERT_TZ(h.created_at, '+00:00', '+09:00'))", 'day')
+      .addSelect('COALESCE(SUM(h.total_amount), 0)', 'totalAmount')
+      .addSelect('COUNT(DISTINCT h.user_id)', 'sponsorCount')
+      .where('h.status = :status', { status: 'success' })
+      .andWhere('h.project_id IN (:...ids)', { ids: myFundingIdList })
+      .andWhere('h.created_at BETWEEN :start AND :end', { start, end })
+      .groupBy('day')
+      .orderBy('day')
+      .getRawMany<{ day: string; totalAmount: string; sponsorCount: string }>();
+
+    const scheduleRepo = AppDataSource.getRepository(PaymentSchedule);
+    const rawSchedule = await scheduleRepo
+      .createQueryBuilder('s')
+      .leftJoinAndSelect('s.project', 'project')
+      .select("DAY(CONVERT_TZ(s.created_at, '+00:00', '+09:00'))", 'day')
+      .addSelect('COALESCE(SUM(s.total_amount), 0)', 'totalAmount')
+      .addSelect('COUNT(*)', 'scheduleCount')
+      .where('s.executed = :exec', { exec: false })
+      .andWhere('project.project_id IN (:...ids)', { ids: myFundingIdList })
+      .andWhere('s.created_at BETWEEN :start AND :end',{ start, end })
+      .groupBy('day')
+      .orderBy('day')
+      .getRawMany<{ day: string; totalAmount: string; scheduleCount: string }>();
+    
+    const amountSeries = {
+      id: 'amount',
+      data: emptyDayArray.map(d => {
+        const h = rawHistory.find(r => +r.day === d);
+        const s = rawSchedule.find(r => +r.day === d);
+        const y = (h ? +h.totalAmount : 0) + (s ? +s.totalAmount : 0);
+        return { x: d, y };
+      })
+    };
+    const countSeries = {
+      id: 'count',
+      data: emptyDayArray.map(d => {
+        const h = rawHistory.find(r => +r.day === d);
+        const s = rawSchedule.find(r => +r.day === d);
+        const y = (h ? +h.sponsorCount : 0) + (s ? +s.scheduleCount : 0);
+        return { x: d, y };
+      })
+    };
+
+    return res.status(StatusCodes.OK).json({
+      meta: {
+        year,
+        month,
+        daysInMonth,
+      },
+      data: [ amountSeries, countSeries ]
+    });
+
+  }catch(err){
+    console.log(err)
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '그래프 데이터 불러오기 실패'})
+  }
+})
 export default router;
