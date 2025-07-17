@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import cors, { CorsOptions } from 'cors';
 import path from 'path';
 import cookieParser from 'cookie-parser';
@@ -28,7 +28,6 @@ const allowedOrigins = [
 
 const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
-    // origin === undefined when no Origin header (Postman, curl)
     if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
@@ -39,7 +38,6 @@ const corsOptions: CorsOptions = {
   credentials: true,
 };
 
-// 3) Apply it
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 app.use(express.json());
