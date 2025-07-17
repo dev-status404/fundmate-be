@@ -3,208 +3,231 @@
   "info": {
     "title": "Auth Service API",
     "version": "1.0.0",
-    "description": "Authentication 관련 기능을 제공하는 마이크로서비스",
-    "contact": {
-      "email": "apiteam@fundmat.store"
-    },
-    "license": {
-      "name": "Apache 2.0",
-      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
-    }
+    "description": "Authentication 관련 기능을 제공하는 마이크로서비스"
   },
   "servers": [
     {
-      "url": "https://fundmat.store/api/auths",
-      "description": "Authentication server"
+      "url": "https://fundmate.store/api/auth",
+      "description": "Production 서버"
+    }
+  ],
+  "tags": [
+    {
+      "name": "auth",
+      "description": "로그인·회원가입·토큰 갱신·이메일 인증·소셜 로그인·로그아웃 등 인증 관련 API"
     }
   ],
   "paths": {
-    "/auth/login": {
+    "/login": {
       "post": {
         "tags": ["auth"],
         "summary": "로그인",
+        "description": "이메일과 비밀번호로 로그인하고 access/refresh 토큰을 발급합니다.",
+        "security": [],
         "requestBody": {
-          "description": "사용자 이메일과 비밀번호로 로그인 요청",
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
-              }
+              "schema": { "$ref": "#/components/schemas/LoginRequest" }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "로그인 성공, access_token 및 refresh_token 반환",
+            "description": "로그인 성공",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TokenResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/TokenResponse" }
               }
             }
           },
-          "400": {
-            "description": "잘못된 요청",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     },
-    "/auth/token": {
+    "/token": {
       "post": {
         "tags": ["auth"],
         "summary": "토큰 갱신",
+        "description": "Refresh Token으로 새로운 Access Token을 발급합니다.",
+        "security": [],
         "requestBody": {
-          "description": "Refresh Token으로 Access Token 갱신",
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RefreshRequest"
-              }
+              "schema": { "$ref": "#/components/schemas/RefreshRequest" }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "새로운 access_token 발급",
+            "description": "토큰 갱신 성공",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TokenResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/TokenResponse" }
               }
             }
-          }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     },
-    "/auth/signup": {
+    "/signup": {
       "post": {
         "tags": ["auth"],
         "summary": "회원가입",
+        "description": "이메일 인증 코드 확인 후 새 사용자를 등록합니다.",
+        "security": [],
         "requestBody": {
-          "description": "새 사용자 등록",
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SignupRequest"
-              }
+              "schema": { "$ref": "#/components/schemas/SignupRequest" }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": "회원가입 성공"
-          }
+          "201": { "description": "회원가입 성공" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     },
-    "/auth/password": {
+    "/password": {
       "patch": {
         "tags": ["auth"],
         "summary": "비밀번호 재설정",
+        "description": "이메일 인증 코드 확인 후 비밀번호를 재설정합니다.",
+        "security": [],
         "requestBody": {
-          "description": "이메일 인증 코드 확인 후 비밀번호 재설정",
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ResetPasswordRequest"
-              }
+              "schema": { "$ref": "#/components/schemas/ResetPasswordRequest" }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "비밀번호 재설정 성공"
-          }
+          "200": { "description": "비밀번호 재설정 성공" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     },
-    "/auth/codes/send": {
+    "/codes/send": {
       "post": {
         "tags": ["auth"],
         "summary": "이메일 인증 코드 전송",
+        "description": "회원가입/비밀번호 재설정을 위한 인증 코드를 이메일로 전송합니다.",
+        "security": [],
         "requestBody": {
-          "description": "이메일로 인증 코드 전송 요청",
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EmailRequest"
-              }
+              "schema": { "$ref": "#/components/schemas/EmailRequest" }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "인증 코드 전송 완료"
-          }
+          "200": { "description": "인증 코드 전송 완료" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     },
-    "/auth/codes/verify": {
+    "/codes/verify": {
       "post": {
         "tags": ["auth"],
         "summary": "이메일 인증 코드 확인",
+        "description": "전송된 인증 코드를 검증합니다.",
+        "security": [],
         "requestBody": {
-          "description": "전송된 인증 코드 확인",
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/VerifyRequest"
-              }
+              "schema": { "$ref": "#/components/schemas/VerifyRequest" }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "인증 코드 확인 성공"
-          }
+          "200": { "description": "인증 코드 확인 성공" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     },
-    "/auth/google": {
+    "/google": {
       "post": {
         "tags": ["auth"],
         "summary": "Google 소셜 로그인",
+        "description": "구글 OAuth를 통해 로그인하고 access token을 발급합니다.",
+        "security": [],
         "responses": {
           "200": {
-            "description": "로그인 성공, access_token 반환"
-          }
+            "description": "로그인 성공",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TokenResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     },
-    "/auth/kakao": {
+    "/kakao": {
       "post": {
         "tags": ["auth"],
         "summary": "Kakao 소셜 로그인",
+        "security": [],
         "responses": {
           "200": {
-            "description": "로그인 성공, access_token 반환"
-          }
+            "description": "로그인 성공",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TokenResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     },
-    "/auth/naver": {
+    "/naver": {
       "post": {
         "tags": ["auth"],
         "summary": "Naver 소셜 로그인",
+        "security": [],
         "responses": {
           "200": {
-            "description": "로그인 성공, access_token 반환"
-          }
+            "description": "로그인 성공",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TokenResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/logout": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "로그아웃",
+        "description": "Refresh 토큰 만료 처리 및 클라이언트 쿠키 삭제를 수행합니다.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "로그아웃 성공" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     }
@@ -213,54 +236,54 @@
     "schemas": {
       "LoginRequest": {
         "type": "object",
+        "required": ["email", "password"],
         "properties": {
           "email": { "type": "string", "format": "email" },
           "password": { "type": "string", "format": "password" }
-        },
-        "required": ["email", "password"]
+        }
       },
       "RefreshRequest": {
         "type": "object",
+        "required": ["refresh_token"],
         "properties": {
           "refresh_token": { "type": "string" }
-        },
-        "required": ["refresh_token"]
+        }
       },
       "SignupRequest": {
         "type": "object",
+        "required": ["nickname", "email", "code", "password", "confirm_password"],
         "properties": {
           "nickname": { "type": "string" },
           "email": { "type": "string", "format": "email" },
           "code": { "type": "string" },
           "password": { "type": "string" },
           "confirm_password": { "type": "string" }
-        },
-        "required": ["nickname", "email", "code", "password", "confirm_password"]
+        }
       },
       "ResetPasswordRequest": {
         "type": "object",
+        "required": ["email", "code", "new_password", "confirm_password"],
         "properties": {
           "email": { "type": "string", "format": "email" },
           "code": { "type": "string" },
           "new_password": { "type": "string" },
           "confirm_password": { "type": "string" }
-        },
-        "required": ["email", "code", "new_password", "confirm_password"]
+        }
       },
       "EmailRequest": {
         "type": "object",
+        "required": ["email"],
         "properties": {
           "email": { "type": "string", "format": "email" }
-        },
-        "required": ["email"]
+        }
       },
       "VerifyRequest": {
         "type": "object",
+        "required": ["email", "code"],
         "properties": {
           "email": { "type": "string", "format": "email" },
           "code": { "type": "string" }
-        },
-        "required": ["email", "code"]
+        }
       },
       "TokenResponse": {
         "type": "object",
@@ -282,6 +305,32 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "잘못된 요청",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "인증 실패",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "서버 내부 오류",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
       }
     }
   },

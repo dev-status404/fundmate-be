@@ -7,12 +7,12 @@
   },
   "servers": [
     {
-      "url": "https://fundmat.store/api/public",
+      "url": "https://fundmate.store/api/public",
       "description": "Public content server"
     }
   ],
   "paths": {
-    "/public/stats": {
+    "/stats": {
       "get": {
         "tags": ["public"],
         "summary": "통계 데이터 목록 조회",
@@ -57,7 +57,7 @@
         }
       }
     },
-    "/public/patents": {
+    "/patents": {
       "get": {
         "tags": ["public"],
         "summary": "특허 정보 목록 조회",
@@ -76,7 +76,7 @@
         }
       }
     },
-    "/public/patents/{patent_id}": {
+    "/patents/{patent_id}": {
       "get": {
         "tags": ["public"],
         "summary": "특정 특허 정보 조회",
