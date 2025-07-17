@@ -79,7 +79,7 @@ export const getRecentlyViewedFundingList = async (req: Request, res: Response) 
       'project.shortDescription AS shortDescription',
       'project.goalAmount AS goalAmount',
       'project.currentAmount AS currentAmount',
-      'FLOOR((current_amount / goal_amount)*100) AS achievement',
+      'FLOOR((current_amount / NULLIF(goal_amount, 0))*100) AS achievement',
     ])
     .addSelect('DATEDIFF(project.end_date, NOW()) AS remainingDay')
     .where('project.projectId IN (:...projectIds)', { projectIds });
