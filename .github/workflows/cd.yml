@@ -53,13 +53,13 @@ jobs:
           REFRESH_TOKEN_SECRET = ${{ secrets.REFRESH_TOKEN_SECRET}}!
           GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID}}
           GOOGLE_CLIENT_SECRET=${{secrets.GOOGLE_CLIENT_SECRET}}
-          GOOGLE_REDIRECT_URI=http://localhost:3002/oauth/google/callback
+          GOOGLE_REDIRECT_URI=http://localhost:5000/oauth/google/callback
           KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}
           KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}
-          KAKAO_REDIRECT_URI=http://localhost:3002/oauth/kakao/callback
+          KAKAO_REDIRECT_URI=http://localhost:5000/oauth/kakao/callback
           NAVER_CLIENT_ID=${{secrets.NAVER_CLIENT_ID}}
           NAVER_CLIENT_SECRET=${{secrets.NAVER_CLIENT_SECRET}}
-          NAVER_REDIRECT_URI=http://localhost:3002/oauth/naver/callback 
+          NAVER_REDIRECT_URI=http://localhost:5000/oauth/naver/callback 
           PUBLIC_CONSUMER_KEY=${{secrets.PUBLIC_CONSUMER_KEY}}
           PUBLIC_CONSUMER_SECRET=${{secrets.PUBLIC_CONSUMER_SECRET}}
           EOL
