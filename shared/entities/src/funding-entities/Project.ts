@@ -64,5 +64,5 @@ export class Project {
   comments!: Comment[];
 
   @OneToMany(() => PaymentSchedule, (payment_schedule) => payment_schedule.project)
-  paymentSchedule!: PaymentSchedule;
+  paymentSchedule!: PaymentSchedule[];
 }
