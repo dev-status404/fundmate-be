@@ -3,100 +3,179 @@
   "info": {
     "title": "AI Service API",
     "version": "1.0.0",
-    "description": "AI 모델 추론 기능을 제공하는 마이크로서비스"
+    "description": "AI 모델 추론 기능을 제공하는 마이크로서비스입니다."
   },
   "servers": [
     {
-      "url": "https://fundmat.store/api/ai",
-      "description": "AI processing server"
+      "url": "https://fundmate.store/api/ai",
+      "description": "Production 서버"
     }
   ],
-  "paths": {
-    "/ai/models": {
-      "get": {
-        "tags": ["ai"],
-        "summary": "사용 가능한 모델 목록 조회",
-        "responses": {
-          "200": {
-            "description": "모델 리스트",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": { "$ref": "#/components/schemas/ModelInfo" }
-                }
-              }
+  "tags": [
+    {
+      "name": "ai",
+      "description": "AI 모델 조회 및 추론 API"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "잘못된 요청",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "인증 실패",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "서버 내부 오류",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
             }
           }
         }
       }
     },
-    "/ai/predict": {
+    "schemas": {
+      "ModelInfo": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "name": { "type": "string", "example": "gpt-4" },
+          "version": { "type": "string", "example": "4.0" },
+          "createdAt": { "type": "string", "format": "date-time", "example": "2025-07-01T12:34:56Z" }
+        }
+      },
+      "PredictionRequest": {
+        "type": "object",
+        "required": ["modelId", "input"],
+        "properties": {
+          "modelId": { "type": "integer", "example": 1 },
+          "input": {
+            "type": "object",
+            "description": "모델 입력 데이터",
+            "example": { "prompt": "Hello, world!" }
+          }
+        }
+      },
+      "PredictionResponse": {
+        "type": "object",
+        "properties": {
+          "modelId": { "type": "integer", "example": 1 },
+          "output": {
+            "type": "object",
+            "description": "모델 추론 결과",
+            "example": { "text": "안녕하세요!" }
+          },
+          "latencyMs": { "type": "number", "description": "처리 시간(밀리초)", "example": 123.45 }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "string", "example": "INVALID_INPUT" },
+          "message": { "type": "string", "example": "modelId는 필수입니다." }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/models": {
+      "get": {
+        "tags": ["ai"],
+        "summary": "사용 가능한 모델 목록 조회",
+        "description": "AI 모델 리스트를 조회합니다.",
+        "responses": {
+          "200": {
+            "description": "모델 리스트 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ModelInfo" }
+                },
+                "examples": {
+                  "sample": {
+                    "summary": "예시 응답",
+                    "value": [
+                      {
+                        "id": 1,
+                        "name": "gpt-4",
+                        "version": "4.0",
+                        "createdAt": "2025-07-01T12:34:56Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/predict": {
       "post": {
         "tags": ["ai"],
         "summary": "모델 추론 요청",
+        "description": "입력 데이터를 기반으로 AI 모델 추론 결과를 반환합니다.",
         "requestBody": {
-          "description": "입력 데이터를 기반으로 AI 모델 추론",
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/PredictionRequest" }
+              "schema": { "$ref": "#/components/schemas/PredictionRequest" },
+              "examples": {
+                "sample": {
+                  "summary": "예시 요청",
+                  "value": {
+                    "modelId": 1,
+                    "input": {
+                      "prompt": "Hello, world!"
+                    }
+                  }
+                }
+              }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "추론 결과",
+            "description": "추론 결과 반환 성공",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/PredictionResponse" }
               }
             }
           },
-          "400": {
-            "description": "잘못된 요청",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "ModelInfo": {
-        "type": "object",
-        "properties": {
-          "model_id": { "type": "integer" },
-          "name": { "type": "string" },
-          "version": { "type": "string" },
-          "created_at": { "type": "string", "format": "date-time" }
-        }
-      },
-      "PredictionRequest": {
-        "type": "object",
-        "properties": {
-          "model_id": { "type": "integer" },
-          "input": { "type": "object" }
-        },
-        "required": ["model_id", "input"]
-      },
-      "PredictionResponse": {
-        "type": "object",
-        "properties": {
-          "model_id": { "type": "integer" },
-          "output": { "type": "object" },
-          "latency_ms": { "type": "number" }
-        }
-      },
-      "ErrorResponse": {
-        "type": "object",
-        "properties": {
-          "code": { "type": "string" },
-          "message": { "type": "string" }
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     }

@@ -8,7 +8,7 @@ const router = Router();
 router.post('/', async (req: Request, res: Response) => {
   const { method, code, token, displayInfo, details } = req.body;
   const { userId } = res.locals.user;
-  if (!method || !bank || !masked || !extra) {
+  if (!method || !code || !token || !displayInfo || !details) {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: '올바른 결제정보를 입력해주세요' });
   }
   try {
@@ -16,9 +16,10 @@ router.post('/', async (req: Request, res: Response) => {
     const paymentInfo = await repo.save({
       userId,
       method,
-      code: bank,
-      displayInfo: masked,
-      details: extra,
+      code,
+      token,
+      displayInfo,
+      details,
     });
     const insertedId = paymentInfo.id;
     return res.status(StatusCodes.CREATED).json({ insertedId });

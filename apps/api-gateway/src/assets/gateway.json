@@ -1,0 +1,275 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "API Gateway Swagger",
+    "version": "1.0.0",
+    "description": "서비스 헬스체크, API 문서, S3 업로드 presign 및 complete 기능을 제공하는 API Gateway용 Swagger 문서입니다."
+  },
+  "servers": [
+    {
+      "url": "https://fundmate.store/api",
+      "description": "Production 서버"
+    }
+  ],
+  "tags": [
+    {
+      "name": "system",
+      "description": "서비스 상태 확인 및 문서 제공용 엔드포인트"
+    },
+    {
+      "name": "upload",
+      "description": "S3 업로드 presign 및 완료 알림 관련 API"
+    }
+  ],
+  "paths": {
+    "/health-checks": {
+      "get": {
+        "tags": ["system"],
+        "summary": "서비스 헬스체크",
+        "description": "서비스가 정상 동작 중인지 확인합니다.",
+        "responses": {
+          "200": {
+            "description": "서비스 정상 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthCheck"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/docs": {
+      "get": {
+        "tags": ["system"],
+        "summary": "API 문서 보기",
+        "description": "Swagger UI 또는 Redoc 페이지를 반환합니다.",
+        "responses": {
+          "200": {
+            "description": "HTML 형식의 API 문서",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/upload/presign": {
+      "get": {
+        "tags": ["upload"],
+        "summary": "S3 업로드 presign URL 생성",
+        "description": "클라이언트가 S3에 파일을 업로드할 수 있도록 presigned URL과 key를 반환합니다.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "업로드할 파일 이름"
+          },
+          {
+            "name": "contentType",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "파일의 MIME 타입"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Presign URL 및 key 반환 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PresignResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/upload/complete": {
+      "post": {
+        "tags": ["upload"],
+        "summary": "S3 업로드 완료 알림",
+        "description": "S3 업로드가 완료된 후 반환된 key를 서버에 저장하도록 알립니다.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadCompleteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "업로드 완료 처리 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadCompleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "BadRequest": {
+        "description": "잘못된 요청",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "인증 실패",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "서버 내부 오류",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "HealthCheck": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "OK"
+          }
+        }
+      },
+      "PresignResponse": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://status404-s3.s3.amazonaws.com/uploads/1690000000000-a.png?X-Amz-..."
+          },
+          "key": {
+            "type": "string",
+            "example": "uploads/1690000000000-a.png"
+          }
+        }
+      },
+      "UploadCompleteRequest": {
+        "type": "object",
+        "required": ["key"],
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "S3에 업로드된 object key",
+            "example": "uploads/1690000000000-a.png"
+          }
+        }
+      },
+      "UploadCompleteResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "업로드 완료"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://status404-s3.s3.amazonaws.com/uploads/1690000000000-a.png"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "INVALID_REQUEST"
+          },
+          "message": {
+            "type": "string",
+            "example": "key가 필요합니다."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}

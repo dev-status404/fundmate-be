@@ -221,8 +221,8 @@ router.put('/:id/payment_info', async (req, res) => {
   const { userId } = res.locals.user;
   if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
   const reservationId = +req.params.id;
-  const { method, bank, masked, extra } = req.body;
-  if (!method || !bank || !masked || !extra) {
+  const { method, code, token, displayInfo, details } = req.body;
+  if (!method || !code || !token || !displayInfo || !details) {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: '올바른 결제정보를 입력해주세요' });
   }
   try {

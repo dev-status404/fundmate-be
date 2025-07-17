@@ -50,9 +50,9 @@ app.get('/', (req: Request, res: Response) => {
   return res.send({ message: "Hello I'm api gateway" });
 });
 
-app.get('/health-checks', healthCheck);
-app.use('/assets', express.static(path.join(__dirname, 'src/assets')));
 app.use('/docs', docsRoutes);
+app.use('/assets', express.static(path.join(__dirname, 'src/assets')));
+app.get('/health-checks', healthCheck);
 app.use('/upload', awsRoutes);
 app.use('/', apiRoutes);
 
