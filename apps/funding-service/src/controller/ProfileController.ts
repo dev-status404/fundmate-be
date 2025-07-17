@@ -12,12 +12,15 @@ export const getMyFundingRecentlyFinished = async (req: Request, res: Response) 
 
   const query = projectRepo
     .createQueryBuilder('project')
+    .leftJoin('project.paymentSchedule', 'schedule')
     .select([
       'project.image_url',
       'project.title',
       'DATE(CONVERT_TZ(project.start_date, "+00:00", "+09:00")) AS start_date',
       'DATE(CONVERT_TZ(project.end_date, "+00:00", "+09:00")) AS end_date',
       'FLOOR((current_amount / goal_amount)*100) AS achievement',
+      'project.currentAmount AS current_amount',
+      'COUNT(schedule.payment_info_id) AS sponsor',
     ])
     .where('project.user_id = :userId', { userId: userId })
     .andWhere('project.is_active = 0')
