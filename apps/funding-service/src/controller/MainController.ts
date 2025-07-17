@@ -201,13 +201,17 @@ export const getPopularFundingList = async (req: Request, res: Response) => {
     .limit(8);
 
   try {
-    const result = await query.getRawMany();
+    const queryResult = await query.getRawMany();
 
-    if (result.length == 0) {
+    if (queryResult.length == 0) {
       return res.status(HttpStatusCode.Ok).json([]);
     }
 
-    return res.status(HttpStatusCode.Ok).json(result);
+    return res.status(HttpStatusCode.Ok).json(
+      queryResult.map((item) => ({
+        ...item,
+        achievement: Number(item.achievement),
+      })));
   } catch (err) {
     console.error(err);
     return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
