@@ -36,19 +36,21 @@ export const httpLogger = pinoHttp({
   },
   customReceivedMessage: (rawReq: IncomingMessage, _res) => {
     const req = rawReq as Request;
-    const parts = [`[REQUEST] ${req.method} - ${req.url}`];
-
+    const parts = [`[REQUEST] ${req.method}: ${req.url}`];
     if (req.query && Object.keys(req.query).length > 0) {
       parts.push(`query=${JSON.stringify(req.query)}`);
     }
-
     if (req.body && Object.keys(req.body).length > 0) {
       parts.push(`body=${JSON.stringify(req.body)}`);
     }
-
-    return parts.join(' ') + '\n';
+    return parts.join('\n') + '\n';
   },
   customSuccessMessage: (req, res, responseTime) =>
     `[SUCCESS] (${res.statusCode}) ${req.method}: ${req.url} in ${responseTime}ms`,
   customErrorMessage: (req, res, err) => `[ERROR] (${res.statusCode}) ${req.method}: ${req.url} → ${err.message}`,
+  customLogLevel: (req, res) => {
+    if (res.statusCode >= 500) return 'error';
+    if (res.statusCode >= 400) return 'warn';
+    return 'info';
+  },
 });
