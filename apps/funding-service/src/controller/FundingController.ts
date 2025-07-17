@@ -118,6 +118,7 @@ export const getFundingDetail = async (req: Request, res: Response) => {
     .createQueryBuilder('project')
     .leftJoin('project.user', 'user')
     .leftJoin('project.paymentSchedule', 'schedule')
+    .leftJoin('project.likes', 'like')
     .select([
       'project.image_url AS project_image_url',
       'project.title AS title',
@@ -165,7 +166,7 @@ export const getFundingDetail = async (req: Request, res: Response) => {
       };
 
       const users = {
-        image_url: projectQueryResult.user_image_url,
+        image_id: projectQueryResult.user_image_id,
         nickname: projectQueryResult.nickname,
         content: projectQueryResult.content,
       };
