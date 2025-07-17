@@ -9,16 +9,22 @@ export class PaymentHistory {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ name: 'user_id', type: 'int' })
+  @Column({ name: 'user_id', type: 'int', nullable: false })
   userId!: number;
 
-  @Column({ name: 'schedule_id', type: 'int' })
+  @Column({ name: 'schedule_id', type: 'int', nullable:false})
   scheduleId!: number;
 
-  @Column({ name: 'payment_info_id', type: 'int' })
+  @Column({ name: 'payment_info_id', type: 'int', nullable:false})
   paymentInfoId!: number;
 
-  @Column({ name: 'payment_method', type: 'varchar', length: 30 })
+  @Column({
+    name: 'payment_method',
+    type: 'varchar',
+    length: 30,
+    default: 'UNKNOWN',
+    nullable:false
+  })
   paymentMethod!: string;
 
   @Column({ name: 'bank_code', type: 'varchar', length: 30, nullable: true })
@@ -27,13 +33,10 @@ export class PaymentHistory {
   @Column({ name: 'display_info', type: 'varchar', length: 255, nullable: true })
   displayInfo?: string;
 
-  @Column({ name: 'transaction_id', type: 'varchar', length: 100, nullable: true })
-  transactionId?: string;
-
   @Column({ name: 'reward_id', type: 'int', nullable: true })
   rewardId?: number;
 
-  @Column({ name: 'project_id', type: 'int' })
+  @Column({ name: 'project_id', type: 'int', nullable: false })
   projectId!: number;
 
   @Column({ name: 'option_title', type: 'varchar', length: 255, nullable: true })
@@ -48,13 +51,13 @@ export class PaymentHistory {
   @Column({ name: 'project_image', type: 'varchar', length: 255, nullable: true })
   projectImage!: string;
 
-  @Column({ name: 'amount', type: 'int' })
+  @Column({ name: 'amount', type: 'int',nullable: false })
   amount!: number;
 
   @Column({ name: 'donate_amount', type: 'int', nullable: true })
   donateAmount?: number;
 
-  @Column({ name: 'total_amount', type: 'int' })
+  @Column({ name: 'total_amount', type: 'int',nullable: false })
   totalAmount!: number;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
@@ -69,7 +72,7 @@ export class PaymentHistory {
   @Column({ name: 'executed_at', type: 'datetime', nullable: true })
   executedAt?: Date;
 
-  @Column({ type: 'enum', enum: ['success', 'fail', 'cancel'], default: 'success' })
+  @Column({ type: 'enum', enum: ['success', 'fail', 'cancel'], default: 'success', nullable: false })
   status!: 'success' | 'fail' | 'cancel';
 
   @Column({ name: 'created_at', type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })

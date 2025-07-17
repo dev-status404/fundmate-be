@@ -266,7 +266,6 @@ router.delete('/:id', async (req, res) => {
   const { userId } = res.locals.user;
   if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
   const reservationId = +req.params.id;
-  let savedHistory!: PaymentHistory;
   try {
     await AppDataSource.transaction(async (manager) => {
       const schedule = await manager.findOne(PaymentSchedule, {
@@ -276,11 +275,18 @@ router.delete('/:id', async (req, res) => {
       if (!schedule) throw createError(404, '예약된 정보가 없습니다.');
       const historyRepo = manager.getRepository(PaymentHistory);
       const historyEntity = historyRepo.create({
-        userId: schedule.userId,
+        userId: userId,
         scheduleId: schedule.id,
         paymentInfoId: schedule.paymentInfo.id,
+        paymentMethod: schedule.paymentInfo.method,
+        bankCode: schedule.paymentInfo.code,
+        displayInfo: schedule.paymentInfo.displayInfo,
         rewardId: schedule.option?.optionId ?? null,
         projectId: schedule.project.projectId,
+        optionTitle: schedule.option?.title,
+        optionAmount: schedule.option?.price,
+        projectTitle: schedule.project.title,
+        projectImage: schedule.project.imageUrl,
         amount: schedule.amount,
         donateAmount: schedule.donateAmount ?? null,
         totalAmount: schedule.totalAmount,
@@ -292,12 +298,11 @@ router.delete('/:id', async (req, res) => {
         createdAt: schedule.createdAt,
         errorLog: schedule.lastErrorMessage ?? null,
       } as DeepPartial<PaymentHistory>);
-      savedHistory = await manager.save(historyEntity);
+      await manager.save(historyEntity);
       await manager.remove(schedule);
     });
     return res.status(StatusCodes.OK).json({
       message: '예약이 취소되었습니다.',
-      history: savedHistory,
     });
   } catch (err: any) {
     console.error(err);
