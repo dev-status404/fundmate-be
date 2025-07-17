@@ -9,13 +9,13 @@ export class PaymentHistory {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ name: 'user_id', type: 'int', nullable: false })
+  @Column({ name: 'user_id', type: 'int' })
   userId!: number;
 
-  @Column({ name: 'schedule_id', type: 'int', nullable:false})
+  @Column({ name: 'schedule_id', type: 'int' })
   scheduleId!: number;
 
-  @Column({ name: 'payment_info_id', type: 'int', nullable:false})
+  @Column({ name: 'payment_info_id', type: 'int' })
   paymentInfoId!: number;
 
   @Column({
@@ -36,8 +36,12 @@ export class PaymentHistory {
   @Column({ name: 'reward_id', type: 'int', nullable: true })
   rewardId?: number;
 
-  @Column({ name: 'project_id', type: 'int', nullable: false })
-  projectId!: number;
+  @ManyToOne(() => Project, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'project_id' })
+  project?: Project;
+  
+  @Column({ name: 'project_id', type: 'int', nullable: true })
+  projectId?: number;
 
   @Column({ name: 'option_title', type: 'varchar', length: 255, nullable: true })
   optionTitle?: string;
@@ -51,13 +55,13 @@ export class PaymentHistory {
   @Column({ name: 'project_image', type: 'varchar', length: 255, nullable: true })
   projectImage!: string;
 
-  @Column({ name: 'amount', type: 'int',nullable: false })
+  @Column({ name: 'amount', type: 'int' })
   amount!: number;
 
   @Column({ name: 'donate_amount', type: 'int', nullable: true })
   donateAmount?: number;
 
-  @Column({ name: 'total_amount', type: 'int',nullable: false })
+  @Column({ name: 'total_amount', type: 'int' })
   totalAmount!: number;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
@@ -72,7 +76,7 @@ export class PaymentHistory {
   @Column({ name: 'executed_at', type: 'datetime', nullable: true })
   executedAt?: Date;
 
-  @Column({ type: 'enum', enum: ['success', 'fail', 'cancel'], default: 'success', nullable: false })
+  @Column({ type: 'enum', enum: ['success', 'fail', 'cancel'], default: 'success' })
   status!: 'success' | 'fail' | 'cancel';
 
   @Column({ name: 'created_at', type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })

@@ -46,10 +46,6 @@ app.use(express.json());
 app.use(httpLogger);
 app.use(cookieParser());
 
-app.get('/', (req: Request, res: Response) => {
-  return res.send({ message: "Hello I'm api gateway" });
-});
-
 app.use('/docs', docsRoutes);
 app.use('/assets', express.static(path.join(__dirname, 'src/assets')));
 app.get('/health-checks', healthCheck);
