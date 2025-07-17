@@ -9,7 +9,7 @@ export const createFundingAndOption = async (req: Request, res: Response) => {
   const { userId } = res.locals.user;
 
   const {
-    image_id: imageId,
+    image_url: imageUrl,
     title,
     goal_amount: goalAmount,
     start_date: startDate,
@@ -24,7 +24,7 @@ export const createFundingAndOption = async (req: Request, res: Response) => {
   } = req.body;
 
   const values = [
-    imageId,
+    imageUrl,
     userId,
     category,
     title,
@@ -51,8 +51,8 @@ export const createFundingAndOption = async (req: Request, res: Response) => {
   await queryRunner.startTransaction();
 
   try {
-    const newFunding = fundingRepo.create({
-      image: { imageId },
+    const newFunding: Project = fundingRepo.create({
+      imageUrl: imageUrl,
       user: { userId: userId },
       category: { categoryId: category },
       goalAmount,
@@ -118,7 +118,7 @@ export const getFundingDetail = async (req: Request, res: Response) => {
     .createQueryBuilder('project')
     .leftJoin('project.user', 'user')
     .select([
-      'project.image_id AS project_image_id',
+      'project.image_url AS project_image_url',
       'project.title AS title',
       'project.current_amount AS current_price',
       'DATEDIFF(project.end_date, NOW()) AS remaining_day',
@@ -128,7 +128,7 @@ export const getFundingDetail = async (req: Request, res: Response) => {
       'DATE(CONVERT_TZ(project.delivery_date, "+00:00", "+09:00")) AS delivery_date',
       'project.description AS description',
 
-      'user.image_id AS user_image_id',
+      'user.image_url AS user_image_url',
       'user.nickname AS nickname',
       'user.contents AS content',
     ])
@@ -147,7 +147,7 @@ export const getFundingDetail = async (req: Request, res: Response) => {
 
     if (projectQueryResult && optionQueryResult) {
       const project = {
-        image_id: projectQueryResult.project_image_id,
+        image_url: projectQueryResult.project_image_url,
         title: projectQueryResult.title,
         current_price: projectQueryResult.current_price,
         remaining_day: projectQueryResult.remaining_day,
@@ -159,7 +159,7 @@ export const getFundingDetail = async (req: Request, res: Response) => {
       };
 
       const users = {
-        image_id: projectQueryResult.user_image_id,
+        image_url: projectQueryResult.user_image_url,
         nickname: projectQueryResult.nickname,
         content: projectQueryResult.content,
       };

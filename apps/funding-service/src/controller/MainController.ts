@@ -4,7 +4,7 @@ import { Project } from '@shared/entities';
 import { HttpStatusCode } from 'axios';
 
 type ProjectType = {
-  imageId: number;
+  imageUrl: string;
   title: string;
   shortDescription: string;
   goalAmount: number;
@@ -24,7 +24,7 @@ export const getAllProjects = async (req: Request, res: Response) => {
   const query = projectRepo
     .createQueryBuilder('project')
     .select([
-      'project.image_id AS imageId',
+      'project.image_url AS imageUrl',
       'project.title AS title',
       'project.shortDescription AS shortDescription',
       'project.goalAmount AS goalAmount',
@@ -47,7 +47,7 @@ export const getAllProjects = async (req: Request, res: Response) => {
       const achievement = (row.currentAmount / row.goalAmount) * 100;
 
       return {
-        image_id: row.imageId,
+        image_url: row.imageUrl,
         title: row.title,
         short_description: row.shortDescription,
         achievement: achievement,
@@ -81,7 +81,7 @@ export const getRecentlyViewedFundingList = async (req: Request, res: Response) 
   const query = projectRepo
     .createQueryBuilder('project')
     .select([
-      'project.image_id AS imageId',
+      'project.image_url AS imageUrl',
       'project.title AS title',
       'project.shortDescription AS shortDescription',
       'project.goalAmount AS goalAmount',
@@ -128,7 +128,7 @@ export const getDeadlineFundingList = async (req: Request, res: Response) => {
   const query = projectRepo
     .createQueryBuilder('project')
     .select([
-      'project.image_id AS image_id',
+      'project.image_url AS image_url',
       'project.title AS title',
       'project.shortDescription AS short_description',
       'project.goalAmount AS goal_amount',
@@ -163,7 +163,7 @@ export const getNewFundingList = async (req: Request, res: Response) => {
   const query = projectRepo
     .createQueryBuilder('project')
     .select([
-      'project.image_id AS image_id',
+      'project.image_url AS image_url',
       'project.title AS title',
       'project.shortDescription AS short_description',
       'project.goalAmount AS goal_amount',
@@ -198,7 +198,7 @@ export const getPopularFundingList = async (req: Request, res: Response) => {
     .createQueryBuilder('project')
     .leftJoin('project.likes', 'like')
     .select([
-      'project.image_id AS image_id',
+      'project.image_url AS image_url',
       'project.title AS title',
       'project.shortDescription AS short_description',
       'project.currentAmount AS current_amount',
@@ -237,7 +237,7 @@ export const getFundingListByCategoryId = async (req: Request, res: Response) =>
   const query = projectRepo
     .createQueryBuilder('project')
     .select([
-      'project.image_id AS image_id',
+      'project.image_url AS image_url',
       'project.title AS title',
       'project.shortDescription AS short_description',
       'project.goalAmount AS goal_amount',

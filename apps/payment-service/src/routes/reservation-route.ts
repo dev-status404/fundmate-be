@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
     }
     const data = findBySchedule.map((schedule) => ({
       scheduleId: schedule.id,
-      productImage: schedule.project.image,
+      productImage: schedule.project.imageUrl,
       productName: schedule.project.title,
       optionName: schedule.option?.title ?? null,
       totalAmount: schedule.totalAmount,
@@ -56,7 +56,7 @@ router.get('/:id', async (req, res) => {
       userId: schedule.userId,
       rewardId: schedule.option?.optionId ?? null,
       paymentInfoId: schedule.paymentInfo.id,
-      productImage: schedule.project.image,
+      productImage: schedule.project.imageUrl,
       productName: schedule.project.title,
       optionName: schedule.option?.title ?? null,
       optionAmount: schedule.option?.price ?? null,
