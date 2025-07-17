@@ -12,12 +12,15 @@ export const getMyFundingRecentlyFinished = async (req: Request, res: Response) 
 
   const query = projectRepo
     .createQueryBuilder('project')
+    .leftJoin('project.paymentSchedule', 'schedule')
     .select([
       'project.image_url',
       'project.title',
       'DATE(CONVERT_TZ(project.start_date, "+00:00", "+09:00")) AS start_date',
       'DATE(CONVERT_TZ(project.end_date, "+00:00", "+09:00")) AS end_date',
       'FLOOR((current_amount / goal_amount)*100) AS achievement',
+      'project.currentAmount AS current_amount',
+      'COUNT(schedule.payment_info_id) AS sponsor',
     ])
     .where('project.user_id = :userId', { userId: userId })
     .andWhere('project.is_active = 0')
@@ -29,7 +32,11 @@ export const getMyFundingRecentlyFinished = async (req: Request, res: Response) 
       return res.status(HttpStatusCode.Ok).json([]);
     }
 
-    return res.status(HttpStatusCode.Ok).json(queryResult);
+    return res.status(HttpStatusCode.Ok).json({
+      ...queryResult,
+      sponsor: Number(queryResult?.sponsor),
+      achievement: Number(queryResult?.achievement)
+    });
   } catch (err) {
     console.error(err);
     return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
@@ -44,9 +51,7 @@ export const getMyFundingList = async (req: Request, res: Response) => {
 
   const query = projectRepo
     .createQueryBuilder('project')
-    .select(['project.image_url', 'project.title', 'project.short_description', 'project.current_amount'])
-    .addSelect('FLOOR((current_amount / goal_amount)*100) AS achievement')
-    .addSelect('GREATEST(DATEDIFF(project.end_date, NOW()), 0) AS remaining_day')
+    .select(['project.image_url', 'project.title', 'project.short_description', 'project.current_amount', 'FLOOR((current_amount / goal_amount)*100) AS achievement', 'GREATEST(DATEDIFF(project.end_date, NOW()), 0) AS remaining_day'])
     .where('project.user_id = :userId', { userId: userId });
 
   try {
@@ -56,7 +61,14 @@ export const getMyFundingList = async (req: Request, res: Response) => {
       return res.status(HttpStatusCode.Ok).json([]);
     }
 
-    return res.status(StatusCodes.OK).json(queryResult);
+    return res.status(HttpStatusCode.Ok).json(
+    queryResult.map((item) => ({
+      ...item,
+      achievement: Number(item.achievement),
+      remaining_day: Number(item.remaining_day),
+      current_amount: Number(item.current_amount),
+    }))
+  );
   } catch (err) {
     console.error(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '서버 문제가 발생했습니다.' });
@@ -83,7 +95,14 @@ export const getOthersFundingList = async (req: Request, res: Response) => {
       return res.status(HttpStatusCode.Ok).json([]);
     }
 
-    return res.status(StatusCodes.OK).json(queryResult);
+    return res.status(HttpStatusCode.Ok).json(
+    queryResult.map((item) => ({
+      ...item,
+      achievement: Number(item.achievement),
+      remaining_day: Number(item.remaining_day),
+      current_amount: Number(item.current_amount),
+    }))
+  );
   } catch (err) {
     console.error(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '서버 문제가 발생했습니다.' });

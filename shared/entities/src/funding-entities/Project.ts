@@ -1,4 +1,4 @@
-import { Category, OptionData, User, Like } from '@shared/entities';
+import { Category, OptionData, User, Like, PaymentSchedule } from '@shared/entities';
 import { Comment } from '@shared/entities';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -63,6 +63,6 @@ export class Project {
   @OneToMany(() => Comment, (comment) => comment.project)
   comments!: Comment[];
 
-  // @OneToMany(() => PaymentSchedule, (payment_schedule) => payment_schedule.project)
-  // paymentSchedule!: PaymentSchedule;
+  @OneToMany(() => PaymentSchedule, (payment_schedule) => payment_schedule.project)
+  paymentSchedule!: PaymentSchedule[];
 }

@@ -117,6 +117,7 @@ export const getFundingDetail = async (req: Request, res: Response) => {
   const projectQuery = projectRepo
     .createQueryBuilder('project')
     .leftJoin('project.user', 'user')
+    .leftJoin('project.paymentSchedule', 'schedule')
     .select([
       'project.image_url AS project_image_url',
       'project.title AS title',
@@ -128,9 +129,12 @@ export const getFundingDetail = async (req: Request, res: Response) => {
       'DATE(CONVERT_TZ(project.delivery_date, "+00:00", "+09:00")) AS delivery_date',
       'project.description AS description',
 
-      'user.image_url AS user_image_url',
+      'user.image_id AS user_image_id',
       'user.nickname AS nickname',
       'user.contents AS content',
+
+      'DATE_ADD(project.end_date, INTERVAL 1 DAY) AS payment_date',
+      'COUNT(schedule.payment_info_id) AS sponsor',
     ])
     .where('project.projectId = :projectId', { projectId: projectDetailId });
 
@@ -156,6 +160,8 @@ export const getFundingDetail = async (req: Request, res: Response) => {
         end_date: projectQueryResult.end_date,
         delivery_date: projectQueryResult.delivery_date,
         description: projectQueryResult.description,
+        payment_date: projectQueryResult.payment_date,
+        sponsor: Number(projectQueryResult.sponsor),
       };
 
       const users = {
