@@ -272,11 +272,13 @@ export const getMyProjectStatistics = async (req: Request, res: Response) => {
 
 export const getMyProjectPayments = async (req: Request, res: Response) => {
   const { userId } = res.locals.user;
+  const page = req.query.page || 1;
+  const limit = req.query.limit;
 
   try {
     const paymentClient = serviceClients['payment-service'];
     paymentClient.setAuthContext({ userId });
-    const paymentList = await paymentClient.get(`/statistics/history`);
+    const paymentList = await paymentClient.get(`/statistics/history?page=${page}&limit=${limit}`);
 
     return res.status(StatusCode.OK).json(paymentList.data);
   } catch (err) {
