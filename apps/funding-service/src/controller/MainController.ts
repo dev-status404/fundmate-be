@@ -29,7 +29,7 @@ export const getAllProjects = async (req: Request, res: Response) => {
       'project.shortDescription AS short_description',
       'project.goalAmount AS goal_amount',
       'project.currentAmount AS current_amount',
-      'FLOOR((current_amount / goal_amount)*100) AS achievement',
+      'FLOOR((current_amount / NULLIF(goal_amount, 0))*100) AS achievement',
     ])
     .addSelect('DATEDIFF(project.end_date, NOW()) AS remaining_day');
 
