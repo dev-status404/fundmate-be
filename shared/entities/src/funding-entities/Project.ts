@@ -1,4 +1,4 @@
-import { Category, Image, OptionData, User, Like } from '@shared/entities';
+import { Category, OptionData, User, Like } from '@shared/entities';
 import { Comment } from '@shared/entities';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -11,9 +11,8 @@ export class Project {
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
-  @ManyToOne(() => Image, { nullable: true, onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'image_id' })
-  image?: Image;
+  @Column({ type: "text", name: 'image_url' })
+  imageUrl?: string;
 
   @ManyToOne(() => Category, { nullable: false })
   @JoinColumn({ name: 'category_id' })
@@ -63,4 +62,7 @@ export class Project {
 
   @OneToMany(() => Comment, (comment) => comment.project)
   comments!: Comment[];
+
+  // @OneToMany(() => PaymentSchedule, (payment_schedule) => payment_schedule.project)
+  // paymentSchedule!: PaymentSchedule;
 }

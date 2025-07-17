@@ -1,5 +1,5 @@
 import express from 'express';
-import { createFundingAndOption, getFundingDetail, getFundingSummary } from '../controller/FundingController';
+import { createFundingAndOption, getFundingDetail } from '../controller/FundingController';
 
 const router = express.Router();
 

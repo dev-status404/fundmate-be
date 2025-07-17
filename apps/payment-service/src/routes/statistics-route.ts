@@ -99,7 +99,7 @@ router.get('/history', async (req, res) => {
     });
     const scheduleData = schedules.map((schedule) => ({
       scheduleId: schedule.id,
-      productImage: schedule.project.image,
+      productImage: schedule.project.imageUrl,
       productName: schedule.project.title,
       optionName: schedule.option?.title ?? null,
       date: schedule.scheduleDate,

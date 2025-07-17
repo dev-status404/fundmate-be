@@ -13,7 +13,7 @@ export const getMyFundingRecentlyFinished = async (req: Request, res: Response) 
   const query = projectRepo
     .createQueryBuilder('project')
     .select([
-      'project.image_id',
+      'project.image_url',
       'project.title',
       'DATE(CONVERT_TZ(project.start_date, "+00:00", "+09:00")) AS start_date',
       'DATE(CONVERT_TZ(project.end_date, "+00:00", "+09:00")) AS end_date',
@@ -44,7 +44,7 @@ export const getMyFundingList = async (req: Request, res: Response) => {
 
   const query = projectRepo
     .createQueryBuilder('project')
-    .select(['project.image_id', 'project.title', 'project.short_description', 'project.current_amount'])
+    .select(['project.image_url', 'project.title', 'project.short_description', 'project.current_amount'])
     .addSelect('FLOOR((current_amount / goal_amount)*100) AS achievement')
     .addSelect('GREATEST(DATEDIFF(project.end_date, NOW()), 0) AS remaining_day')
     .where('project.user_id = :userId', { userId: userId });
@@ -71,7 +71,7 @@ export const getOthersFundingList = async (req: Request, res: Response) => {
 
   const query = projectRepo
     .createQueryBuilder('project')
-    .select(['project.image_id', 'project.title', 'project.short_description', 'project.current_amount'])
+    .select(['project.image_url', 'project.title', 'project.short_description', 'project.current_amount'])
     .addSelect('FLOOR((current_amount / goal_amount)*100) AS achievement')
     .addSelect('GREATEST(DATEDIFF(project.end_date, NOW()), 0) AS remaining_day')
     .where('project.user_id = :userId', { userId: userId });
@@ -98,7 +98,7 @@ export const getFundingComments = async (req: Request, res: Response) => {
 
   const query = ProjectRepo.createQueryBuilder('project')
     .innerJoin('project.comments', 'comment')
-    .select(['project.image_id AS image_id', 'project.title AS title', 'comment.content AS content'])
+    .select(['project.image_url AS image_url', 'project.title AS title', 'comment.content AS content'])
     .where('comment.user_id = :userId', { userId: userId });
 
   try {
