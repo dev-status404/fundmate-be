@@ -137,7 +137,7 @@ export const getFundingDetail = async (req: Request, res: Response) => {
       'DATE_ADD(project.end_date, INTERVAL 1 DAY) AS payment_date',
       'COUNT(schedule.payment_info_id) AS sponsor',
 
-      'COUNT(like.userId) AS likes',
+      'COUNT(DISTINCT like.userId) AS likes',
     ])
     .where('project.projectId = :projectId', { projectId: projectDetailId });
 
