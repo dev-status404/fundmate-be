@@ -52,7 +52,7 @@ export const getMyFundingList = async (req: Request, res: Response) => {
 
   const query = projectRepo
     .createQueryBuilder('project')
-    .select(['project.projectId AS project_id', 'project.image_url', 'project.title', 'project.short_description', 'project.current_amount', 'FLOOR((current_amount / goal_amount)*100) AS achievement', 'GREATEST(DATEDIFF(project.end_date, NOW()), 0) AS remaining_day'])
+    .select(['project.projectId AS project_id', 'project.image_url', 'project.title', 'project.short_description', 'project.current_amount', 'FLOOR((current_amount / NULLIF(goal_amount, 0))*100) AS achievement', 'GREATEST(DATEDIFF(project.end_date, NOW()), 0) AS remaining_day'])
     .where('project.user_id = :userId', { userId: userId });
 
   try {
