@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
 
     return res.status(StatusCodes.OK).json({ data, count });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '전체 펀딩 조회 실패' });
   }
 });
@@ -74,7 +74,7 @@ router.get('/:id', async (req, res) => {
     };
     return res.status(StatusCodes.OK).json(result);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '펀딩 조회 실패' });
   }
 });

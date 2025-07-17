@@ -47,7 +47,7 @@ router.get('/presign', async (req, res) => {
 
     return res.status(StatusCodes.OK).json({ url, key });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Presign URL 생성 중 오류가 발생했습니다.' });
   }
 });
@@ -59,7 +59,7 @@ router.post('/complete', (req, res) => {
     const publicUrl = `https://${process.env.AWS_BUCKET}.s3.amazonaws.com/${key}`;
     return res.json({ message: '업로드 완료', url: publicUrl });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '업로드 완료 중 오류가 발생했습니다.' });
   }
 });

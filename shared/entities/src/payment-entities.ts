@@ -39,9 +39,9 @@ export class PaymentHistory {
   @ManyToOne(() => Project, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'project_id' })
   project?: Project;
-
-  @Column({ name: 'project_id', type: 'int' })
-  projectId!: number;
+  
+  @Column({ name: 'project_id', type: 'int', nullable: true })
+  projectId?: number;
 
   @Column({ name: 'option_title', type: 'varchar', length: 255, nullable: true })
   optionTitle?: string;

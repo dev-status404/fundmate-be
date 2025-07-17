@@ -22,7 +22,7 @@ router.get('/count', async (req, res) => {
       .status(StatusCodes.OK)
       .json({ count: countBySchedule + countByHistory, countBySchedule, countByHistory });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '펀딩 갯수 조회 실패' });
   }
 });
@@ -154,6 +154,11 @@ export interface MyProjectListItem {
   remaining_day: number;
 }
 
+export interface GraphData{
+  x: number;
+  y: number;
+}
+
 // 통계용 그래프
 router.get("/graph", async (req, res)=>{
   const { userId, email} = res.locals.user;
@@ -241,23 +246,27 @@ router.get("/graph", async (req, res)=>{
       .orderBy('day')
       .getRawMany<{ day: string; totalAmount: string; scheduleCount: string }>();
     
+    const historyMap = new Map(rawHistory.map(r => [Number(r.day), r]));
+    const scheduleMap = new Map(rawSchedule.map(r => [Number(r.day), r]));
+
+    const amountData:GraphData[] = [];
+    const countData:GraphData[] = [];
+
+    emptyDayArray.forEach(d => {
+      const h = historyMap.get(d);
+      const s = scheduleMap.get(d);
+
+      amountData.push({ x: d, y: (h ? +h.totalAmount : 0) + (s ? +s.totalAmount : 0) });
+      countData.push({ x: d, y: (h ? +h.sponsorCount : 0) + (s ? +s.scheduleCount : 0) });
+    });
+
     const amountSeries = {
       id: 'amount',
-      data: emptyDayArray.map(d => {
-        const h = rawHistory.find(r => +r.day === d);
-        const s = rawSchedule.find(r => +r.day === d);
-        const y = (h ? +h.totalAmount : 0) + (s ? +s.totalAmount : 0);
-        return { x: d, y };
-      })
+      data: amountData,
     };
     const countSeries = {
       id: 'count',
-      data: emptyDayArray.map(d => {
-        const h = rawHistory.find(r => +r.day === d);
-        const s = rawSchedule.find(r => +r.day === d);
-        const y = (h ? +h.sponsorCount : 0) + (s ? +s.scheduleCount : 0);
-        return { x: d, y };
-      })
+      data: countData,
     };
 
     return res.status(StatusCodes.OK).json({
@@ -270,7 +279,7 @@ router.get("/graph", async (req, res)=>{
     });
 
   }catch(err){
-    console.log(err)
+    console.error(err)
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '그래프 데이터 불러오기 실패'})
   }
 })
