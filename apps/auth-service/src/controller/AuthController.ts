@@ -205,7 +205,9 @@ export const login = async (req: Request, res: Response) => {
       maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
-    return res.status(StatusCode.OK).json({ message: '로그인 성공' });
+    return res.status(StatusCode.OK).json({
+      nickname: user.nickname,
+    });
   } catch (err) {
     console.error(err);
     return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: '로그인 실패' });
