@@ -48,7 +48,11 @@ router.get('/:id', async (req, res) => {
       where: { id: reservationId, userId },
       relations: ['project', 'option', 'paymentInfo'],
     });
-    if (!findBySchedule) throw createError(StatusCodes.NOT_FOUND, '예약된 정보가 없습니다.');
+    if (!findBySchedule) {
+      return res
+        .status(StatusCodes.OK)
+        .json({ message: '이미 취소되었거나 존재하지 않는 예약입니다.' });
+    }
 
     const schedule = findBySchedule;
     const result = {
