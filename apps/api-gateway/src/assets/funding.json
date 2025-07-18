@@ -3,109 +3,72 @@
   "info": {
     "title": "Fundings Service API",
     "version": "1.0.0",
-    "description": "펀딩(프로젝트·리워드·옵션) 기능을 제공하는 마이크로서비스"
+    "description": "펀딩 프로젝트의 생성, 조회, 리워드 및 옵션 관리, 그리고 다양한 조건에 따른 프로젝트 목록 조회 기능을 제공하는 마이크로서비스입니다. 사용자의 펀딩 활동 내역(내가 올린 펀딩, 최근 완료된 펀딩, 내 후기 등)도 관리합니다."
   },
   "servers": [
     {
-      "url": "https://fundmate.store/api/fundings",
-      "description": "Production 서버"
+      "url": "https://fundmate.store/api/api/projects",
+      "description": "메인 화면 프로젝트 목록 조회 서버"
+    },{
+      "url": "https://fundmate.store/api/profiles",
+      "description": "마이페이지 관련 프로젝트 목록 조회 서버"
+    },{
+      "url": "https://fundmate.store/api/projects",
+      "description": "프로젝트 & 옵션 API 서버"
     }
   ],
   "tags": [
     {
-      "name": "fundings",
-      "description": "프로젝트·리워드·옵션 조회 및 생성 API"
+      "name": "프로젝트 (Projects)",
+      "description": "펀딩 프로젝트의 생성, 조회 및 관리를 위한 API"
+    },
+    {
+      "name": "리워드 (Rewards)",
+      "description": "펀딩 프로젝트에 속한 리워드 상품의 조회 및 관리를 위한 API"
+    },
+    {
+      "name": "옵션 (Options)",
+      "description": "펀딩 프로젝트에 속한 추가 옵션의 조회 및 관리를 위한 API"
+    },
+    {
+      "name": "마이페이지 펀딩 활동 (My Page Funding Activities)",
+      "description": "사용자의 펀딩 관련 활동 내역을 조회하는 API"
     }
   ],
   "paths": {
     "/projects": {
-      "get": {
-        "tags": ["fundings"],
-        "summary": "전체 프로젝트 목록 조회",
-        "description": "페이지네이션을 지원합니다.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/page"
-          },
-          {
-            "$ref": "#/components/parameters/pageSize"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "프로젝트 리스트 조회 성공",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Project"
-                  }
-                },
-                "examples": {
-                  "sample": {
-                    "summary": "예시 응답",
-                    "value": [
-                      {
-                        "project_id": 123,
-                        "user_id": 45,
-                        "title": "환경 보호 캠페인",
-                        "goal_amount": 1000000,
-                        "current_amount": 500000,
-                        "start_date": "2025-07-01",
-                        "end_date": "2025-08-01",
-                        "is_active": true
-                      }
-                    ]
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalError"
-          }
-        }
-      },
       "post": {
-        "tags": ["fundings"],
-        "summary": "새 프로젝트 생성",
-        "description": "새 프로젝트를 등록합니다.",
+        "tags": ["프로젝트 (Projects)"],
+        "summary": "새 펀딩 프로젝트 생성",
+        "description": "새로운 펀딩 프로젝트를 시스템에 등록합니다. 프로젝트의 상세 정보, 목표 금액, 기간 등을 포함합니다. 생성 후 프로젝트 ID가 반환됩니다.",
         "security": [
           {
             "bearerAuth": []
           }
         ],
         "requestBody": {
+          "description": "생성할 프로젝트의 상세 정보",
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Project"
-              },
+              "schema": { "$ref": "#/components/schemas/ProjectCreateRequest" },
               "examples": {
                 "sample": {
-                  "summary": "생성 요청 예시",
+                  "summary": "프로젝트 생성 요청 예시",
                   "value": {
                     "user_id": 45,
                     "image_id": 10,
                     "category_id": 3,
-                    "title": "새로운 프로젝트",
-                    "description": "프로젝트 설명",
-                    "story": "상세 스토리",
-                    "goal_amount": 2000000,
-                    "start_date": "2025-07-20",
-                    "end_date": "2025-09-20",
-                    "delivery_date": "2025-10-01",
-                    "is_active": true
+                    "title": "새로운 친환경 제품 개발",
+                    "description": "지속 가능한 미래를 위한 혁신적인 친환경 제품입니다.",
+                    "story": "제품 개발 배경 및 비전, 팀 소개 등 상세 스토리",
+                    "goal_amount": 5000000,
+                    "start_date": "2025-08-01",
+                    "end_date": "2025-09-30",
+                    "delivery_date": "2025-11-15",
+                    "is_active": true,
+                    "gender": 0,
+                    "age_group": 3
                   }
                 }
               }
@@ -114,129 +77,489 @@
         },
         "responses": {
           "201": {
-            "description": "프로젝트 생성 성공",
+            "description": "프로젝트 생성 성공. 생성된 프로젝트의 상세 정보가 반환됩니다.",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Project"
-                }
+                "schema": { "$ref": "#/components/schemas/Project" }
               }
             }
           },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalError"
-          }
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     },
     "/projects/{project_id}": {
       "get": {
-        "tags": ["fundings"],
-        "summary": "프로젝트 상세 조회",
+        "tags": ["프로젝트 (Projects)"],
+        "summary": "특정 펀딩 프로젝트 상세 조회",
+        "description": "지정된 `project_id`에 해당하는 펀딩 프로젝트의 모든 상세 정보를 조회합니다. 프로젝트의 스토리, 목표 금액, 현재 모금액, 기간, 리워드 및 옵션 정보 등을 포함합니다.",
         "security": [
           {
             "bearerAuth": []
           }
         ],
         "parameters": [
-          {
-            "$ref": "#/components/parameters/projectId"
-          }
+          { "$ref": "#/components/parameters/projectId" }
         ],
         "responses": {
           "200": {
-            "description": "단일 프로젝트 조회 성공",
+            "description": "프로젝트 상세 조회 성공",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Project"
+                "schema": { "$ref": "#/components/schemas/Project" },
+                "examples": {
+                  "sample": {
+                    "summary": "예시 응답",
+                    "value": {
+                      "project_id": 123,
+                      "user_id": 45,
+                      "image_id": 10,
+                      "category_id": 3,
+                      "title": "환경 보호 캠페인",
+                      "description": "상세 프로젝트 설명입니다. 이 프로젝트는 ...",
+                      "story": "프로젝트의 배경, 비전, 팀 소개 등 상세 스토리 내용입니다.",
+                      "goal_amount": 1000000,
+                      "current_amount": 500000,
+                      "start_date": "2025-07-01",
+                      "end_date": "2025-08-01",
+                      "delivery_date": "2025-09-01",
+                      "is_active": true,
+                      "created_at": "2025-07-10T14:30:00Z",
+                      "gender": 0,
+                      "age_group": 3
+                    }
+                  }
                 }
               }
             }
           },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalError"
-          }
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     },
     "/projects/{project_id}/rewards": {
       "get": {
-        "tags": ["fundings"],
-        "summary": "특정 프로젝트 리워드 목록 조회",
+        "tags": ["리워드 (Rewards)"],
+        "summary": "특정 프로젝트의 리워드 목록 조회",
+        "description": "지정된 `project_id`에 해당하는 펀딩 프로젝트에 등록된 모든 리워드 상품의 목록을 조회합니다. 각 리워드의 이름, 설명, 금액, 재고 수량 등을 포함합니다.",
         "security": [
           {
             "bearerAuth": []
           }
         ],
         "parameters": [
-          {
-            "$ref": "#/components/parameters/projectId"
-          }
+          { "$ref": "#/components/parameters/projectId" }
         ],
         "responses": {
           "200": {
-            "description": "리워드 리스트 조회 성공",
+            "description": "리워드 목록 조회 성공",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Reward"
+                  "items": { "$ref": "#/components/schemas/Reward" }
+                },
+                "examples": {
+                  "sample": {
+                    "summary": "예시 응답",
+                    "value": [
+                      {
+                        "reward_id": 1,
+                        "project_id": 123,
+                        "name": "스티커 세트",
+                        "description": "프로젝트 로고 스티커",
+                        "amount": 5000,
+                        "stock": 100
+                      },
+                      {
+                        "reward_id": 2,
+                        "project_id": 123,
+                        "name": "텀블러",
+                        "description": "친환경 텀블러",
+                        "amount": 20000,
+                        "stock": 50
+                      }
+                    ]
                   }
                 }
               }
             }
           },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalError"
-          }
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     },
     "/projects/{project_id}/options": {
       "get": {
-        "tags": ["fundings"],
-        "summary": "특정 프로젝트 옵션 목록 조회",
+        "tags": ["옵션 (Options)"],
+        "summary": "특정 프로젝트의 옵션 목록 조회",
+        "description": "지정된 `project_id`에 해당하는 펀딩 프로젝트에 등록된 모든 추가 옵션의 목록을 조회합니다. 각 옵션의 이름, 설명, 추가 금액 등을 포함합니다.",
         "security": [
           {
             "bearerAuth": []
           }
         ],
         "parameters": [
-          {
-            "$ref": "#/components/parameters/projectId"
-          }
+          { "$ref": "#/components/parameters/projectId" }
         ],
         "responses": {
           "200": {
-            "description": "옵션 리스트 조회 성공",
+            "description": "옵션 목록 조회 성공",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/OptionData"
+                  "items": { "$ref": "#/components/schemas/OptionData" }
+                },
+                "examples": {
+                  "sample": {
+                    "summary": "예시 응답",
+                    "value": [
+                      {
+                        "option_id": 1,
+                        "project_id": 123,
+                        "title": "색상 선택 (블루)",
+                        "description": "선택 가능한 색상 중 블루 옵션입니다.",
+                        "price": 5000
+                      },
+                      {
+                        "option_id": 2,
+                        "project_id": 123,
+                        "title": "사이즈 선택 (L)",
+                        "description": "선택 가능한 사이즈 중 L 옵션입니다.",
+                        "price": 0
+                      }
+                    ]
                   }
                 }
               }
             }
           },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalError"
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/projects": {
+      "get": {
+        "tags": ["프로젝트 (Projects)"],
+        "summary": "전체 프로젝트 목록 조회 (API Gateway)",
+        "description": "API Gateway를 통해 접근하는 전체 펀딩 프로젝트 목록을 페이지네이션과 함께 조회합니다. 이 엔드포인트는 `MainRouter`에 의해 제공됩니다.",
+        "security": [
+          {
+            "bearerAuth": []
           }
+        ],
+        "parameters": [
+          { "$ref": "#/components/parameters/page" },
+          { "$ref": "#/components/parameters/pageSize" }
+        ],
+        "responses": {
+          "200": {
+            "description": "프로젝트 목록 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProjectListResponse" },
+                "examples": {
+                  "sample": {
+                    "summary": "예시 응답",
+                    "value": {
+                      "data": [
+                        {
+                          "project_id": 123,
+                          "title": "환경 보호 캠페인",
+                          "current_amount": 500000,
+                          "goal_amount": 1000000,
+                          "achievement_rate": 50,
+                          "remaining_days": 15,
+                          "image_url": "https://fundmate.s3.amazonaws.com/projects/123.jpg"
+                        }
+                      ],
+                      "count": 100
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/projects/recent": {
+      "get": {
+        "tags": ["프로젝트 (Projects)"],
+        "summary": "최근 본 프로젝트 목록 조회",
+        "description": "사용자가 최근에 조회한 펀딩 프로젝트들의 목록을 조회합니다. 이 엔드포인트는 `MainRouter`에 의해 제공됩니다.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          { "$ref": "#/components/parameters/page" },
+          { "$ref": "#/components/parameters/pageSize" }
+        ],
+        "responses": {
+          "200": {
+            "description": "최근 본 프로젝트 목록 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProjectListResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/projects/deadline": {
+      "get": {
+        "tags": ["프로젝트 (Projects)"],
+        "summary": "마감 임박 프로젝트 목록 조회",
+        "description": "펀딩 마감일이 임박한 프로젝트들의 목록을 조회합니다. 이 엔드포인트는 `MainRouter`에 의해 제공됩니다.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          { "$ref": "#/components/parameters/page" },
+          { "$ref": "#/components/parameters/pageSize" }
+        ],
+        "responses": {
+          "200": {
+            "description": "마감 임박 프로젝트 목록 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProjectListResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/projects/new": {
+      "get": {
+        "tags": ["프로젝트 (Projects)"],
+        "summary": "신규 프로젝트 목록 조회",
+        "description": "최근에 등록된 새로운 펀딩 프로젝트들의 목록을 조회합니다. 이 엔드포인트는 `MainRouter`에 의해 제공됩니다.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          { "$ref": "#/components/parameters/page" },
+          { "$ref": "#/components/parameters/pageSize" }
+        ],
+        "responses": {
+          "200": {
+            "description": "신규 프로젝트 목록 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProjectListResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/projects/popular": {
+      "get": {
+        "tags": ["프로젝트 (Projects)"],
+        "summary": "인기 프로젝트 목록 조회",
+        "description": "현재 가장 인기 있는(예: 후원자 수, 모금액 기준) 펀딩 프로젝트들의 목록을 조회합니다. 이 엔드포인트는 `MainRouter`에 의해 제공됩니다.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          { "$ref": "#/components/parameters/page" },
+          { "$ref": "#/components/parameters/pageSize" }
+        ],
+        "responses": {
+          "200": {
+            "description": "인기 프로젝트 목록 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProjectListResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/projects/{category_id}": {
+      "get": {
+        "tags": ["프로젝트 (Projects)"],
+        "summary": "카테고리별 프로젝트 목록 조회",
+        "description": "지정된 `category_id`에 해당하는 카테고리의 펀딩 프로젝트 목록을 조회합니다. 이 엔드포인트는 `MainRouter`에 의해 제공됩니다.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          { "$ref": "#/components/parameters/categoryId" },
+          { "$ref": "#/components/parameters/page" },
+          { "$ref": "#/components/parameters/pageSize" }
+        ],
+        "responses": {
+          "200": {
+            "description": "카테고리별 프로젝트 목록 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProjectListResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/options/{option_id}": {
+      "delete": {
+        "tags": ["옵션 (Options)"],
+        "summary": "특정 옵션 삭제",
+        "description": "지정된 `option_id`에 해당하는 프로젝트 옵션을 삭제합니다. 해당 옵션이 더 이상 필요하지 않을 때 사용합니다.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          { "$ref": "#/components/parameters/optionId" }
+        ],
+        "responses": {
+          "204": {
+            "description": "옵션 삭제 성공. 응답 본문은 없습니다."
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "./auths.json#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/profiles/recent-completed": {
+      "get": {
+        "tags": ["마이페이지 펀딩 활동 (My Page Funding Activities)"],
+        "summary": "최근 완료된 펀딩 조회",
+        "description": "로그인한 사용자가 참여했거나 생성한 펀딩 중 최근에 완료된 프로젝트를 조회합니다.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "최근 완료된 펀딩 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MyFundingCompletedResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/profiles/my-projects": {
+      "get": {
+        "tags": ["마이페이지 펀딩 활동 (My Page Funding Activities)"],
+        "summary": "내가 올린 펀딩 조회",
+        "description": "로그인한 사용자가 직접 생성하고 등록한 펀딩 프로젝트 목록을 조회합니다.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "내가 올린 펀딩 목록 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MyFundingListResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/profiles/my-comments": {
+      "get": {
+        "tags": ["마이페이지 펀딩 활동 (My Page Funding Activities)"],
+        "summary": "내 후기 조회",
+        "description": "로그인한 사용자가 작성한 모든 후기(댓글) 목록을 조회합니다.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "내 후기 목록 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MyCommentsListResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/profiles/{user_id}": {
+      "get": {
+        "tags": ["마이페이지 펀딩 활동 (My Page Funding Activities)"],
+        "summary": "다른 회원 펀딩 목록 조회",
+        "description": "특정 `user_id`를 가진 다른 회원이 올린 펀딩 프로젝트 목록을 조회합니다.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "다른 회원 펀딩 목록 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OthersFundingListResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     }
@@ -246,7 +569,7 @@
       "page": {
         "name": "page",
         "in": "query",
-        "description": "페이지 번호 (1부터 시작)",
+        "description": "조회할 페이지 번호 (1부터 시작). 기본값은 1입니다.",
         "schema": {
           "type": "integer",
           "minimum": 1,
@@ -256,7 +579,7 @@
       "pageSize": {
         "name": "pageSize",
         "in": "query",
-        "description": "한 페이지당 항목 수",
+        "description": "한 페이지당 반환할 항목의 최대 개수. 기본값은 20이며, 최대 100까지 설정 가능합니다.",
         "schema": {
           "type": "integer",
           "minimum": 1,
@@ -268,212 +591,233 @@
         "name": "project_id",
         "in": "path",
         "required": true,
-        "description": "프로젝트 고유 ID",
+        "description": "조회할 프로젝트의 고유 ID입니다.",
         "schema": {
-          "type": "integer"
+          "type": "integer",
+          "example": 123
+        }
+      },
+      "categoryId": {
+        "name": "category_id",
+        "in": "path",
+        "required": true,
+        "description": "조회할 카테고리의 고유 ID입니다.",
+        "schema": {
+          "type": "integer",
+          "example": 1
+        }
+      },
+      "optionId": {
+        "name": "option_id",
+        "in": "path",
+        "required": true,
+        "description": "삭제할 옵션의 고유 ID입니다.",
+        "schema": {
+          "type": "integer",
+          "example": 1
+        }
+      },
+      "userId": {
+        "name": "user_id",
+        "in": "path",
+        "required": true,
+        "description": "조회할 사용자의 고유 ID입니다.",
+        "schema": {
+          "type": "integer",
+          "example": 42
         }
       }
     },
     "schemas": {
+      "ProjectSummary": {
+        "type": "object",
+        "title": "프로젝트 요약 정보",
+        "description": "프로젝트 목록 조회 시 반환되는 간략한 프로젝트 정보입니다. 목록 페이지에 표시될 핵심 정보를 포함합니다.",
+        "properties": {
+          "project_id": { "type": "integer", "example": 123, "description": "프로젝트 고유 ID" },
+          "title": { "type": "string", "example": "환경 보호 캠페인", "description": "프로젝트 제목" },
+          "current_amount": { "type": "integer", "example": 500000, "description": "현재 모금된 금액" },
+          "goal_amount": { "type": "integer", "example": 1000000, "description": "목표 모금액" },
+          "achievement_rate": { "type": "integer", "example": 50, "description": "목표 달성률 (%) " },
+          "remaining_days": { "type": "integer", "example": 15, "description": "펀딩 종료까지 남은 일수" },
+          "image_url": { "type": "string", "format": "uri", "example": "https://fundmate.s3.amazonaws.com/projects/123.jpg", "description": "프로젝트 대표 이미지 URL" }
+        }
+      },
+      "ProjectListResponse": {
+        "type": "object",
+        "title": "프로젝트 목록 응답",
+        "description": "프로젝트 목록 조회 시 반환되는 응답 형식입니다.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ProjectSummary" },
+            "description": "프로젝트 요약 정보 목록"
+          },
+          "count": { "type": "integer", "example": 100, "description": "전체 프로젝트 개수" }
+        }
+      },
       "Project": {
         "type": "object",
-        "required": ["title", "goal_amount"],
+        "title": "프로젝트 상세 정보",
+        "description": "단일 프로젝트 조회 시 반환되는 모든 상세 정보입니다. 프로젝트의 모든 속성을 포함합니다.",
+        "required": ["title", "goal_amount", "start_date", "end_date", "delivery_date"],
         "properties": {
-          "project_id": {
-            "type": "integer",
-            "example": 123
-          },
-          "user_id": {
-            "type": "integer",
-            "example": 45
-          },
-          "image_id": {
-            "type": "integer",
-            "example": 10
-          },
-          "category_id": {
-            "type": "integer",
-            "example": 3
-          },
-          "title": {
-            "type": "string",
-            "example": "환경 보호 캠페인"
-          },
-          "description": {
-            "type": "string",
-            "example": "상세 프로젝트 설명"
-          },
-          "story": {
-            "type": "string",
-            "example": "스토리 텍스트..."
-          },
-          "goal_amount": {
-            "type": "integer",
-            "example": 1000000
-          },
-          "current_amount": {
-            "type": "integer",
-            "example": 500000
-          },
-          "start_date": {
-            "type": "string",
-            "format": "date",
-            "example": "2025-07-01"
-          },
-          "end_date": {
-            "type": "string",
-            "format": "date",
-            "example": "2025-08-01"
-          },
-          "delivery_date": {
-            "type": "string",
-            "format": "date",
-            "example": "2025-09-01"
-          },
-          "is_active": {
-            "type": "boolean",
-            "example": true
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2025-07-10T14:30:00Z"
-          },
-          "gender": {
-            "type": "integer",
-            "description": "지원 대상 성별 코드",
-            "example": 0
-          },
-          "age_group": {
-            "type": "integer",
-            "description": "지원 대상 연령대 코드",
-            "example": 3
-          }
+          "project_id": { "type": "integer", "example": 123, "description": "프로젝트 고유 ID" },
+          "user_id": { "type": "integer", "example": 45, "description": "프로젝트를 생성한 사용자(메이커)의 ID" },
+          "image_id": { "type": "integer", "example": 10, "description": "프로젝트 대표 이미지의 ID" },
+          "category_id": { "type": "integer", "example": 3, "description": "프로젝트 카테고리 ID (예: 1=테크/가전, 2=패션/잡화 등)" },
+          "title": { "type": "string", "example": "환경 보호 캠페인", "description": "프로젝트 제목" },
+          "description": { "type": "string", "example": "상세 프로젝트 설명입니다. 이 프로젝트는 ...", "description": "프로젝트에 대한 간략한 설명" },
+          "story": { "type": "string", "example": "프로젝트의 배경, 비전, 팀 소개 등 상세 스토리 내용입니다.", "description": "프로젝트의 상세 스토리 (HTML 또는 Markdown 형식)" },
+          "goal_amount": { "type": "integer", "example": 1000000, "description": "목표 모금액 (원)" },
+          "current_amount": { "type": "integer", "example": 500000, "description": "현재 모금된 금액 (원)" },
+          "start_date": { "type": "string", "format": "date", "example": "2025-07-01", "description": "펀딩 시작일 (YYYY-MM-DD)" },
+          "end_date": { "type": "string", "format": "date", "example": "2025-08-01", "description": "펀딩 종료일 (YYYY-MM-DD)" },
+          "delivery_date": { "type": "string", "format": "date", "example": "2025-09-01", "description": "리워드 예상 전달일 (YYYY-MM-DD)" },
+          "is_active": { "type": "boolean", "example": true, "description": "프로젝트 활성화 여부" },
+          "created_at": { "type": "string", "format": "date-time", "example": "2025-07-10T14:30:00Z", "description": "프로젝트 생성 일시" },
+          "gender": { "type": "integer", "description": "지원 대상 성별 코드 (0: 무관, 1: 남성, 2: 여성)", "example": 0 },
+          "age_group": { "type": "integer", "description": "지원 대상 연령대 코드 (예: 1=10대, 2=20대, 3=30대 등)", "example": 3 }
+        }
+      },
+      "ProjectCreateRequest": {
+        "type": "object",
+        "title": "프로젝트 생성 요청",
+        "description": "새로운 펀딩 프로젝트를 생성하기 위한 요청 본문입니다. 모든 필수 필드를 포함해야 합니다.",
+        "required": ["user_id", "image_id", "category_id", "title", "description", "story", "goal_amount", "start_date", "end_date", "delivery_date", "is_active", "gender", "age_group"],
+        "properties": {
+          "user_id": { "type": "integer", "example": 45, "description": "프로젝트를 생성하는 사용자(메이커)의 ID" },
+          "image_id": { "type": "integer", "example": 10, "description": "프로젝트 대표 이미지의 ID" },
+          "category_id": { "type": "integer", "example": 3, "description": "프로젝트 카테고리 ID" },
+          "title": { "type": "string", "example": "새로운 친환경 제품 개발", "description": "프로젝트 제목" },
+          "description": { "type": "string", "example": "지속 가능한 미래를 위한 혁신적인 친환경 제품입니다.", "description": "프로젝트에 대한 간략한 설명" },
+          "story": { "type": "string", "example": "제품 개발 배경 및 비전, 팀 소개 등 상세 스토리", "description": "프로젝트의 상세 스토리 (HTML 또는 Markdown 형식)" },
+          "goal_amount": { "type": "integer", "example": 5000000, "description": "목표 모금액 (원)" },
+          "start_date": { "type": "string", "format": "date", "example": "2025-08-01", "description": "펀딩 시작일 (YYYY-MM-DD)" },
+          "end_date": { "type": "string", "format": "date", "example": "2025-09-30", "description": "펀딩 종료일 (YYYY-MM-DD)" },
+          "delivery_date": { "type": "string", "format": "date", "example": "2025-11-15", "description": "리워드 예상 전달일 (YYYY-MM-DD)" },
+          "is_active": { "type": "boolean", "example": true, "description": "프로젝트 활성화 여부" },
+          "gender": { "type": "integer", "description": "지원 대상 성별 코드 (0: 무관, 1: 남성, 2: 여성)", "example": 0 },
+          "age_group": { "type": "integer", "description": "지원 대상 연령대 코드 (예: 1=10대, 2=20대, 3=30대 등)", "example": 3 }
         }
       },
       "Reward": {
         "type": "object",
-        "required": ["project_id", "amount", "stock"],
+        "title": "리워드 상품 정보",
+        "description": "펀딩 프로젝트에 속한 개별 리워드 상품의 상세 정보입니다. 후원자가 선택할 수 있는 상품 단위를 나타냅니다.",
+        "required": ["project_id", "name", "amount", "stock"],
         "properties": {
-          "reward_id": {
-            "type": "integer",
-            "example": 1
-          },
-          "project_id": {
-            "type": "integer",
-            "example": 123
-          },
-          "name": {
-            "type": "string",
-            "example": "스티커 세트"
-          },
-          "description": {
-            "type": "string",
-            "example": "프로젝트 로고 스티커"
-          },
-          "amount": {
-            "type": "integer",
-            "example": 5000
-          },
-          "stock": {
-            "type": "integer",
-            "example": 100
-          }
+          "reward_id": { "type": "integer", "example": 1, "description": "리워드 고유 ID" },
+          "project_id": { "type": "integer", "example": 123, "description": "리워드가 속한 프로젝트의 ID" },
+          "name": { "type": "string", "example": "얼리버드 한정판 굿즈", "description": "리워드 상품명" },
+          "description": { "type": "string", "example": "프로젝트 로고가 새겨진 한정판 굿즈입니다.", "description": "리워드 상품에 대한 설명" },
+          "amount": { "type": "integer", "example": 50000, "description": "리워드 후원 금액 (원)" },
+          "stock": { "type": "integer", "example": 100, "description": "리워드 재고 수량" }
         }
       },
       "OptionData": {
         "type": "object",
+        "title": "추가 옵션 정보",
+        "description": "펀딩 프로젝트에 속한 추가 옵션의 상세 정보입니다. (예: 사이즈, 색상 선택 등) 리워드와 별개로 추가 선택 가능한 항목입니다.",
         "required": ["project_id", "title", "price"],
         "properties": {
-          "option_id": {
-            "type": "integer",
-            "example": 2
+          "option_id": { "type": "integer", "example": 2, "description": "옵션 고유 ID" },
+          "project_id": { "type": "integer", "example": 123, "description": "옵션이 속한 프로젝트의 ID" },
+          "title": { "type": "string", "example": "색상 선택 (블루)", "description": "옵션명" },
+          "description": { "type": "string", "example": "선택 가능한 색상 중 블루 옵션입니다.", "description": "옵션에 대한 설명" },
+          "price": { "type": "integer", "example": 5000, "description": "옵션 추가 금액 (원)" }
+        }
+      },
+      "MyFundingCompletedResponse": {
+        "type": "object",
+        "title": "최근 완료된 펀딩 응답",
+        "description": "사용자가 참여했거나 생성한 펀딩 중 최근에 완료된 프로젝트의 상세 정보입니다.",
+        "properties": {
+          "project_title": { "type": "string", "example": "성공적으로 완료된 프로젝트", "description": "프로젝트 제목" },
+          "image_url": { "type": "string", "format": "uri", "example": "https://fundmate.s3.amazonaws.com/projects/completed_project.jpg", "description": "프로젝트 대표 이미지 URL" },
+          "start_date": { "type": "string", "format": "date-time", "example": "2025-01-01T00:00:00Z", "description": "펀딩 시작일" },
+          "end_date": { "type": "string", "format": "date-time", "example": "2025-02-01T00:00:00Z", "description": "펀딩 종료일" },
+          "achievement": { "type": "string", "example": "150%", "description": "달성률" }
+        }
+      },
+      "MyFundingListResponse": {
+        "type": "object",
+        "title": "내가 올린 펀딩 목록 응답",
+        "description": "로그인한 사용자가 직접 생성하고 등록한 펀딩 프로젝트 목록입니다.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ProjectSummary" },
+            "description": "내가 올린 프로젝트 요약 정보 목록"
           },
-          "project_id": {
-            "type": "integer",
-            "example": 123
+          "count": { "type": "integer", "example": 5, "description": "총 프로젝트 개수" }
+        }
+      },
+      "MyCommentsListResponse": {
+        "type": "object",
+        "title": "내 후기 목록 응답",
+        "description": "로그인한 사용자가 작성한 모든 후기(댓글) 목록입니다.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "comment_id": { "type": "integer", "example": 101, "description": "후기 고유 ID" },
+                "project_title": { "type": "string", "example": "펀딩 프로젝트 A", "description": "후기가 작성된 프로젝트 제목" },
+                "content": { "type": "string", "example": "정말 좋은 프로젝트였습니다!", "description": "후기 내용" },
+                "created_at": { "type": "string", "format": "date-time", "example": "2025-07-10T10:00:00Z", "description": "작성일" }
+              }
+            },
+            "description": "내 후기 목록"
           },
-          "title": {
-            "type": "string",
-            "example": "초기 엑세스"
+          "count": { "type": "integer", "example": 3, "description": "총 후기 개수" }
+        }
+      },
+      "OthersFundingListResponse": {
+        "type": "object",
+        "title": "다른 회원 펀딩 목록 응답",
+        "description": "특정 회원이 올린 펀딩 프로젝트 목록입니다.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ProjectSummary" },
+            "description": "다른 회원이 올린 프로젝트 요약 정보 목록"
           },
-          "description": {
-            "type": "string",
-            "example": "베타 버전 이용권"
-          },
-          "price": {
-            "type": "integer",
-            "example": 15000
-          }
+          "count": { "type": "integer", "example": 7, "description": "총 프로젝트 개수" }
         }
       },
       "ErrorResponse": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "example": "NOT_FOUND"
-          },
-          "message": {
-            "type": "string",
-            "example": "요청하신 자원을 찾을 수 없습니다."
-          }
-        }
-      }
-    },
-    "responses": {
-      "BadRequest": {
-        "description": "잘못된 요청",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ErrorResponse"
-            }
-          }
-        }
-      },
-      "Unauthorized": {
-        "description": "인증 실패",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ErrorResponse"
-            }
-          }
-        }
-      },
-      "NotFound": {
-        "description": "리소스 없음",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ErrorResponse"
-            }
-          }
-        }
-      },
-      "InternalError": {
-        "description": "서버 내부 오류",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ErrorResponse"
-            }
-          }
-        }
+        "$ref": "./auths.json#/components/schemas/ErrorResponse"
       }
     },
     "securitySchemes": {
       "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
+        "$ref": "./auths.json#/components/securitySchemes/bearerAuth"
       }
+    },
+    "responses": {
+      "BadRequest": { "$ref": "./auths.json#/components/responses/BadRequest" },
+      "Unauthorized": { "$ref": "./auths.json#/components/responses/Unauthorized" },
+      "Forbidden": { "$ref": "./auths.json#/components/responses/Forbidden" },
+      "NotFound": {
+        "description": "요청한 리소스를 찾을 수 없습니다.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "examples": {
+              "sample": {
+                "summary": "리소스를 찾을 수 없음",
+                "value": {
+                  "code": "NOT_FOUND",
+                  "message": "해당 프로젝트 또는 옵션을 찾을 수 없습니다."
+                }
+              }
+            }
+          }
+        }
+      },
+      "InternalError": { "$ref": "./auths.json#/components/responses/InternalError" }
     }
-  },
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ]
+  }
 }

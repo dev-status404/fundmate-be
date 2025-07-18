@@ -1,57 +1,61 @@
 {
   "openapi": "3.0.4",
   "info": {
-    "title": "API Gateway Swagger",
+    "title": "API Gateway API",
     "version": "1.0.0",
-    "description": "서비스 헬스체크, API 문서, S3 업로드 presign 및 complete 기능을 제공하는 API Gateway용 Swagger 문서입니다."
+    "description": "마이크로서비스 아키텍처의 진입점 역할을 하는 API Gateway의 자체 API 명세입니다. 서비스 헬스체크, API 문서 제공, 그리고 S3 파일 업로드에 필요한 Presigned URL 생성 및 완료 알림 기능을 제공합니다."
   },
   "servers": [
     {
       "url": "https://fundmate.store/api",
-      "description": "Production 서버"
+      "description": "게이트웨이 서버"
     }
   ],
   "tags": [
     {
-      "name": "system",
-      "description": "서비스 상태 확인 및 문서 제공용 엔드포인트"
+      "name": "시스템 (System)",
+      "description": "API Gateway의 상태 확인 및 문서 제공 관련 엔드포인트"
     },
     {
-      "name": "upload",
-      "description": "S3 업로드 presign 및 완료 알림 관련 API"
+      "name": "파일 업로드 (File Upload)",
+      "description": "S3에 파일을 안전하게 업로드하기 위한 Presigned URL 생성 및 업로드 완료 알림 API"
     }
   ],
   "paths": {
     "/health-checks": {
       "get": {
-        "tags": ["system"],
-        "summary": "서비스 헬스체크",
-        "description": "서비스가 정상 동작 중인지 확인합니다.",
+        "tags": ["시스템 (System)"],
+        "summary": "API Gateway 헬스체크",
+        "description": "API Gateway 서비스가 정상적으로 동작 중인지 확인합니다. 주기적인 서비스 상태 모니터링에 사용됩니다.",
         "responses": {
           "200": {
             "description": "서비스 정상 응답",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HealthCheck"
+                "schema": { "$ref": "#/components/schemas/HealthCheck" },
+                "examples": {
+                  "sample": {
+                    "summary": "정상 응답 예시",
+                    "value": {
+                      "status": "OK"
+                    }
+                  }
                 }
               }
             }
           },
-          "500": {
-            "$ref": "#/components/responses/InternalError"
-          }
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     },
     "/docs": {
       "get": {
-        "tags": ["system"],
-        "summary": "API 문서 보기",
-        "description": "Swagger UI 또는 Redoc 페이지를 반환합니다.",
+        "tags": ["시스템 (System)"],
+        "summary": "API 문서 페이지 제공",
+        "description": "현재 API Gateway에 통합된 모든 마이크로서비스의 API 문서를 Swagger UI 형태로 제공합니다.",
         "responses": {
           "200": {
-            "description": "HTML 형식의 API 문서",
+            "description": "HTML 형식의 API 문서 페이지",
             "content": {
               "text/html": {
                 "schema": {
@@ -60,17 +64,15 @@
               }
             }
           },
-          "500": {
-            "$ref": "#/components/responses/InternalError"
-          }
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     },
     "/upload/presign": {
       "get": {
-        "tags": ["upload"],
-        "summary": "S3 업로드 presign URL 생성",
-        "description": "클라이언트가 S3에 파일을 업로드할 수 있도록 presigned URL과 key를 반환합니다.",
+        "tags": ["파일 업로드 (File Upload)"],
+        "summary": "S3 Presigned URL 생성",
+        "description": "클라이언트가 S3 버킷에 파일을 직접 안전하게 업로드할 수 있도록 임시 서명된 URL(Presigned URL)과 파일 키를 생성하여 반환합니다. 이 URL을 통해 인증 없이 S3에 파일을 업로드할 수 있습니다.",
         "security": [
           {
             "bearerAuth": []
@@ -81,60 +83,64 @@
             "name": "filename",
             "in": "query",
             "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "업로드할 파일 이름"
+            "schema": { "type": "string", "example": "my_image.png" },
+            "description": "업로드할 파일의 원래 이름 (확장자 포함)"
           },
           {
             "name": "contentType",
             "in": "query",
             "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "파일의 MIME 타입"
+            "schema": { "type": "string", "example": "image/png" },
+            "description": "업로드할 파일의 MIME 타입 (예: image/jpeg, application/pdf)"
           }
         ],
         "responses": {
           "200": {
-            "description": "Presign URL 및 key 반환 성공",
+            "description": "Presigned URL 및 파일 키 생성 성공",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PresignResponse"
+                "schema": { "$ref": "#/components/schemas/PresignResponse" },
+                "examples": {
+                  "sample": {
+                    "summary": "Presigned URL 응답 예시",
+                    "value": {
+                      "url": "https://your-bucket.s3.amazonaws.com/uploads/unique-id-my_image.png?X-Amz-Algorithm=...",
+                      "key": "uploads/unique-id-my_image.png"
+                    }
+                  }
                 }
               }
             }
           },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalError"
-          }
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     },
     "/upload/complete": {
       "post": {
-        "tags": ["upload"],
+        "tags": ["파일 업로드 (File Upload)"],
         "summary": "S3 업로드 완료 알림",
-        "description": "S3 업로드가 완료된 후 반환된 key를 서버에 저장하도록 알립니다.",
+        "description": "클라이언트가 Presigned URL을 통해 S3에 파일 업로드를 완료한 후, 서버에 해당 파일의 키를 알려주는 API입니다. 서버는 이 정보를 바탕으로 파일의 메타데이터를 저장하거나 후속 처리를 진행합니다.",
         "security": [
           {
             "bearerAuth": []
           }
         ],
         "requestBody": {
+          "description": "업로드 완료된 파일의 키",
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UploadCompleteRequest"
+              "schema": { "$ref": "#/components/schemas/UploadCompleteRequest" },
+              "examples": {
+                "sample": {
+                  "summary": "업로드 완료 요청 예시",
+                  "value": {
+                    "key": "uploads/unique-id-my_image.png"
+                  }
+                }
               }
             }
           }
@@ -144,126 +150,101 @@
             "description": "업로드 완료 처리 성공",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UploadCompleteResponse"
+                "schema": { "$ref": "#/components/schemas/UploadCompleteResponse" },
+                "examples": {
+                  "sample": {
+                    "summary": "업로드 완료 응답 예시",
+                    "value": {
+                      "message": "파일 업로드가 성공적으로 처리되었습니다.",
+                      "url": "https://your-bucket.s3.amazonaws.com/uploads/unique-id-my_image.png"
+                    }
+                  }
                 }
               }
             }
           },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalError"
-          }
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     }
   },
   "components": {
     "responses": {
-      "BadRequest": {
-        "description": "잘못된 요청",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ErrorResponse"
-            }
-          }
-        }
-      },
-      "Unauthorized": {
-        "description": "인증 실패",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ErrorResponse"
-            }
-          }
-        }
-      },
-      "InternalError": {
-        "description": "서버 내부 오류",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ErrorResponse"
-            }
-          }
-        }
-      }
+      "BadRequest": { "$ref": "./auths.json#/components/responses/BadRequest" },
+      "Unauthorized": { "$ref": "./auths.json#/components/responses/Unauthorized" },
+      "InternalError": { "$ref": "./auths.json#/components/responses/InternalError" }
     },
     "schemas": {
       "HealthCheck": {
         "type": "object",
+        "title": "헬스체크 응답",
+        "description": "API Gateway의 현재 상태를 나타내는 응답입니다.",
         "properties": {
           "status": {
             "type": "string",
-            "example": "OK"
+            "example": "OK",
+            "description": "서비스 상태 (예: OK, ERROR)"
           }
         }
       },
       "PresignResponse": {
         "type": "object",
+        "title": "Presigned URL 응답",
+        "description": "S3 파일 업로드를 위한 Presigned URL과 파일 키를 포함하는 응답입니다.",
         "properties": {
           "url": {
             "type": "string",
             "format": "uri",
-            "example": "https://status404-s3.s3.amazonaws.com/uploads/1690000000000-a.png?X-Amz-..."
+            "example": "https://your-bucket.s3.amazonaws.com/uploads/unique-id-my_image.png?X-Amz-Algorithm=...",
+            "description": "파일을 업로드할 수 있는 Presigned URL"
           },
           "key": {
             "type": "string",
-            "example": "uploads/1690000000000-a.png"
+            "example": "uploads/unique-id-my_image.png",
+            "description": "S3 버킷 내 파일의 고유 키"
           }
         }
       },
       "UploadCompleteRequest": {
         "type": "object",
+        "title": "업로드 완료 요청",
+        "description": "S3 파일 업로드 완료 후 서버에 알리는 요청 본문입니다.",
         "required": ["key"],
         "properties": {
           "key": {
             "type": "string",
-            "description": "S3에 업로드된 object key",
-            "example": "uploads/1690000000000-a.png"
+            "description": "S3에 업로드된 파일의 고유 키",
+            "example": "uploads/unique-id-my_image.png"
           }
         }
       },
       "UploadCompleteResponse": {
         "type": "object",
+        "title": "업로드 완료 응답",
+        "description": "S3 파일 업로드 완료 처리 결과에 대한 응답입니다.",
         "properties": {
           "message": {
             "type": "string",
-            "example": "업로드 완료"
+            "example": "파일 업로드가 성공적으로 처리되었습니다.",
+            "description": "처리 결과 메시지"
           },
           "url": {
             "type": "string",
             "format": "uri",
-            "example": "https://status404-s3.s3.amazonaws.com/uploads/1690000000000-a.png"
+            "example": "https://your-bucket.s3.amazonaws.com/uploads/unique-id-my_image.png",
+            "description": "업로드된 파일의 최종 접근 가능한 URL"
           }
         }
       },
       "ErrorResponse": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "example": "INVALID_REQUEST"
-          },
-          "message": {
-            "type": "string",
-            "example": "key가 필요합니다."
-          }
-        }
+        "$ref": "./auths.json#/components/schemas/ErrorResponse"
       }
     },
     "securitySchemes": {
       "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
+        "$ref": "./auths.json#/components/securitySchemes/bearerAuth"
       }
     }
   },

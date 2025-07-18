@@ -3,133 +3,189 @@
   "info": {
     "title": "Public Service API",
     "version": "1.0.0",
-    "description": "공개 컨텐츠 기능을 제공하는 마이크로서비스"
+    "description": "다양한 조건에 따라 공개 데이터를 조회하는 마이크로서비스입니다. 통계 데이터 및 키워드 기반 데이터 조회를 지원합니다."
   },
   "servers": [
     {
       "url": "https://fundmate.store/api/public",
-      "description": "Public content server"
+      "description": "공공데이터 서버"
+    }
+  ],
+  "tags": [
+    {
+      "name": "공개 데이터 조회 (Public Data Retrieval)",
+      "description": "다양한 필터링 조건 및 키워드를 사용하여 공개 데이터를 조회하는 API"
     }
   ],
   "paths": {
-    "/stats": {
-      "get": {
-        "tags": ["public"],
-        "summary": "통계 데이터 목록 조회",
-        "parameters": [
-          {
-            "name": "category",
-            "in": "query",
-            "schema": { "type": "string" },
-            "required": false
-          },
-          {
-            "name": "age_group",
-            "in": "query",
-            "schema": { "type": "string" },
-            "required": false
-          },
-          {
-            "name": "gender",
-            "in": "query",
-            "schema": { "type": "string", "enum": ["male", "female", "any"] },
-            "required": false
-          },
-          {
-            "name": "household_type",
-            "in": "query",
-            "schema": { "type": "string" },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "통계 데이터 배열",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": { "$ref": "#/components/schemas/PublicStat" }
+    "public/option": {
+      "post": {
+        "tags": ["공개 데이터 조회 (Public Data Retrieval)"],
+        "summary": "옵션 기반 공개 데이터 조회",
+        "description": "지정된 옵션(예: 카테고리, 연령대, 성별, 가구 유형)에 따라 공개 데이터를 조회합니다.",
+        "requestBody": {
+          "description": "조회할 옵션 정보",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/OptionDataRequest" },
+              "examples": {
+                "sample": {
+                  "summary": "옵션 데이터 요청 예시",
+                  "value": {
+                    "category": "IT/가전",
+                    "age_group": "20대",
+                    "gender": "female"
+                  }
                 }
               }
             }
           }
+        },
+        "responses": {
+          "200": {
+            "description": "데이터 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PublicDataResponse" },
+                "examples": {
+                  "sample": {
+                    "summary": "옵션 데이터 응답 예시",
+                    "value": [
+                      {
+                        "id": 1,
+                        "title": "20대 여성 IT/가전 관심도",
+                        "value": "높음",
+                        "source": "설문조사"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     },
-    "/patents": {
-      "get": {
-        "tags": ["public"],
-        "summary": "특허 정보 목록 조회",
-        "responses": {
-          "200": {
-            "description": "특허 정보 배열",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": { "$ref": "#/components/schemas/PatentInfo" }
+    "public/keyword": {
+      "post": {
+        "tags": ["공개 데이터 조회 (Public Data Retrieval)"],
+        "summary": "키워드 기반 공개 데이터 조회",
+        "description": "지정된 키워드를 포함하는 공개 데이터를 조회합니다. (예: 특허 정보, 뉴스 기사 등)",
+        "requestBody": {
+          "description": "조회할 키워드 정보",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/KeywordDataRequest" },
+              "examples": {
+                "sample": {
+                  "summary": "키워드 데이터 요청 예시",
+                  "value": {
+                    "keyword": "AI 특허"
+                  }
                 }
               }
             }
           }
-        }
-      }
-    },
-    "/patents/{patent_id}": {
-      "get": {
-        "tags": ["public"],
-        "summary": "특정 특허 정보 조회",
-        "parameters": [
-          {
-            "name": "patent_id",
-            "in": "path",
-            "schema": { "type": "integer" },
-            "required": true
-          }
-        ],
+        },
         "responses": {
           "200": {
-            "description": "단일 특허 정보",
+            "description": "데이터 조회 성공",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PatentInfo" }
+                "schema": { "$ref": "#/components/schemas/PublicDataResponse" },
+                "examples": {
+                  "sample": {
+                    "summary": "키워드 데이터 응답 예시",
+                    "value": [
+                      {
+                        "id": 101,
+                        "title": "AI 기반 이미지 분석 특허",
+                        "value": "2023년 등록",
+                        "source": "특허청"
+                      }
+                    ]
+                  }
+                }
               }
             }
           },
-          "404": {
-            "description": "특허 정보를 찾을 수 없음"
-          }
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     }
   },
   "components": {
     "schemas": {
-      "PublicStat": {
+      "OptionDataRequest": {
         "type": "object",
+        "title": "옵션 데이터 요청",
+        "description": "옵션 기반 데이터 조회를 위한 요청 본문입니다.",
         "properties": {
-          "stat_id": { "type": "integer" },
-          "category": { "type": "string" },
-          "age_group": { "type": "string" },
-          "gender": { "type": "string", "enum": ["male", "female", "any"] },
-          "household_type": { "type": "string" },
-          "stat_title": { "type": "string" },
-          "stat_value": { "type": "string" },
-          "source": { "type": "string" },
-          "collected_at": { "type": "string", "format": "date-time" }
+          "category": { "type": "string", "example": "IT/가전", "description": "조회할 통계의 카테고리" },
+          "age_group": { "type": "string", "example": "20대", "description": "조회할 통계의 연령대" },
+          "gender": { "type": "string", "enum": ["male", "female", "any"], "example": "female", "description": "조회할 통계의 성별" },
+          "household_type": { "type": "string", "example": "1인 가구", "description": "조회할 통계의 가구 유형" }
         }
       },
-      "PatentInfo": {
+      "KeywordDataRequest": {
         "type": "object",
+        "title": "키워드 데이터 요청",
+        "description": "키워드 기반 데이터 조회를 위한 요청 본문입니다.",
+        "required": ["keyword"],
         "properties": {
-          "patent_id": { "type": "integer" },
-          "ai_id": { "type": "integer" },
-          "title": { "type": "string" },
-          "summary": { "type": "string" },
-          "link": { "type": "string" }
+          "keyword": { "type": "string", "example": "AI 기술", "description": "검색할 키워드" }
         }
+      },
+      "PublicDataResponse": {
+        "type": "array",
+        "title": "공개 데이터 응답",
+        "description": "조회된 공개 데이터 목록입니다. 각 항목의 구조는 조회 방식에 따라 달라질 수 있습니다.",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "integer", "description": "데이터 고유 ID", "example": 1 },
+            "title": { "type": "string", "description": "데이터 제목", "example": "데이터 제목" },
+            "value": { "type": "string", "description": "데이터 값 또는 요약", "example": "데이터 값" },
+            "source": { "type": "string", "description": "데이터 출처", "example": "출처" },
+            "collected_at": { "type": "string", "format": "date-time", "description": "데이터 수집 일시", "example": "2025-07-15T10:00:00Z" }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "$ref": "./auths.json#/components/schemas/ErrorResponse"
       }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "$ref": "./auths.json#/components/securitySchemes/bearerAuth"
+      }
+    },
+    "responses": {
+      "BadRequest": { "$ref": "./auths.json#/components/responses/BadRequest" },
+      "Unauthorized": { "$ref": "./auths.json#/components/responses/Unauthorized" },
+      "NotFound": {
+        "description": "요청한 리소스를 찾을 수 없습니다.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "examples": {
+              "sample": {
+                "summary": "데이터 없음",
+                "value": {
+                  "code": "DATA_NOT_FOUND",
+                  "message": "요청한 조건에 해당하는 데이터를 찾을 수 없습니다."
+                }
+              }
+            }
+          }
+        }
+      },
+      "InternalError": { "$ref": "./auths.json#/components/responses/InternalError" }
     }
   }
 }
