@@ -232,11 +232,22 @@ export const getMySupportedProjects = async (req: Request, res: Response) => {
 
 export const getMyComments = async (req: Request, res: Response) => {
   const { userId } = res.locals.user;
+  if (!userId) return res.status(StatusCode.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
+
+  const page = req.query.page as string | undefined;
+  const limit = req.query.limit as string | undefined;
+  const params = new URLSearchParams();
+  if (page && limit){
+    params.set('page',page);
+    params.set('limit',limit);
+  }
+  
+  const url = `/profiles/my-comments${params.toString() ? `?${params}` : ''}`;
 
   try {
     const fundingClient = serviceClients['funding-service'];
     fundingClient.setAuthContext({ userId });
-    const CommentsList = await fundingClient.get(`/profiles/my-comments`);
+    const CommentsList = await fundingClient.get(url);
 
     return res.status(StatusCode.OK).json(CommentsList.data);
   } catch (err) {

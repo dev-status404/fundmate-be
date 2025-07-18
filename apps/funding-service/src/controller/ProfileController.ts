@@ -114,21 +114,51 @@ export const getOthersFundingList = async (req: Request, res: Response) => {
 export const getFundingComments = async (req: Request, res: Response) => {
   const { userId } = res.locals.user;
 
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+  const offset = (page - 1) * limit;
+
+  try {
   const ProjectRepo = AppDataSource.getRepository(Project);
 
   const query = ProjectRepo.createQueryBuilder('project')
     .innerJoin('project.comments', 'comment')
-    .select(['project.projectId AS project_id', 'project.image_url AS image_url', 'project.title AS title', 'comment.content AS content'])
-    .where('comment.user_id = :userId', { userId: userId });
+    .select([
+      'project.projectId AS project_id',
+      'project.image_url AS image_url',
+      'project.title AS title',
+      'comment.content AS content'
+    ])
+    .where('comment.user_id = :userId', { userId })
+    .orderBy('comment.created_at', 'DESC');
 
-  try {
-    const queryResult = await query.getRawMany();
+    const totalData = await query.getRawMany();
+    const totalItems = totalData.length;
 
-    if (queryResult.length === 0) {
-      return res.status(StatusCodes.OK).json([]);
+    if (totalItems === 0) {
+      return res.status(StatusCodes.OK).json({
+        meta: {
+          totalItems: 0,
+          totalPages: 0,
+          currentPage: page,
+          limit,
+        },
+        data: [],
+      });
     }
 
-    return res.status(StatusCodes.OK).json(queryResult);
+    const totalPages = Math.ceil(totalItems / limit);
+    const data = totalData.slice(offset, offset + limit);
+
+    return res.status(StatusCodes.OK).json({
+      meta: {
+        totalItems,
+        totalPages,
+        currentPage: page,
+        limit,
+      },
+      data,
+    });
   } catch (err) {
     console.error(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '서버 문제가 발생했습니다.' });

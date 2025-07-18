@@ -69,12 +69,11 @@ router.get('/summary', async (req, res) => {
 
     return res.status(StatusCodes.OK).json({
       totalAmount: totalAmountAll,
-      count: countAll,
+      totalcount: countAll,
       meta: {
-        startDate,
-        endDate,
-        totalAmount: totalAmountPeriod,
-        count: countPeriod,
+        month: startDate,
+        monthAmount: totalAmountPeriod,
+        monthCount: countPeriod,
       },
     });
   } catch (err) {
