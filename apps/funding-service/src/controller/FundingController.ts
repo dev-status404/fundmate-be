@@ -3,6 +3,7 @@ import { AppDataSource } from '../data-source';
 import { Project, OptionData } from '@shared/entities';
 import { HttpStatusCode } from 'axios';
 import { requestBodyValidation } from '../modules/RequestBodyValidation';
+import { addLikedStatusToQuery } from '../modules/addLikedStatus';
 
 // 프로젝트 생성
 export const createFundingAndOption = async (req: Request, res: Response) => {
@@ -105,6 +106,7 @@ export const createFundingAndOption = async (req: Request, res: Response) => {
 // 프로젝트 상세 조회
 export const getFundingDetail = async (req: Request, res: Response) => {
   const projectDetailId = req.params.id;
+  const userId = res.locals.user?.userId;
 
   if (!projectDetailId) {
     return res.status(HttpStatusCode.BadRequest).json({ message: '잘못된 프로젝트 ID 값입니다.' });
@@ -113,7 +115,7 @@ export const getFundingDetail = async (req: Request, res: Response) => {
   const projectRepo = AppDataSource.getRepository(Project);
   const optionRepo = AppDataSource.getRepository(OptionData);
 
-  const projectQuery = projectRepo
+  let projectQuery = projectRepo
     .createQueryBuilder('project')
     .leftJoin('project.user', 'user')
     .leftJoin('project.paymentSchedule', 'schedule')
@@ -141,6 +143,8 @@ export const getFundingDetail = async (req: Request, res: Response) => {
     ])
     .where('project.projectId = :projectId', { projectId: projectDetailId });
 
+    projectQuery = addLikedStatusToQuery(userId, projectQuery);
+
   const optionQuery = optionRepo
     .createQueryBuilder('option')
     .select(['option.title AS title', 'option.description AS description', 'option.price AS price'])
@@ -167,6 +171,7 @@ export const getFundingDetail = async (req: Request, res: Response) => {
         payment_date: projectQueryResult.payment_date,
         sponsor: Number(projectQueryResult.sponsor),
         likes: Number(projectQueryResult.likes),
+liked: !!Number(projectQueryResult.liked),
       };
 
       const users = {

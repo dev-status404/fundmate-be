@@ -1,6 +1,6 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
-dotenv.config({ path: __dirname + '/../../../../.env' });
+dotenv.config();
 
 let accessToken: string | null = null;
 const consumer_key = process.env.PUBLIC_CONSUMER_KEY;
