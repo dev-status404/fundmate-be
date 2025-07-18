@@ -171,7 +171,7 @@ export const getFundingDetail = async (req: Request, res: Response) => {
         payment_date: projectQueryResult.payment_date,
         sponsor: Number(projectQueryResult.sponsor),
         likes: Number(projectQueryResult.likes),
-        liked: Number(projectQueryResult.liked),
+liked: !!Number(projectQueryResult.liked),
       };
 
       const users = {
