@@ -27,7 +27,7 @@ router.get('/count', async (req, res) => {
   }
 });
 
-// 총 후원 금액 및 후원 건수
+ // 총 후원 금액 및 후원 건수
 router.get('/summary', async (req, res) => {
   const { userId } = res.locals.user;
   if (!userId) {
@@ -44,37 +44,42 @@ router.get('/summary', async (req, res) => {
       where: { userId, status: 'success' },
     });
     const allHistoryAmount = allHistories.reduce((sum, h) => sum + h.totalAmount, 0);
+
     const totalAmountAll = allScheduleAmount + allHistoryAmount;
-    const countAll = allScheduleCount + allHistoryCount;
+    const totalCountAll = allScheduleCount + allHistoryCount;
 
     if (typeof startDate !== 'string' || typeof endDate !== 'string') {
-      return res.status(StatusCodes.OK).json({ totalAmount: totalAmountAll, count: countAll });
+      return res.status(StatusCodes.OK).json({ totalAmount: totalAmountAll, totalCount: totalCountAll });
     }
 
     const historyWhere: any = { userId, status: 'success' };
+    const scheduleWhere: any = { userId };
+
     if (typeof startDate === 'string' && typeof endDate === 'string') {
+      scheduleWhere.createdAt = Between(new Date(startDate), new Date(endDate));
       historyWhere.executedAt = Between(new Date(startDate), new Date(endDate));
     }
 
-    const scheduleWhere: any = { userId, scheduleDate: Between(new Date(startDate), new Date(endDate)) };
-
     const [periodSchedules, periodScheduleCount] = await paymentScheduleRepo.findAndCount({ where: scheduleWhere });
-    const periodScheduleAmount = periodSchedules.reduce((sum, s) => sum + s.totalAmount, 0);
+    const periodScheduleAmount = periodSchedules.reduce((acc, cur) => acc + cur.totalAmount, 0);
 
     const [periodHistories, periodHistoryCount] = await paymentHistoryRepo.findAndCount({ where: historyWhere });
-    const periodHistoryAmount = periodHistories.reduce((sum, h) => sum + h.totalAmount, 0);
+    const periodHistoryAmount = periodHistories.reduce((acc, cur) => acc + cur.totalAmount, 0);
 
-    const totalAmountPeriod = periodScheduleAmount + periodHistoryAmount;
-    const countPeriod = periodScheduleCount + periodHistoryCount;
+    const periodAmount = periodScheduleAmount + periodHistoryAmount;
+    const periodSponsorCount = periodHistoryCount;
+    const periodCheckOut = periodScheduleCount
 
     return res.status(StatusCodes.OK).json({
       totalAmount: totalAmountAll,
-      totalcount: countAll,
-      meta: {
-        month: startDate,
-        monthAmount: totalAmountPeriod,
-        monthCount: countPeriod,
-      },
+      totalcount: totalCountAll,
+      period: {
+        startDay:startDate,
+        endDay:endDate,
+        amount:periodAmount,
+        sponsorCount:periodSponsorCount,
+        checkOut:periodCheckOut
+      }
     });
   } catch (err) {
     console.error(err);
