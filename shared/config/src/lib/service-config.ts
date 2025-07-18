@@ -93,7 +93,10 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url' | 'host'>> = {
     swagger: 'public.json',
     port: Number(process.env.PUBLIC_SERVICE_PORT) || 3006,
     base: ['/datas'],
-    jwtRules: [],
+    jwtRules: [
+      { method: 'ALL', path: '/keyword', required: false },
+      { method: 'ALL', path: '/option', required: false },
+    ],
   },
   'user-service': {
     name: 'user-service',
