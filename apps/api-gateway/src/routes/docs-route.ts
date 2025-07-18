@@ -10,10 +10,13 @@ router.use(
   swaggerUi.setup(null, {
     explorer: true,
     swaggerOptions: {
-      urls: Object.values(serviceConfig).map((service) => ({
+      urls: [...Object.values(serviceConfig).map((service) => ({
         name: service.name,
         url: service.swagger,
       })),
+    {
+      name: "api-gateway", url: '/assets/gateway.json'
+    }],
     },
   })
 );

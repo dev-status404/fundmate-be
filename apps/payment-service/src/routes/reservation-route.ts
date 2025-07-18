@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
     }
     const data = findBySchedule.map((schedule) => ({
       scheduleId: schedule.id,
-      productImage: schedule.project.image,
+      productImage: schedule.project.imageUrl,
       productName: schedule.project.title,
       optionName: schedule.option?.title ?? null,
       totalAmount: schedule.totalAmount,
@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
 
     return res.status(StatusCodes.OK).json({ data, count });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '전체 펀딩 조회 실패' });
   }
 });
@@ -48,7 +48,11 @@ router.get('/:id', async (req, res) => {
       where: { id: reservationId, userId },
       relations: ['project', 'option', 'paymentInfo'],
     });
-    if (!findBySchedule) throw createError(StatusCodes.NOT_FOUND, '예약된 정보가 없습니다.');
+    if (!findBySchedule) {
+      return res
+        .status(StatusCodes.OK)
+        .json({ message: '이미 취소되었거나 존재하지 않는 예약입니다.' });
+    }
 
     const schedule = findBySchedule;
     const result = {
@@ -56,7 +60,7 @@ router.get('/:id', async (req, res) => {
       userId: schedule.userId,
       rewardId: schedule.option?.optionId ?? null,
       paymentInfoId: schedule.paymentInfo.id,
-      productImage: schedule.project.image,
+      productImage: schedule.project.imageUrl,
       productName: schedule.project.title,
       optionName: schedule.option?.title ?? null,
       optionAmount: schedule.option?.price ?? null,
@@ -74,7 +78,7 @@ router.get('/:id', async (req, res) => {
     };
     return res.status(StatusCodes.OK).json(result);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: '펀딩 조회 실패' });
   }
 });
@@ -266,7 +270,6 @@ router.delete('/:id', async (req, res) => {
   const { userId } = res.locals.user;
   if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
   const reservationId = +req.params.id;
-  let savedHistory!: PaymentHistory;
   try {
     await AppDataSource.transaction(async (manager) => {
       const schedule = await manager.findOne(PaymentSchedule, {
@@ -276,11 +279,19 @@ router.delete('/:id', async (req, res) => {
       if (!schedule) throw createError(404, '예약된 정보가 없습니다.');
       const historyRepo = manager.getRepository(PaymentHistory);
       const historyEntity = historyRepo.create({
-        userId: schedule.userId,
+        userId: userId,
         scheduleId: schedule.id,
         paymentInfoId: schedule.paymentInfo.id,
+        paymentMethod: schedule.paymentInfo.method,
+        bankCode: schedule.paymentInfo.code,
+        displayInfo: schedule.paymentInfo.displayInfo,
         rewardId: schedule.option?.optionId ?? null,
         projectId: schedule.project.projectId,
+        optionTitle: schedule.option?.title,
+        optionAmount: schedule.option?.price,
+        project: schedule.project,
+        projectTitle: schedule.project.title,
+        projectImage: schedule.project.imageUrl,
         amount: schedule.amount,
         donateAmount: schedule.donateAmount ?? null,
         totalAmount: schedule.totalAmount,
@@ -292,12 +303,11 @@ router.delete('/:id', async (req, res) => {
         createdAt: schedule.createdAt,
         errorLog: schedule.lastErrorMessage ?? null,
       } as DeepPartial<PaymentHistory>);
-      savedHistory = await manager.save(historyEntity);
+      await manager.save(historyEntity);
       await manager.remove(schedule);
     });
     return res.status(StatusCodes.OK).json({
       message: '예약이 취소되었습니다.',
-      history: savedHistory,
     });
   } catch (err: any) {
     console.error(err);

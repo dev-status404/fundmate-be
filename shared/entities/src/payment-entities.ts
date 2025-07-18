@@ -18,7 +18,13 @@ export class PaymentHistory {
   @Column({ name: 'payment_info_id', type: 'int' })
   paymentInfoId!: number;
 
-  @Column({ name: 'payment_method', type: 'varchar', length: 30 })
+  @Column({
+    name: 'payment_method',
+    type: 'varchar',
+    length: 30,
+    default: 'UNKNOWN',
+    nullable:false
+  })
   paymentMethod!: string;
 
   @Column({ name: 'bank_code', type: 'varchar', length: 30, nullable: true })
@@ -27,14 +33,15 @@ export class PaymentHistory {
   @Column({ name: 'display_info', type: 'varchar', length: 255, nullable: true })
   displayInfo?: string;
 
-  @Column({ name: 'transaction_id', type: 'varchar', length: 100, nullable: true })
-  transactionId?: string;
-
   @Column({ name: 'reward_id', type: 'int', nullable: true })
   rewardId?: number;
 
-  @Column({ name: 'project_id', type: 'int' })
-  projectId!: number;
+  @ManyToOne(() => Project, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'project_id' })
+  project?: Project;
+  
+  @Column({ name: 'project_id', type: 'int', nullable: true })
+  projectId?: number;
 
   @Column({ name: 'option_title', type: 'varchar', length: 255, nullable: true })
   optionTitle?: string;

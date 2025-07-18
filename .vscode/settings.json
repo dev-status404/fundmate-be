@@ -1,6 +1,10 @@
 {
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "prettier.requireConfig": true,
-  "nxConsole.generateAiAgentRules": true
+  "prettier.requireConfig": false,
+  "nxConsole.generateAiAgentRules": true,
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "postman.settings.dotenv-detection-notification-visibility": false
 }

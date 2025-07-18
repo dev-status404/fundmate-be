@@ -12,10 +12,6 @@ const app = express();
 app.use(httpLogger);
 app.use(headerToLocals);
 
-app.get('/', (req, res) => {
-  res.send({ message: "Hello I'm ai service" });
-});
-
 app.get('/health', (_req, res) =>
   res.status(200).json({ status: 'ok', service: 'ai-service', timestamp: new Date().toISOString() })
 );
