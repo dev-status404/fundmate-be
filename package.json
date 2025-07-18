@@ -17,6 +17,7 @@
     "@aws-sdk/s3-request-presigner": "^3.846.0",
     "@types/cookie-parser": "^1.4.9",
     "axios": "^1.6.0",
+    "clean": "^4.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.6.0",
