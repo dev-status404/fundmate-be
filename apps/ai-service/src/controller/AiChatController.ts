@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import axios from 'axios';
 import dotenv from 'dotenv';
-import { getDataByUrl } from '../modules/GetDataByUrl';
+//import { getPopulationStat } from '../modules/getPopulationStat';
+//import { processPopulationData } from '../modules/processPopulationData';
 dotenv.config();
 dotenv.config({ path: '.env.apikey' });
 
@@ -64,74 +65,9 @@ export const summarize = async (req: Request, res: Response) => {
   }
 };
 
-const years = [2019, 2020, 2021, 2022, 2023];
-
-// 공공데이터 분석 함수
-const getAdditionalData = async (
-  category: string,
-  gender: string,
-  age: string,
-  housing: string,
-  area = '11000' // 기본: 서울
-) => {
-  try {
-    // 인구 데이터
-    const populationData = await Promise.all(
-      years.map((year) =>
-        getDataByUrl('https://sgisapi.kostat.go.kr/OpenAPI3/stats/searchpopulation.json', {
-          year,
-          gender,
-          adm_cd: area,
-          age_type: age,
-        })
-      )
-    );
-
-    // 가구 데이터
-    const householdData = await Promise.all(
-      years.map((year) =>
-        getDataByUrl('https://sgisapi.kostat.go.kr/OpenAPI3/stats/household.json', {
-          year,
-        })
-      )
-    );
-
-    // 주택 데이터
-    const houseData = await Promise.all(
-      years.map((year) =>
-        getDataByUrl('https://sgisapi.kostat.go.kr/OpenAPI3/stats/house.json', {
-          year,
-        })
-      )
-    );
-
-    // 가공 예시
-    const lastPop = populationData.at(-1)?.[0]?.data || [];
-    const lastHousehold = householdData.at(-1)?.[0]?.data || [];
-    const lastHouse = houseData.at(-1)?.[0]?.data || [];
-
-    const totalPop = lastPop.reduce((sum: number, d: any) => sum + Number(d.dataval || 0), 0);
-    const onePersonRate =
-      lastHousehold[0]?.one_person_household && lastHousehold[0]?.total_household
-        ? Math.round((Number(lastHousehold[0]?.one_person_household) / Number(lastHousehold[0]?.total_household)) * 100)
-        : null;
-
-    const trend = `최근 ${years.at(-1)}년 기준 인구는 약 ${totalPop.toLocaleString()}명입니다.`;
-    const stat = onePersonRate
-      ? `1인 가구 비율은 전체 가구 중 약 ${onePersonRate}%로 추정됩니다.`
-      : `1인 가구 비율 정보를 불러오지 못했습니다.`;
-    const interest = '해당 연령대는 자기계발, 반려동물, 홈인테리어에 대한 관심이 높은 것으로 조사됩니다.';
-
-    return { trend, stat, interest };
-  } catch (err) {
-    console.error('getAdditionalData 오류:', err);
-    return {
-      trend: '트렌드 정보를 불러오는 데 실패했습니다.',
-      stat: '통계 정보를 불러오는 데 실패했습니다.',
-      interest: '관심사 정보를 불러오는 데 실패했습니다.',
-    };
-  }
-};
+// const getAdditionalData = async (category: string, gender: string, age: string) => {
+//   //이 부분 공공데이터 내용 가져오기
+// };
 const sanitizeOutput = (text: string): string => {
   return text
     .replace(/interactive/gi, '상호작용형')
@@ -143,18 +79,24 @@ const sanitizeOutput = (text: string): string => {
     .replace(/分析/g, '분석')
     .replace(/概要/g, '개요')
     .replace(/提案/g, '제안')
-    .replace(/顧客/g, '고객');
+    .replace(/顧客/g, '고객')
+    .replace(/顾虑/g, '걱정')
+    .replace(/毎年/g, '매년');
 };
-export const requests = async (req: Request, res: Response) => {
-  const { input_text, category, gender, age_ground, household_type } = req.body;
 
-  if (!input_text || !category || !gender || !age_ground || !household_type) {
+export const requests = async (req: Request, res: Response) => {
+  const { input_text, category, gender, age_ground } = req.body;
+
+  if (!input_text || !category || !gender || !age_ground) {
     return res.status(400).json({ error: '필수 항목이 누락되었습니다.' });
   }
 
   try {
-    const data = await getAdditionalData(category, gender, age_ground, household_type);
-
+    // const statData = await getPopulationStat(gender, age_ground);
+    // console.log('📊 statData 원본 구조 확인:', JSON.stringify(statData, null, 2));
+    // const { mapData, chartData } = processPopulationData(statData || []);
+    // const statSummary = statData ? JSON.stringify(statData.slice(0, 2), null, 2) : '통계 데이터를 가져오지 못했습니다.';
+    // console.log(statSummary);
     const aiPrompt = `
 아래는 사용자가 제시한 아이디어와 타겟 정보입니다.
 이 정보를 바탕으로 아이디어를 구체적이고 창의적으로 확장하고, 반드시 아래 출력 구조에 맞춰 마크다운으로 출력해 주세요.
@@ -166,21 +108,16 @@ ${input_text}
 - 카테고리: ${category}
 - 성별: ${gender}
 - 나이대: ${age_ground}
-- 주거 형태: ${household_type}
 
-[참고 데이터]
-- 트렌드: ${data.trend}
-- 통계: ${data.stat}
-- 관심사: ${data.interest}
 
 [마크다운 출력 포맷 예시]
-# 🐶 ${age_ground} ${household_type} ${gender}을 위한 펀딩 아이디어  
+# 🐶 ${age_ground} ${gender}을 위한 펀딩 아이디어  
 ### ${input_text}에서 핵심 키워드 추출하여 제목으로
 
 ---
 
 ## 📈 1. 시장 동향 및 성장성  
-- 시장 규모와 CAGR
+- 시장 규모와 성장성
 - 관련 트렌드
 
 ## 🧪 2. 관련 특허 아이디어  
@@ -195,10 +132,7 @@ ${input_text}
 ## 🎯 4. 타깃 전략  
 - 디자인, 사용 편의성 등 타깃 맞춤 전략
 
-## 📊 5. 통계 기반 타당성  
-- 통계 수치 기반으로 설득력 있게 설명
-
-## ✅ 6. 추진 일정  
+## ✅ 5. 추진 일정  
 | 단계 | 주요 내용 |
 |------|----------|
 | 리서치 | 시장 조사 등 |
@@ -221,7 +155,6 @@ ${input_text}
 - ${category}의 내용이 '관계없음', '관계 없음' 일때 해당 내용을 포함하지 않음
 - ${gender}의 내용이 '관계없음', '관계 없음' 일때 해당 내용을 포함하지 않음
 - ${age_ground}의 내용이 '관계없음', '관계 없음' 일때 해당 내용을 포함하지 않음
-- ${household_type}의 내용이 '관계없음', '관계 없음' 일때 해당 내용을 포함하지 않음
 - ${input_text}의 내용이 질문 형태거나 불명확한 요청에도 "아이디어를 제대로 입력해주세요"라고 하세요.
 `;
 
