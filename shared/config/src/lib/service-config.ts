@@ -85,6 +85,7 @@ const rowServiceConfig: Record<string, Omit<ServiceConfig, 'url' | 'host'>> = {
       { method: 'ALL', path: '/payments', required: true },
       { method: 'PUT', path: '/reservations/:id/payment-info', required: true },
       { method: 'ALL', path: '/reservations', required: true },
+      { method: 'PATCH', path: '/reservations/:id', required: true},
       { method: 'ALL', path: '/statistics', required: true },
     ],
   },
