@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
 # 활성 환경 파일(.active)이 없으면 blue로 초기화
@@ -20,16 +20,24 @@ docker-compose \
   -f docker-compose.base.yml \
   -f docker-compose.${NEW}.yml up -d --build
 
-# 2) 헬스체크 대기 (포트 3000 or 3001 은 override에서 정의됨)
-HEALTH_PORT=$([ "$NEW" = "blue" ] && echo 3000 || echo 3001)
-echo "Waiting for $NEW (/health on port $HEALTH_PORT)..."
-until curl -fs "http://localhost:${HEALTH_PORT}/health" > /dev/null; do
+HEALTH_PORT=$([ "$NEW" = "blue" ] && echo ${API_GATEWAY_PORT} || echo 3001)
+echo "Waiting for $NEW (/health-checks on port $HEALTH_PORT) to report overall OK..."
+while true; do
+  RESPONSE=$(curl -fs "http://localhost:${HEALTH_PORT}/health-checks" 2>/dev/null) || {
+    echo "Health endpoint unreachable, retrying..."
+    sleep 5
+    continue
+  }
+  if echo "$RESPONSE" | jq -e '.overall == "ok"' >/dev/null; then
+    echo "Health-check passed."
+    break
+  fi
+  echo "Health-check not OK yet, retrying..."
   sleep 5
 done
 
-echo "$NEW is healthy. Shutting down $OLD..."
-
-# 3) 기존 환경 내리기
+# 3) 기존 환경 down
+echo "$NEW is healthy. Shutting down $OLD environment..."
 docker-compose \
   -f docker-compose.base.yml \
   -f docker-compose.${OLD}.yml down

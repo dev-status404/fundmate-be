@@ -1,5 +1,5 @@
 services:
-  api-gateway:
+  api-gateway_blue:
     build:
       context: .
       dockerfile: docker/Dockerfile
@@ -7,12 +7,44 @@ services:
         SERVICE: api-gateway
         HOST: '0.0.0.0'
         NODE_ENV: 'docker'
-    ports:
-      - '${API_GATEWAY_PORT}:${API_GATEWAY_PORT}'
+    image: your-registry/your-app:blue
+    container_name: api-gateway_blue
+    command: pm2-runtime start ecosystem.config.js --only app --env blue
     environment:
-      - API_GATEWAY_PORT=${API_GATEWAY_PORT}
+      API_GATEWAY_PORT: ${API_GATEWAY_PORT}
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:${API_GATEWAY_PORT}/health-checks']
+      test: ["CMD","curl","-f","http://localhost:${API_GATEWAY_PORT}/health-checks"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      - auth-service
+      - user-service
+      - funding-service
+      - interaction-service
+      - payment-service
+      - public-service
+      - ai-service
+    networks:
+      - backend
+    restart: unless-stopped
+
+  api-gateway_green:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        SERVICE: api-gateway
+        HOST: '0.0.0.0'
+        NODE_ENV: 'docker'
+    image: your-registry/your-app:green
+    container_name: api-gateway_green
+    command: pm2-runtime start ecosystem.config.js --only app --env green
+    environment:
+      API_GATEWAY_PORT: ${API_GATEWAY_PORT}
+    healthcheck:
+      test: ["CMD","curl","-f","http://localhost:${API_GATEWAY_PORT}/health-checks"]
       interval: 10s
       timeout: 5s
       retries: 3
