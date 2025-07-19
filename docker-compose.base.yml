@@ -1,3 +1,9 @@
+x-basic-health: &basic-health
+  interval: 10s
+  timeout: 5s
+  retries: 3
+  start_period: 30s
+
 services:
   api-gateway_blue:
     build:
@@ -7,17 +13,13 @@ services:
         SERVICE: api-gateway
         HOST: '0.0.0.0'
         NODE_ENV: 'docker'
-    image: your-registry/your-app:blue
+    image: fundmate-gateway:blue
     container_name: api-gateway_blue
-    command: pm2-runtime start ecosystem.config.js --only app --env blue
     environment:
       API_GATEWAY_PORT: ${API_GATEWAY_PORT}
     healthcheck:
-      test: ["CMD","curl","-f","http://localhost:${API_GATEWAY_PORT}/health-checks"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
+      test: ['CMD','curl','-f','http://localhost:${API_GATEWAY_PORT}/health']
+      <<: *basic-health
     depends_on:
       - auth-service
       - user-service
@@ -38,17 +40,13 @@ services:
         SERVICE: api-gateway
         HOST: '0.0.0.0'
         NODE_ENV: 'docker'
-    image: your-registry/your-app:green
+    image: fundmate-gateway:green
     container_name: api-gateway_green
-    command: pm2-runtime start ecosystem.config.js --only app --env green
     environment:
       API_GATEWAY_PORT: ${API_GATEWAY_PORT}
     healthcheck:
-      test: ["CMD","curl","-f","http://localhost:${API_GATEWAY_PORT}/health-checks"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
+      test: ['CMD','curl','-f','http://localhost:${API_GATEWAY_PORT}/health']
+      <<: *basic-health
     depends_on:
       - auth-service
       - user-service
@@ -69,16 +67,12 @@ services:
         SERVICE: auth-service
         HOST: '0.0.0.0'
         NODE_ENV: 'docker'
-    #    ports:
-    #      - '${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}'
     environment:
-      - AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT}
+      AUTH_SERVICE_PORT: ${AUTH_SERVICE_PORT}
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:${AUTH_SERVICE_PORT}/health']
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
+      <<: *basic-health
+
     networks:
       - backend
     restart: unless-stopped
@@ -91,16 +85,11 @@ services:
         SERVICE: user-service
         HOST: '0.0.0.0'
         NODE_ENV: 'docker'
-    #    ports:
-    #      - '${USER_SERVICE_PORT}:${USER_SERVICE_PORT}'
     environment:
-      - USER_SERVICE_PORT=${USER_SERVICE_PORT}
+      USER_SERVICE_PORT: ${USER_SERVICE_PORT}
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:${USER_SERVICE_PORT}/health']
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
+      <<: *basic-health
     networks:
       - backend
     restart: unless-stopped
@@ -113,16 +102,11 @@ services:
         SERVICE: funding-service
         HOST: '0.0.0.0'
         NODE_ENV: 'docker'
-    #    ports:
-    #      - '${FUNDING_SERVICE_PORT}:${FUNDING_SERVICE_PORT}'
     environment:
-      - FUNDING_SERVICE_PORT=${FUNDING_SERVICE_PORT}
+      FUNDING_SERVICE_PORT: ${FUNDING_SERVICE_PORT}
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:${FUNDING_SERVICE_PORT}/health']
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
+      <<: *basic-health
     networks:
       - backend
     restart: unless-stopped
@@ -135,16 +119,11 @@ services:
         SERVICE: interaction-service
         HOST: '0.0.0.0'
         NODE_ENV: 'docker'
-    #    ports:
-    #      - '${INTERACTION_SERVICE_PORT}:${INTERACTION_SERVICE_PORT}'
     environment:
-      - INTERACTION_SERVICE_PORT=${INTERACTION_SERVICE_PORT}
+      INTERACTION_SERVICE_PORT: ${INTERACTION_SERVICE_PORT}
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:${INTERACTION_SERVICE_PORT}/health']
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
+      <<: *basic-health
     networks:
       - backend
     restart: unless-stopped
@@ -157,16 +136,11 @@ services:
         SERVICE: payment-service
         HOST: '0.0.0.0'
         NODE_ENV: 'docker'
-    #    ports:
-    #      - '${PAYMENT_SERVICE_PORT}:${PAYMENT_SERVICE_PORT}'
     environment:
-      - PAYMENT_SERVICE_PORT=${PAYMENT_SERVICE_PORT}
+      PAYMENT_SERVICE_PORT: ${PAYMENT_SERVICE_PORT}
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:${PAYMENT_SERVICE_PORT}/health']
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
+      <<: *basic-health
     networks:
       - backend
     restart: unless-stopped
@@ -179,16 +153,11 @@ services:
         SERVICE: public-service
         HOST: '0.0.0.0'
         NODE_ENV: 'docker'
-    #    ports:
-    #      - '${PUBLIC_SERVICE_PORT}:${PUBLIC_SERVICE_PORT}'
     environment:
-      - PUBLIC_SERVICE_PORT=${PUBLIC_SERVICE_PORT}
+      PUBLIC_SERVICE_PORT: ${PUBLIC_SERVICE_PORT}
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:${PUBLIC_SERVICE_PORT}/health']
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
+      <<: *basic-health
     networks:
       - backend
     restart: unless-stopped
@@ -201,16 +170,11 @@ services:
         SERVICE: ai-service
         HOST: '0.0.0.0'
         NODE_ENV: 'docker'
-    #    ports:
-    #      - '${AI_SERVICE_PORT}:${AI_SERVICE_PORT}'
     environment:
-      - AI_SERVICE_PORT=${AI_SERVICE_PORT}
+      AI_SERVICE_PORT: ${AI_SERVICE_PORT}
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:${AI_SERVICE_PORT}/health']
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
+      <<: *basic-health
     networks:
       - backend
     restart: unless-stopped
