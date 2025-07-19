@@ -50,7 +50,7 @@ router.get('/:id', async (req, res) => {
     });
     if (!findBySchedule) {
       return res
-        .status(StatusCodes.OK)
+        .status(StatusCodes.NOT_FOUND)
         .json({ message: '이미 취소되었거나 존재하지 않는 예약입니다.' });
     }
 
