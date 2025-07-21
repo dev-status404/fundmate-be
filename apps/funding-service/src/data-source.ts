@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import dotenv from 'dotenv';
 import { fundingEntities } from '@shared/entities';
-// dotenv.config({ path: __dirname + '/../../../.env.development' });
 dotenv.config();
 
 export const AppDataSource = new DataSource({

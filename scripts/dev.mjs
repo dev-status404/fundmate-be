@@ -12,7 +12,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 
-dotenv.config({ path: path.join(ROOT_DIR, '.env') });
+dotenv.config();
 console.log(`Loaded environment from .env`);
 
 // Extract only the needed variables

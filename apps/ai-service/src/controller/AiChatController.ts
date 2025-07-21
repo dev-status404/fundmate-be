@@ -1,10 +1,8 @@
 import { Request, Response } from 'express';
 import axios from 'axios';
 import dotenv from 'dotenv';
-//import { getPopulationStat } from '../modules/getPopulationStat';
-//import { processPopulationData } from '../modules/processPopulationData';
 dotenv.config();
-dotenv.config({ path: '.env.apikey' });
+
 
 export const summarize = async (req: Request, res: Response) => {
   const { message } = req.body as { message?: string };

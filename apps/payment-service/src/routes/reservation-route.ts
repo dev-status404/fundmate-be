@@ -154,6 +154,7 @@ router.post('/', async (req, res) => {
 router.patch('/:id', async (req, res) => {
   const { userId } = res.locals.user;
   if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
+
   const reservationId = +req.params.id;
   try {
     const scheduleRepo = AppDataSource.getRepository(PaymentSchedule);

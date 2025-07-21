@@ -24,7 +24,6 @@ export class AwsS3Service {
       Bucket: process.env.AWS_BUCKET,
       Key: key,
       ContentType: contentType,
-      ACL: 'private',
     });
     return await getSignedUrl(this.client, cmd, { expiresIn });
   }
