@@ -9,6 +9,7 @@ out-tsc
 .env.production
 .env.test
 .env.apikey
+.active
 # dependencies
 node_modules
 

@@ -1,37 +1,54 @@
-import express, { Request, Response } from 'express';
-import dotenv from 'dotenv';
+import express from 'express';
+import cors, { CorsOptions } from 'cors';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import { httpLogger } from '@shared/logger';
+
 import { healthCheck } from './controllers/health-controller';
 import docsRoutes from './routes/docs-route';
 import apiRoutes from './routes/api-route';
-import path from 'path';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import { httpLogger } from '@shared/logger';
+import awsRoutes from './routes/aws-route';
+import dotenv from 'dotenv';
 dotenv.config();
 
 const host = process.env.HOST ? process.env.HOST : 'localhost';
 const port = process.env.API_GATEWAY_PORT ? Number(process.env.API_GATEWAY_PORT) : 3000;
 
 const app = express();
-app.use(cors());
-app.use(
-  cors({
-    origin: '*',
-    credentials: true,
-  })
-);
-app.options('*', cors());
+
+const allowedOrigins = [
+  'http://localhost:5000',
+  'http://localhost:5001',
+  'http://localhost:5002',
+  'http://localhost:5003',
+  'http://localhost:5004',
+  'http://localhost:5005',
+  'https://www.fundmate.com',
+];
+
+const corsOptions: CorsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    callback(new Error(`Not allowed by CORS: ${origin}`));
+  },
+  credentials: true,
+  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization','X-Requested-With','Accept'],
+  maxAge: 600,
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 app.use(httpLogger);
 app.use(cookieParser());
 
-app.get('/', (req: Request, res: Response) => {
-  return res.send({ message: "Hello I'm api gateway" });
-});
-
-app.get('/health-checks', healthCheck);
-app.use('/assets', express.static(path.join(__dirname, 'src/assets')));
 app.use('/docs', docsRoutes);
+app.use('/assets', express.static(path.join(__dirname, 'src/assets')));
+app.get('/health-checks', healthCheck);
+app.use('/upload', awsRoutes);
 app.use('/', apiRoutes);
 
 app.listen(port, host, () => {

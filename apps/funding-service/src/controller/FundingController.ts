@@ -1,16 +1,16 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
-import { In } from 'typeorm';
 import { Project, OptionData } from '@shared/entities';
 import { HttpStatusCode } from 'axios';
 import { requestBodyValidation } from '../modules/RequestBodyValidation';
+import { addLikedStatusToQuery } from '../modules/addLikedStatus';
 
 // 프로젝트 생성
-export const createFunding = async (req: Request, res: Response) => {
+export const createFundingAndOption = async (req: Request, res: Response) => {
   const { userId } = res.locals.user;
 
   const {
-    image_id: imageId,
+    image_url: imageUrl,
     title,
     goal_amount: goalAmount,
     start_date: startDate,
@@ -19,13 +19,13 @@ export const createFunding = async (req: Request, res: Response) => {
     short_description: shortDescription,
     description,
     category_id: category,
-    option_ids: optionIds,
+    options,
     gender,
     age_group: ageGroup,
   } = req.body;
 
   const values = [
-    imageId,
+    imageUrl,
     userId,
     category,
     title,
@@ -35,7 +35,7 @@ export const createFunding = async (req: Request, res: Response) => {
     deliveryDate,
     shortDescription,
     description,
-    optionIds,
+    options,
     gender,
     ageGroup,
   ];
@@ -52,8 +52,8 @@ export const createFunding = async (req: Request, res: Response) => {
   await queryRunner.startTransaction();
 
   try {
-    const newFunding = fundingRepo.create({
-      image: { imageId },
+    const newFunding: Project = fundingRepo.create({
+      imageUrl: imageUrl,
       user: { userId: userId },
       category: { categoryId: category },
       goalAmount,
@@ -71,23 +71,33 @@ export const createFunding = async (req: Request, res: Response) => {
 
     const fundingResult = await fundingRepo.save(newFunding);
 
-    const optionResult = await optionRepo
-      .createQueryBuilder()
-      .update()
-      .set({ project: { projectId: fundingResult.projectId } })
-      .where('option_id IN (:...optionIds)', { optionIds })
-      .execute();
-
-    if (fundingResult && optionResult.affected && optionResult.affected === optionIds.length) {
-      await queryRunner.commitTransaction();
-      return res.status(HttpStatusCode.Created).json({ message: '프로젝트 생성이 완료되었습니다.' });
-    } else {
-      throw new Error('프로젝트 생성에 실패했습니다.');
+    if(!fundingResult.projectId) {
+      throw new Error("프로젝트 생성 실패");
     }
+
+    for (const option of options) {
+      const newOption: OptionData = optionRepo.create({
+        title: option.title,
+        description: option.description,
+        price: option.price,
+        project: { projectId: fundingResult.projectId },
+      });
+
+      const savedOption = await optionRepo.save(newOption);
+
+      if (!savedOption.optionId) {
+        throw new Error("옵션 생성 실패");
+      }
+    }
+      
+    
+    await queryRunner.commitTransaction();
+    return res.status(HttpStatusCode.Created).json({project_id: fundingResult.projectId});
+    
   } catch (err) {
     console.error(err);
     await queryRunner.rollbackTransaction();
-    return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
+    return res.status(HttpStatusCode.InternalServerError).json({ message: '프로젝트 & 옵션 생성을 실패하였습니다.' });
   } finally {
     await queryRunner.release();
   }
@@ -96,20 +106,23 @@ export const createFunding = async (req: Request, res: Response) => {
 // 프로젝트 상세 조회
 export const getFundingDetail = async (req: Request, res: Response) => {
   const projectDetailId = req.params.id;
+  const userId = res.locals.user?.userId;
 
   if (!projectDetailId) {
     return res.status(HttpStatusCode.BadRequest).json({ message: '잘못된 프로젝트 ID 값입니다.' });
   }
 
-  // [TODO] 프로젝트 좋아요 수 출력
   const projectRepo = AppDataSource.getRepository(Project);
   const optionRepo = AppDataSource.getRepository(OptionData);
 
-  const projectQuery = projectRepo
+  let projectQuery = projectRepo
     .createQueryBuilder('project')
     .leftJoin('project.user', 'user')
+    .leftJoin('project.paymentSchedule', 'schedule')
+    .leftJoin('project.likes', 'like')
     .select([
-      'project.image_id AS project_image_id',
+      'project.projectId AS project_id',
+      'project.image_url AS project_image_url',
       'project.title AS title',
       'project.current_amount AS current_price',
       'DATEDIFF(project.end_date, NOW()) AS remaining_day',
@@ -122,8 +135,15 @@ export const getFundingDetail = async (req: Request, res: Response) => {
       'user.image_id AS user_image_id',
       'user.nickname AS nickname',
       'user.contents AS content',
+
+      'DATE_ADD(project.end_date, INTERVAL 1 DAY) AS payment_date',
+      'COUNT(schedule.payment_info_id) AS sponsor',
+
+      'COUNT(DISTINCT like.userId) AS likes',
     ])
     .where('project.projectId = :projectId', { projectId: projectDetailId });
+
+    projectQuery = addLikedStatusToQuery(userId, projectQuery);
 
   const optionQuery = optionRepo
     .createQueryBuilder('option')
@@ -138,7 +158,8 @@ export const getFundingDetail = async (req: Request, res: Response) => {
 
     if (projectQueryResult && optionQueryResult) {
       const project = {
-        image_id: projectQueryResult.project_image_id,
+        project_id: projectQueryResult.project_id,
+        image_url: projectQueryResult.project_image_url,
         title: projectQueryResult.title,
         current_price: projectQueryResult.current_price,
         remaining_day: projectQueryResult.remaining_day,
@@ -147,6 +168,10 @@ export const getFundingDetail = async (req: Request, res: Response) => {
         end_date: projectQueryResult.end_date,
         delivery_date: projectQueryResult.delivery_date,
         description: projectQueryResult.description,
+        payment_date: projectQueryResult.payment_date,
+        sponsor: Number(projectQueryResult.sponsor),
+        likes: Number(projectQueryResult.likes),
+liked: !!Number(projectQueryResult.liked),
       };
 
       const users = {
@@ -167,30 +192,6 @@ export const getFundingDetail = async (req: Request, res: Response) => {
     }
   } catch (err) {
     console.error(err);
-    return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
-  }
-};
-
-export const getFundingSummary = async (req: Request, res: Response) => {
-  const projectDetailIdList = req.body.project_ids;
-
-  if (!projectDetailIdList) {
-    return res.status(HttpStatusCode.BadRequest).json({ message: '잘못된 프로젝트 ID 값입니다.' });
-  }
-  try {
-    const projectRepo = AppDataSource.getRepository(Project);
-    const findProject = await projectRepo.find({
-      where: { projectId: In(projectDetailIdList) },
-      select: ['projectId', 'title', 'image'],
-    });
-    const data = findProject.map((project) => ({
-      projectId: project.projectId,
-      title: project.title,
-      image: project.image ?? null,
-    }));
-    return res.status(HttpStatusCode.Ok).json({ data });
-  } catch (err) {
-    console.log(err);
     return res.status(HttpStatusCode.InternalServerError).json({ message: '서버 문제가 발생했습니다.' });
   }
 };

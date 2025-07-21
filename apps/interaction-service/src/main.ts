@@ -17,10 +17,6 @@ app.use(httpLogger);
 app.use(cookieParser());
 app.use(headerToLocals);
 
-app.get('/', (req, res) => {
-  res.send({ message: "Hello I'm interaction service" });
-});
-
 app.get('/health', (_req, res) =>
   res.status(200).json({ status: 'ok', service: 'interaction-service', timestamp: new Date().toISOString() })
 );

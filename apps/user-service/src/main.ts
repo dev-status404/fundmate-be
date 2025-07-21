@@ -15,10 +15,6 @@ app.use(httpLogger);
 app.use(express.json());
 app.use(headerToLocals);
 
-app.get('/', (req, res) => {
-  res.send({ message: "Hello I'm user service" });
-});
-
 app.get('/health', (_req, res) =>
   res.status(200).json({ status: 'ok', service: 'user-service', timestamp: new Date().toISOString() })
 );

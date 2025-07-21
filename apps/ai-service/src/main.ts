@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import AiChat from './routes/aichat.js';
 import { serviceConfig, headerToLocals } from '@shared/config';
 import { httpLogger } from '@shared/logger';
@@ -12,15 +11,10 @@ const app = express();
 app.use(httpLogger);
 app.use(headerToLocals);
 
-app.get('/', (req, res) => {
-  res.send({ message: "Hello I'm ai service" });
-});
-
 app.get('/health', (_req, res) =>
   res.status(200).json({ status: 'ok', service: 'ai-service', timestamp: new Date().toISOString() })
 );
 
-app.use(cors());
 app.use(express.json());
 app.use('/ai', AiChat);
 

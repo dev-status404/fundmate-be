@@ -11,10 +11,13 @@ function pathToRegExp(path: string): RegExp {
 
 // 서버 결정 미들웨어
 export function decideService(req: Request, res: Response, next: NextFunction) {
+  console.log(`[API Gateway] Routing request for path: ${req.path}`);
   const service = Object.values(serviceConfig).find((s) => s.base.some((base) => req.path.startsWith(base)));
   if (!service) {
+    console.error(`[API Gateway] Service not found for path: ${req.path}`);
     return res.status(StatusCode.NOT_FOUND).json({ message: 'Service not found' });
   }
+  console.log(`[API Gateway] Forwarding to service: ${service.name}`);
   res.locals.service = service;
   return next();
 }

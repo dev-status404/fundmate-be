@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  api-gateway_blue:
+    ports:
+      - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
+
+  api-gateway_green:
+    ports:
+      - "3001:${API_GATEWAY_PORT}"

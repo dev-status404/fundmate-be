@@ -4,19 +4,37 @@ import { Age, Category, Follow, Image, InterestCategory, User } from '@shared/en
 import { Token } from '@shared/entities';
 import StatusCode from 'http-status-codes';
 import { serviceClients } from '@shared/config';
+import crypto from 'crypto';
 
 export const deleteUser = async (req: Request, res: Response) => {
   const userRepo = AppDataSource.getRepository(User);
   const tokenRepo = AppDataSource.getRepository(Token);
 
   const { userId } = res.locals.user;
+  const { password } = req.body;
   const refreshToken = req.header('x-refresh-token');
 
   if (!refreshToken) {
     return res.status(StatusCode.UNAUTHORIZED).json({ message: '리프레시 토큰 필요' });
   }
 
+  if (!password) {
+    return res.status(StatusCode.BAD_REQUEST).json({ message: '비밀번호 필요' });
+  }
+
   try {
+    const user = await userRepo.findOneBy({ userId });
+
+    if (!user || !user.password || !user.salt) {
+      return res.status(StatusCode.NOT_FOUND).json({ message: '존재하지 않는 유저' });
+    }
+
+    const hashPassword = crypto.pbkdf2Sync(password, user.salt, 10000, 64, 'sha512').toString('base64');
+
+    if (hashPassword !== user.password) {
+      return res.status(StatusCode.UNAUTHORIZED).json({ message: '비밀번호 불일치' });
+    }
+
     const tokenRecord = await tokenRepo.findOne({
       where: {
         user: { userId: userId },
@@ -34,14 +52,16 @@ export const deleteUser = async (req: Request, res: Response) => {
     await userRepo.delete({ userId: userId });
 
     res.clearCookie('accessToken', {
-      httpOnly: false,
+      httpOnly: true,
       secure: false,
-      sameSite: 'none',
+      sameSite: 'lax',
+      path: '/',
     });
     res.clearCookie('refreshToken', {
-      httpOnly: false,
+      httpOnly: true,
       secure: false,
-      sameSite: 'none',
+      sameSite: 'lax',
+      path: '/',
     });
 
     return res.status(StatusCode.OK).json({ message: '회원 탈퇴 성공' });
@@ -71,7 +91,7 @@ export const getMyPage = async (req: Request, res: Response) => {
 
     const paymentClient = serviceClients['payment-service'];
     paymentClient.setAuthContext({ userId });
-    const paymentList = await paymentClient.get(`/reservations/count`);
+    const paymentList = await paymentClient.get(`/statistics/count`);
 
     const interactionClient = serviceClients['interaction-service'];
     interactionClient.setAuthContext({ userId });
@@ -212,11 +232,22 @@ export const getMySupportedProjects = async (req: Request, res: Response) => {
 
 export const getMyComments = async (req: Request, res: Response) => {
   const { userId } = res.locals.user;
+  if (!userId) return res.status(StatusCode.UNAUTHORIZED).json({ message: '로그인이 필요합니다.' });
+
+  const page = req.query.page as string | undefined;
+  const limit = req.query.limit as string | undefined;
+  const params = new URLSearchParams();
+  if (page && limit){
+    params.set('page',page);
+    params.set('limit',limit);
+  }
+  
+  const url = `/profiles/my-comments${params.toString() ? `?${params}` : ''}`;
 
   try {
     const fundingClient = serviceClients['funding-service'];
     fundingClient.setAuthContext({ userId });
-    const CommentsList = await fundingClient.get(`/profiles/my-comments`);
+    const CommentsList = await fundingClient.get(url);
 
     return res.status(StatusCode.OK).json(CommentsList.data);
   } catch (err) {
@@ -256,7 +287,7 @@ export const getMyProjectStatistics = async (req: Request, res: Response) => {
 
     const paymentClient = serviceClients['payment-service'];
     paymentClient.setAuthContext({ userId });
-    const paymentList = await paymentClient.get(`/statistics?start=${startDate}&end=${endDate}`);
+    const paymentList = await paymentClient.get(`/statistics/summary?start=${startDate}&end=${endDate}`);
 
     return res.status(StatusCode.OK).json({
       fundingCount: fundingList.data.length,
@@ -270,11 +301,13 @@ export const getMyProjectStatistics = async (req: Request, res: Response) => {
 
 export const getMyProjectPayments = async (req: Request, res: Response) => {
   const { userId } = res.locals.user;
+  const page = req.query.page || 1;
+  const limit = req.query.limit;
 
   try {
     const paymentClient = serviceClients['payment-service'];
     paymentClient.setAuthContext({ userId });
-    const paymentList = await paymentClient.get(`/reservations/history`);
+    const paymentList = await paymentClient.get(`/statistics/history?page=${page}&limit=${limit}`);
 
     return res.status(StatusCode.OK).json(paymentList.data);
   } catch (err) {
